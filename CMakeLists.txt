@@ -30,6 +30,10 @@ set(IMGUI_SOURCES
 
 set(SOURCES
         src/main.cpp
+        src/Application.cpp
+        src/Application.h
+        src/UIWindows/TerminalWindow.cpp
+        src/UIWindows/TerminalWindow.h
 )
 
 #include imgui
