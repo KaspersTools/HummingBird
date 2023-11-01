@@ -9,8 +9,6 @@
 
 #include "spdlog/logger.h"
 
-#include "terminal_helper_example.h"
-
 int main() {
   if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -40,14 +38,12 @@ int main() {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
 
+
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
     // Setup ImGui platform/renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
-
-
-//    ImTerm::terminal<terminal_> terminal_log(ImTerm::cmd_struct);
-    terminal_log.set_min_log_level(ImTerm::message::severity::info);
-
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();

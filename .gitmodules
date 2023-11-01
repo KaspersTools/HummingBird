@@ -1,6 +1,7 @@
 [submodule "vendor/imgui"]
 	path = vendor/imgui
 	url = https://github.com/ocornut/imgui
+	branch = docking
 [submodule "vendor/glfw"]
 	path = vendor/glfw
 	url = https://github.com/TheCherno/GLFW
