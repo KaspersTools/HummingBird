@@ -46,6 +46,7 @@ public:
 private:
     void Run();
     void Render();
+    void SetupDockspace();
 
 
 private:
