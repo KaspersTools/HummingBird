@@ -8,31 +8,31 @@ void TerminalWindow::Render() {
     // Output region
     if (ImGui::BeginChild("OutputRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())))
     {
-        for (const std::string& log : logs_)
+        for (const std::string& log : m_logs)
         {
             ImGui::TextUnformatted(log.c_str());
         }
-        if (scrollToBottom_)
+        if (m_scrollToBottom)
             ImGui::SetScrollHereY(1.0f);
 
-        scrollToBottom_ = false;
+        m_scrollToBottom = false;
     }
     ImGui::EndChild();
 
     // Command-line
-    bool isReadOnly = currentPid_ != -1;  // This could be set somewhere in your program logic
+    bool isReadOnly = m_currentPid != -1;  // This could be set somewhere in your program logic
 
     ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
                                 (isReadOnly ? ImGuiInputTextFlags_ReadOnly : 0);
 
-    if (ImGui::InputText("##CommandLine", inputBuf_, sizeof(inputBuf_),
+    if (ImGui::InputText("##CommandLine", m_inputBuf, sizeof(m_inputBuf),
                          flags ))
     {
-        ExecuteCommand(inputBuf_);
-        strcpy(inputBuf_, "");
-        scrollToBottom_ = true;
+        ExecuteCommand(m_inputBuf);
+        strcpy(m_inputBuf, "");
+        m_scrollToBottom = true;
     }
-
+    ImGui::SameLine();
     if(ImGui::Button("Stop")){
         StopCurrentCommand();
     }

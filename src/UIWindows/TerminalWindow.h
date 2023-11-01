@@ -26,12 +26,12 @@ public:
         std::thread(&TerminalWindow::ExecuteCommandThreaded, this, std::string(command)).detach();
     }
 private:
-    char inputBuf_[256] = { 0 };
-    std::vector<std::string> logs_;
-    bool scrollToBottom_ = true;
+    char m_inputBuf[256] = {0 };
+    std::vector<std::string> m_logs;
+    bool m_scrollToBottom = true;
 
-    std::mutex logMutex_;
-    std::atomic<pid_t> currentPid_ = -1;  // using atomic for thread-safety
+    std::mutex m_logMutex;
+    std::atomic<pid_t> m_currentPid = -1;  // using atomic for thread-safety
 
 
     void ExecuteCommandThreaded(const std::string command) {
@@ -45,7 +45,7 @@ private:
         }
 
         // Store the PID of the process
-        currentPid_ = pipe_fd;
+        m_currentPid = pipe_fd;
 
         char buffer[128];
         while (fgets(buffer, sizeof(buffer), fp) != nullptr) {
@@ -57,21 +57,21 @@ private:
         }
 
         // Reset the PID to -1 after the command has finished
-        currentPid_ = -1;
+        m_currentPid = -1;
         pclose(fp);
     }
 
     void AddLog(const std::string& log) {
-        std::lock_guard<std::mutex> lock(logMutex_);
-        logs_.emplace_back(log);
+        std::lock_guard<std::mutex> lock(m_logMutex);
+        m_logs.emplace_back(log);
     }
 
     // New function to stop the currently running command
     void StopCurrentCommand() {
-        pid_t pid = currentPid_.load();
+        pid_t pid = m_currentPid.load();
         if (pid != -1) {
             kill(pid, SIGTERM); // sends a termination signal
-            currentPid_ = -1;  // reset the current PID
+            m_currentPid = -1;  // reset the current PID
         }
     }
 

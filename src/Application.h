@@ -34,11 +34,11 @@ public:
     void InitImGui();
 
     void AddWindow(const std::string& name, std::shared_ptr<UIWindow> window) {
-        windows[name] = window;
+        m_uiWindows[name] = window;
     }
 
     void RemoveWindow(const std::string& name) {
-        windows.erase(name);
+        m_uiWindows.erase(name);
     }
 
 
@@ -52,7 +52,7 @@ private:
 
     GLFWwindow* m_nativeWindow;
 
-    std::map<std::string, std::shared_ptr<UIWindow>> windows;
+    std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
 
 };
 

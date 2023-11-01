@@ -64,6 +64,17 @@ void Application::InitImGui() {
     ImGui_ImplGlfw_InitForOpenGL(m_nativeWindow, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
+    //Load fonts
+
+    ImFontConfig config;
+    config.OversampleH = 3;
+    config.OversampleV = 3;
+
+    ImFont* mainFont = io.Fonts->AddFontFromFileTTF(
+            "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
+            17, &config);
+    io.FontDefault = mainFont;
+
 }
 
 void Application::Run(){
@@ -80,7 +91,7 @@ void Application::Render() {
 
     ImGui::NewFrame();
 
-    for (auto& [name, window] : windows) {
+    for (auto& [name, window] : m_uiWindows) {
         if (window->IsOpen()) {
             if (ImGui::Begin(name.c_str())) {
                 window->Render();
@@ -88,11 +99,6 @@ void Application::Render() {
             ImGui::End();
         }
     }
-//    ImGui::Begin("t");
-//    ImGui::Text("teszt");
-//    ImGui::End();
-//
-//    ImGui::ShowDemoWindow();
 
     ImGui::Render();
     int display_w, display_h;
