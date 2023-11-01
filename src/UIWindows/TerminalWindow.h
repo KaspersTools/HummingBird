@@ -18,7 +18,8 @@
 namespace KBTools {
     class TerminalWindow : public UIWindow {
     public:
-        TerminalWindow() = default;
+        TerminalWindow();
+        ~TerminalWindow();
 
         void Render() override;
 
@@ -28,7 +29,11 @@ namespace KBTools {
             std::thread(&TerminalWindow::ExecuteCommandThreaded, this, std::string(command)).detach();
         }
 
+        static std::string GetTerminalName() { return "Terminal " + std::to_string(s_terminalCount); }
+
+
     private:
+        inline static uint s_terminalCount = 0;
         char m_inputBuf[256] = {0};
         std::vector<std::string> m_logs;
         bool m_scrollToBottom = true;
@@ -107,6 +112,8 @@ namespace KBTools {
             }
         }
     };
+
+//    uint TerminalWindow::s_terminalCount = 0;
 }
 
 #endif //KBTOOLS_TERMINALWINDOW_H

@@ -5,6 +5,18 @@
 #include "TerminalWindow.h"
 
 namespace KBTools{
+
+TerminalWindow::TerminalWindow() {
+    s_terminalCount++;
+    m_logs.emplace_back("Welcome to the KBTools Terminal!");
+    m_logs.emplace_back("Type 'help' for a list of commands.");
+}
+
+TerminalWindow::~TerminalWindow() {
+    s_terminalCount--;
+    StopCurrentCommand();
+}
+
 void TerminalWindow::Render() {
 
     // Output region

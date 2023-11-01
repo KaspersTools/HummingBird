@@ -12,8 +12,6 @@ namespace KBTools {
     class UIWindow {
 
     public:
-        virtual ~UIWindow() = default;
-
         virtual void Render() = 0;  // Pure virtual function to be implemented by derived classes
         const bool IsOpen() const { return isOpen; }
 

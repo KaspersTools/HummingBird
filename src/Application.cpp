@@ -10,7 +10,7 @@ namespace KBTools {
         InitGlfw();
         InitImGui();
 
-        AddWindow("Window 1", std::make_shared<TerminalWindow>());
+        AddWindow(TerminalWindow::GetTerminalName(), std::make_shared<TerminalWindow>());
 
         Run();
 
@@ -112,6 +112,13 @@ namespace KBTools {
                 }
                 ImGui::EndMenu();
             }
+            if(ImGui::BeginMenu("Windows")){
+                if(ImGui::MenuItem("Terminal")){
+                    AddWindow(TerminalWindow::GetTerminalName(), std::make_shared<TerminalWindow>());
+                }
+                ImGui::EndMenu();
+            }
+
             if (ImGui::BeginMenu("View")) {
                 if (ImGui::BeginMenu("Styles")) {
                     if (ImGui::MenuItem("Maya")) {
