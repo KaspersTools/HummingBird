@@ -17,45 +17,50 @@
 #include "UIWindows/UIWindow.h"
 #include "UIWindows/TerminalWindow.h"
 
+#include "UIWindows/Themes/ThemeManager.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <iostream>
 #include <map>
 #include <string>
 #include <memory>
 
-
+namespace KBTools{
 class Application {
 public:
     Application();
+
     ~Application();
 
     void InitGlfw();
+
     void InitImGui();
 
-    void AddWindow(const std::string& name, std::shared_ptr<UIWindow> window) {
+    void AddWindow(const std::string &name, std::shared_ptr<UIWindow> window) {
         m_uiWindows[name] = window;
     }
 
-    void RemoveWindow(const std::string& name) {
+    void RemoveWindow(const std::string &name) {
         m_uiWindows.erase(name);
     }
 
 
-
 private:
     void Run();
+
     void Render();
+
     void SetupDockspace();
 
 
 private:
 
-    GLFWwindow* m_nativeWindow;
+    GLFWwindow *m_nativeWindow;
 
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
-
 };
 
 
 #endif //KBTOOLS_APPLICATION_H
+}

@@ -34,6 +34,9 @@ set(SOURCES
         src/Application.h
         src/UIWindows/TerminalWindow.cpp
         src/UIWindows/TerminalWindow.h
+        src/UIWindows/Themes/Themes.h
+        src/UIWindows/Themes/ThemeManager.cpp
+        src/UIWindows/Themes/ThemeManager.h
 )
 
 #include imgui

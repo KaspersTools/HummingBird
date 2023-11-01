@@ -3,13 +3,13 @@
 //
 
 #include "TerminalWindow.h"
+
+namespace KBTools{
 void TerminalWindow::Render() {
 
     // Output region
-    if (ImGui::BeginChild("OutputRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())))
-    {
-        for (const std::string& log : m_logs)
-        {
+    if (ImGui::BeginChild("OutputRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()))) {
+        for (const std::string &log: m_logs) {
             ImGui::TextUnformatted(log.c_str());
         }
         if (m_scrollToBottom)
@@ -26,17 +26,18 @@ void TerminalWindow::Render() {
                                 (isReadOnly ? ImGuiInputTextFlags_ReadOnly : 0);
 
     if (ImGui::InputText("##CommandLine", m_inputBuf, sizeof(m_inputBuf),
-                         flags ))
-    {
+                         flags)) {
         ExecuteCommand(m_inputBuf);
         strcpy(m_inputBuf, "");
         m_scrollToBottom = true;
     }
     ImGui::SameLine();
-    if(ImGui::Button("Stop")){
+    if (ImGui::Button("Stop")) {
         StopCurrentCommand();
     }
 
     // Auto-focus on window appearing
     ImGui::SetItemDefaultFocus();
+}
+
 }
