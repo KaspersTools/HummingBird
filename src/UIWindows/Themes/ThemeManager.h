@@ -53,7 +53,6 @@ namespace KBTools {
                 };
 
                 ImVec4 bgColor = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
-
                 //TODO: CHANGE CLEAR COLOR OF SDL
 //                glClearColor(bgColor.x, bgColor.y, bgColor.z, bgColor.w);
             }
