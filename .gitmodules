@@ -8,6 +8,4 @@
 [submodule "vendor/fmt"]
 	path = vendor/fmt
 	url = https://github.com/fmtlib/fmt.git
-[submodule "vendor/imterm"]
-	path = vendor/imterm
-	url = https://github.com/Organic-Code/ImTerm.git
+
