@@ -10,8 +10,7 @@
 #include <string>
 #include <memory>
 
-#include <GLAD/glad.h>
-#include <GLFW/glfw3.h>
+
 #include <imgui.h>
 
 #include "backends/imgui_impl_glfw.h"
@@ -54,9 +53,6 @@ private:
     void Render();
 
 private:
-
-    GLFWwindow *m_nativeWindow;
-
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
 };
 

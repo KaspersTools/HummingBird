@@ -7,81 +7,23 @@
 namespace KBTools {
     Application::Application() {
 
-        InitGlfw();
-        InitImGui();
-
-        AddWindow(TerminalWindow::GetTerminalName(), std::make_shared<TerminalWindow>());
-
-        Run();
 
     }
 
     Application::~Application() {
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
 
-        glfwDestroyWindow(m_nativeWindow);
-        glfwTerminate();
     }
 
     void Application::InitGlfw() {
-        if (!glfwInit()) {
-            std::cerr << "Failed to initialize GLFW" << std::endl;
-            exit(-1);
-        }
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Necessary for Mac
-#endif
-        m_nativeWindow = glfwCreateWindow(640, 480, "ImGui Mac App", nullptr, nullptr);
-        if (m_nativeWindow == nullptr) {
-            std::cerr << "Failed to create GLFW window" << std::endl;
-            glfwTerminate();
-            exit(-1);
-        }
-        glfwMakeContextCurrent(m_nativeWindow);
-
-        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-            std::cerr << "Failed to initialize GLAD" << std::endl;
-            exit(-1);
-        }
 
     }
 
     void Application::InitImGui() {
 
-        // Setup ImGui context
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO &io = ImGui::GetIO();
-
-
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-        // Setup ImGui platform/renderer bindings
-        ImGui_ImplGlfw_InitForOpenGL(m_nativeWindow, true);
-        ImGui_ImplOpenGL3_Init("#version 330");
-
-        //Load fonts
-
-        ImFontConfig config;
-        config.OversampleH = 3;
-        config.OversampleV = 3;
-
-        ImFont *mainFont = io.Fonts->AddFontFromFileTTF(
-                "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
-                15.5, &config);
-        io.FontDefault = mainFont;
-
     }
 
     void Application::Run() {
-        while (!glfwWindowShouldClose(m_nativeWindow)) {
-            Render();
-        }
+
     }
 
     void Application::SetupDockspace() {
@@ -108,7 +50,7 @@ namespace KBTools {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 if (ImGui::MenuItem("Exit")) {
-                    glfwSetWindowShouldClose(m_nativeWindow, true);
+                    //TODO: Exit SDL
                 }
                 ImGui::EndMenu();
             }
@@ -160,8 +102,9 @@ namespace KBTools {
 
     void Application::RenderUI(){
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
+        //TODO: REPLACE WITH SDL??
+//        ImGui_ImplOpenGL3_NewFrame();
+//        ImGui_ImplGlfw_NewFrame();
 
         ImGui::NewFrame();
 
@@ -181,20 +124,13 @@ namespace KBTools {
 
         ImGui::Render();
 
+        //TODO: REPLACE WITH SDL??
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
     void Application::Render() {
-        glfwPollEvents();
-
-        int display_w, display_h;
-        glfwGetFramebufferSize(m_nativeWindow, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-
-
-        glfwSwapBuffers(m_nativeWindow);
+        //SDL START
+        RenderUI();
     }
 
 }
