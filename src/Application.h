@@ -10,12 +10,17 @@
 #include <string>
 #include <memory>
 
-#include <GLAD/glad.h>
-#include <GLFW/glfw3.h>
-#include <imgui.h>
 
-#include "backends/imgui_impl_glfw.h"
+#include <vector>
+#include <iostream>
+// SDL
+#include <glad/glad.h>
+#include <SDL.h>
+// Dear ImGui
+#include "imgui.h"
+#include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
+
 
 #include "spdlog/logger.h"
 
@@ -32,12 +37,8 @@ public:
 
     ~Application();
 
-    void InitGlfw();
-
-    void InitImGui();
-
-    void AddWindow(const std::string &name, std::shared_ptr<UIWindow> window) {
-        m_uiWindows[name] = window;
+    void AddWindow(const std::string &name, std::shared_ptr<UIWindow> uiWindow) {
+        m_uiWindows[name] = uiWindow;
     }
 
     void RemoveWindow(const std::string &name) {
@@ -46,6 +47,8 @@ public:
 
 
 private:
+    void InitSDL();
+    void InitImGui();
     void Run();
 
     void RenderUI();
@@ -54,10 +57,15 @@ private:
     void Render();
 
 private:
-
-    GLFWwindow *m_nativeWindow;
-
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
+    SDL_Window* m_window{};
+    SDL_GLContext m_gl_context{};
+    bool m_exit = false;
+    bool m_show_demo_window = false;
+    bool m_show_another_window = false;
+
+    GLsizei m_windowWidth = 1280;
+    GLsizei m_windowHeight = 720;
 };
 
 

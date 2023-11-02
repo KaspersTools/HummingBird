@@ -5,7 +5,6 @@
 #ifndef KBTOOLS_THEMEMANAGER_H
 #define KBTOOLS_THEMEMANAGER_H
 #include "Themes.h"
-#include <GLFW/glfw3.h>
 
 namespace KBTools {
     namespace Themes {
@@ -54,8 +53,8 @@ namespace KBTools {
                 };
 
                 ImVec4 bgColor = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
-
-                glClearColor(bgColor.x, bgColor.y, bgColor.z, bgColor.w);
+                //TODO: CHANGE CLEAR COLOR OF SDL
+//                glClearColor(bgColor.x, bgColor.y, bgColor.z, bgColor.w);
             }
         };
     } // Themes
