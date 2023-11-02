@@ -158,13 +158,7 @@ namespace KBTools {
         }
     }
 
-    void Application::Render() {
-        glfwPollEvents();
-
-        int display_w, display_h;
-        glfwGetFramebufferSize(m_nativeWindow, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClear(GL_COLOR_BUFFER_BIT);
+    void Application::RenderUI(){
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -188,6 +182,17 @@ namespace KBTools {
         ImGui::Render();
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void Application::Render() {
+        glfwPollEvents();
+
+        int display_w, display_h;
+        glfwGetFramebufferSize(m_nativeWindow, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+
 
         glfwSwapBuffers(m_nativeWindow);
     }

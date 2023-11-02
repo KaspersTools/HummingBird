@@ -54,7 +54,9 @@ target_include_directories(
 
 target_link_libraries(
         KBTools PRIVATE
-        glfw)
+        glfw
+        /usr/local/Cellar/libvncserver/0.9.14_1/lib/libvncclient.dylib
+)
 
 set_target_properties(
         KBTools PROPERTIES

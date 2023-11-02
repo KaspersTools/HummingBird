@@ -5,10 +5,15 @@
 #ifndef KBTOOLS_APPLICATION_H
 #define KBTOOLS_APPLICATION_H
 
+#include <iostream>
+#include <map>
+#include <string>
+#include <memory>
+
 #include <GLAD/glad.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
 
-#include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
@@ -19,12 +24,6 @@
 
 #include "UIWindows/Themes/ThemeManager.h"
 
-#include <imgui.h>
-#include <imgui_internal.h>
-#include <iostream>
-#include <map>
-#include <string>
-#include <memory>
 
 namespace KBTools{
 class Application {
@@ -49,10 +48,10 @@ public:
 private:
     void Run();
 
-    void Render();
-
+    void RenderUI();
     void SetupDockspace();
 
+    void Render();
 
 private:
 
