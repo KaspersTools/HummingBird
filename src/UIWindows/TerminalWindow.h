@@ -15,6 +15,8 @@
 #include <zconf.h>
 #include <csignal>
 #include <iostream>
+#include <filesystem>
+
 namespace KBTools {
     class TerminalWindow : public UIWindow {
     public:
@@ -23,8 +25,52 @@ namespace KBTools {
 
         void Render() override;
 
-        void ExecuteCommand(const char *command) {
-            AddLog(std::string("> ") + command);
+        void ExecuteCommand(std::string& command) {
+            AddLog(this->currentDir +  "> " + command);
+            // Trim whitespace from both ends of the command
+            command.erase(0, command.find_first_not_of(" \t\n\r\f\v"));
+            command.erase(command.find_last_not_of(" \t\n\r\f\v") + 1);
+
+            if(command.empty()) return;
+
+            if(command.starts_with("cd ")) {
+                std::string newDir = command.substr(3);
+
+                if(newDir.starts_with("~")) {
+                    char* home = std::getenv("HOME"); // Get the home directory path
+                    if (home == nullptr) {
+                        std::cout << "Error: Home directory not found." << std::endl;
+                        return;
+                    }
+                    newDir = std::string(home) + newDir.substr(1); // Replace ~ with home directory path
+                }
+
+                // Trim whitespace from both ends of the newDir
+                newDir.erase(0, newDir.find_first_not_of(" \t\n\r\f\v"));
+                newDir.erase(newDir.find_last_not_of(" \t\n\r\f\v") + 1);
+
+                // Check if the newDir is not empty
+                if(newDir.empty()) {
+                    std::cout << "Error: No directory specified." << std::endl;
+                    return;
+                }
+
+                // Handle relative and absolute paths
+                std::cout << currentDir << std::endl;
+                std::filesystem::path newPath = (std::filesystem::path(currentDir) / newDir).lexically_normal();
+
+                // Check if the directory exists and is accessible
+                if(std::filesystem::exists(newPath) && std::filesystem::is_directory(newPath)) {
+                    this->currentDir = newPath.string();
+                    std::cout << "Directory changed to: " << currentDir << std::endl;
+                } else {
+                    std::cout << "Error: Directory does not exist or cannot be accessed." << std::endl;
+                }
+                return;
+            }
+
+
+            command = "cd " + this->currentDir + " && " + command;
             // Start a new thread to run the command
             std::thread(&TerminalWindow::ExecuteCommandThreaded, this, std::string(command)).detach();
         }
@@ -42,7 +88,7 @@ namespace KBTools {
         std::atomic<pid_t> m_currentPid = -1;  // using atomic for thread-safety
 
 
-        void ExecuteCommandThreaded(const std::string command) {
+        void ExecuteCommandThreaded(const std::string& command) {
             FILE *fp = popen(command.c_str(), "r");
             int pipe_fd;
 
@@ -111,6 +157,8 @@ namespace KBTools {
                 return pid;
             }
         }
+
+        std::string currentDir = "~";
     };
 
 //    uint TerminalWindow::s_terminalCount = 0;

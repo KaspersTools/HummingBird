@@ -37,9 +37,15 @@ void TerminalWindow::Render() {
     ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
                                 (isReadOnly ? ImGuiInputTextFlags_ReadOnly : 0);
 
+    ImGui::Text("%s", std::string(this->currentDir + " >").c_str());
+    ImGui::SameLine();
     if (ImGui::InputText("##CommandLine", m_inputBuf, sizeof(m_inputBuf),
                          flags)) {
-        ExecuteCommand(m_inputBuf);
+        //add cd currentdir to the command
+        std::string myString(m_inputBuf);
+//        std::string command = std::string(m_inputBuf);
+        ExecuteCommand(myString);
+
         strcpy(m_inputBuf, "");
         m_scrollToBottom = true;
     }
