@@ -28,6 +28,7 @@
 #include "UIWindows/TerminalWindow.h"
 
 #include "UIWindows/Themes/ThemeManager.h"
+#include "Rendering/Texture.h"
 
 
 namespace KBTools{
@@ -55,17 +56,21 @@ private:
     void SetupDockspace();
 
     void Render();
-
+    GLuint SDLSurfaceToOpenGLTexture(SDL_Surface* surface);
+public:
+    static SDL_Window* GetWindow() { return s_window; }
 private:
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
-    SDL_Window* m_window{};
+    inline static SDL_Window* s_window;
+
     SDL_GLContext m_gl_context{};
     bool m_exit = false;
-    bool m_show_demo_window = false;
-    bool m_show_another_window = false;
 
-    GLsizei m_windowWidth = 1280;
-    GLsizei m_windowHeight = 720;
+    GLsizei m_windowWidth = 1920;
+    GLsizei m_windowHeight = 1080;
+
+    Texture m_texture = Texture("Assets/Textures/newbg.png");
+
 };
 
 
