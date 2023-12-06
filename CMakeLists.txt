@@ -63,15 +63,14 @@ set(SOURCES
         src/main.cpp
         src/Application.cpp
         src/Application.h
-        src/UIWindows/TerminalWindow.cpp
-        src/UIWindows/TerminalWindow.h
+        src/Terminal/TerminalWindow.cpp
+        src/Terminal/TerminalWindow.h
         src/UIWindows/Themes/Themes.h
         src/UIWindows/Themes/ThemeManager.cpp
         src/UIWindows/Themes/ThemeManager.h
         src/Log.cpp
         src/Log.h
         src/stb_image.h
-        src/Shader.h
         src/Rendering/Texture.cpp
         src/Rendering/Texture.h
 )

@@ -168,7 +168,7 @@ namespace KBTools {
             }
             if(ImGui::BeginMenu("Windows")){
                 if(ImGui::MenuItem("Terminal")){
-                    AddWindow(TerminalWindow::GetTerminalName(), std::make_shared<TerminalWindow>());
+                    AddWindow(Terminal::TerminalWindow::GetTerminalName(), std::make_shared<Terminal::TerminalWindow>());
                 }
                 ImGui::EndMenu();
             }
