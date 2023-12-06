@@ -16,6 +16,7 @@
 // SDL
 #include <glad/glad.h>
 #include <SDL.h>
+
 // Dear ImGui
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
@@ -25,7 +26,10 @@
 #include "spdlog/logger.h"
 
 #include "UIWindows/UIWindow.h"
+
 #include "Terminal/TerminalWindow.h"
+#include "Security/LogInWindow.h"
+#include "Security/LoginManager.h"
 
 #include "UIWindows/Themes/ThemeManager.h"
 #include "Rendering/Texture.h"
@@ -60,14 +64,19 @@ namespace KBTools {
 
         void Render();
 
-        GLuint SDLSurfaceToOpenGLTexture(SDL_Surface *surface);
-
     public:
+        const int GetWindowWidth() const { return m_windowWidth; }
+        const int GetWindowHeight() const { return m_windowHeight; }
+
         static SDL_Window *GetWindow() { return s_window; }
+        static Application *GetApplication() {
+            return s_application;
+        }
 
     private:
         std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
         inline static SDL_Window *s_window;
+        inline static Application *s_application = nullptr;
 
         SDL_GLContext m_gl_context{};
         bool m_exit = false;
@@ -75,7 +84,9 @@ namespace KBTools {
         GLsizei m_windowWidth = 1920;
         GLsizei m_windowHeight = 1080;
 
-        Texture m_texture = Texture("Assets/Textures/newbg.png");
+        Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
+
+        Security::LogInWindow m_loginWindow;
 
     };
 

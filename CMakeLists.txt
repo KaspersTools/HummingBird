@@ -73,6 +73,10 @@ set(SOURCES
         src/stb_image.h
         src/Rendering/Texture.cpp
         src/Rendering/Texture.h
+        src/Security/LogInWindow.cpp
+        src/Security/LogInWindow.h
+        src/Security/LoginManager.cpp
+        src/Security/LoginManager.h
 )
 
 # Include directories

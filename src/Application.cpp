@@ -6,14 +6,21 @@
 #include "Log.h"
 
 namespace KBTools {
+
     Application::Application() {
+        if(s_application != nullptr){
+            CORE_WARN("Application already exists!");
+            return;
+        }
+
+        s_application = this;
         Log::Init();
         InitSDL();
         InitImGui();
 
         Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
 
-        m_texture.Load();
+        m_backgroundTexture.Load();
 
         Run();
     }
@@ -128,44 +135,36 @@ namespace KBTools {
     }
 
     void Application::SetupDockspace() {
-        ImGuiWindowFlags window_flags =
-                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-                ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground;
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-        ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize); // Set the window size to the entire display size
-        ImGui::SetNextWindowPos(ImVec2(0, 0)); // Set the window position to the top-left corner
-        ImGui::Begin("FullscreenWindow", nullptr, window_flags);
-
-        ImGui::PopStyleVar(3);
-
-        // Assuming 'textureID' is your OpenGL texture ID
-        GLuint textureID = m_texture.GetTextureID();// Replace with your actual texture ID
-        ImVec2 texSize = ImVec2(
-                                m_windowWidth,
-                                m_windowHeight
-                                );
-        ImGui::GetWindowDrawList()->AddImage(
-                (void*)(intptr_t)textureID,
-                ImVec2(ImGui::GetWindowPos()),
-                ImVec2(ImGui::GetWindowPos().x + texSize.x, ImGui::GetWindowPos().y + texSize.y),
-                ImVec2(0, 0), ImVec2(1, 1));
 
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0, 0),
                          ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_PassthruCentralNode);
 
         if (ImGui::BeginMenuBar()) {
+            //File menu
             if (ImGui::BeginMenu("File")) {
+                if(ImGui::MenuItem("New Project")){
+
+                }
+                if(ImGui::MenuItem("Open Project")){
+
+                }
+                if(ImGui::MenuItem("Save Project")){
+
+                }
+
+                ImGui::Separator();
+                if(ImGui::MenuItem("Log Out")){
+                    Security::LoginManager::Logout();
+                }
                 if (ImGui::MenuItem("Exit")) {
                     m_exit = true;
                 }
                 ImGui::EndMenu();
             }
+
+            //Windows menu
             if(ImGui::BeginMenu("Windows")){
                 if(ImGui::MenuItem("Terminal")){
                     AddWindow(Terminal::TerminalWindow::GetTerminalName(), std::make_shared<Terminal::TerminalWindow>());
@@ -173,43 +172,47 @@ namespace KBTools {
                 ImGui::EndMenu();
             }
 
+            //View menu
             if (ImGui::BeginMenu("View")) {
                 if (ImGui::BeginMenu("Styles")) {
                     if(ImGui::MenuItem("ThemeManager")) {
                         AddWindow("Theme Manager", std::make_shared<Themes::ThemeManager>());
                     }
-                    if (ImGui::MenuItem("Maya")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::MAYA);
-                    }
-                    if (ImGui::MenuItem("Phocus Green")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
-                    }
-                    if (ImGui::MenuItem("Dark")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::DARK);
-                    }
-                    if (ImGui::MenuItem("Light")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::LIGHT);
-                    }
-                    if (ImGui::MenuItem("Classic")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::CLASSIC);
-                    }
-                    if (ImGui::MenuItem("Monochrome")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::MONOCHROME);
-                    }
-                    if (ImGui::MenuItem("The_0n3")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::THE_0N3);
-                    }
-                    if (ImGui::MenuItem("ModernDarkTheme")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::MODERNDARK);
-                    }
-                    if (ImGui::MenuItem("EmbraceTheDarkness")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::EMBRACETHEDARKNESS);
-                    }
-                    if (ImGui::MenuItem("DoughBkins_Black")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_BLACK);
-                    }
-                    if (ImGui::MenuItem("DoughBkins_White")) {
-                        Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_WHITE);
+                    if(ImGui::BeginMenu("Themes")) {
+                        if (ImGui::MenuItem("Maya")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::MAYA);
+                        }
+                        if (ImGui::MenuItem("Phocus Green")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
+                        }
+                        if (ImGui::MenuItem("Dark")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::DARK);
+                        }
+                        if (ImGui::MenuItem("Light")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::LIGHT);
+                        }
+                        if (ImGui::MenuItem("Classic")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::CLASSIC);
+                        }
+                        if (ImGui::MenuItem("Monochrome")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::MONOCHROME);
+                        }
+                        if (ImGui::MenuItem("The_0n3")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::THE_0N3);
+                        }
+                        if (ImGui::MenuItem("ModernDarkTheme")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::MODERNDARK);
+                        }
+                        if (ImGui::MenuItem("EmbraceTheDarkness")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::EMBRACETHEDARKNESS);
+                        }
+                        if (ImGui::MenuItem("DoughBkins_Black")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_BLACK);
+                        }
+                        if (ImGui::MenuItem("DoughBkins_White")) {
+                            Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_WHITE);
+                        }
+                        ImGui::EndMenu();
                     }
                     ImGui::EndMenu();
                 }
@@ -226,22 +229,60 @@ namespace KBTools {
         // start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame(s_window);
-        ImGui::NewFrame();;
+        ImGui::NewFrame();
 
-        SetupDockspace();
+        // Setup the fullscreen window
+        {
+            ImGuiWindowFlags window_flags =
+                    ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                    ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground;
 
-        for (auto &[name, window]: m_uiWindows) {
-            if (window->IsOpen()) {
-                ImGui::Begin(name.c_str(), &window->isOpen);
-                window->Render();
-                ImGui::End();
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+            ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize); // Set the window size to the entire display size
+            ImGui::SetNextWindowPos(ImVec2(0, 0)); // Set the window position to the top-left corner
+            ImGui::Begin("FullscreenWindow", nullptr, window_flags);
+
+            ImGui::PopStyleVar(3);
+        }
+
+        //Render background texture
+        {
+            GLuint textureID = m_backgroundTexture.GetTextureID();// Replace with your actual texture ID
+            ImVec2 texSize = ImVec2(
+                    m_windowWidth,
+                    m_windowHeight
+            );
+            ImGui::GetWindowDrawList()->AddImage(
+                    (void *) (intptr_t) textureID,
+                    ImVec2(ImGui::GetWindowPos()),
+                    ImVec2(ImGui::GetWindowPos().x + texSize.x, ImGui::GetWindowPos().y + texSize.y),
+                    ImVec2(0, 0), ImVec2(1, 1));
+        }
+
+        //Render UI
+        {
+            if (Security::LoginManager::IsLoggedIn()) {
+                SetupDockspace();
+
+                for (auto &[name, window]: m_uiWindows) {
+                    if (window->IsOpen()) {
+                        ImGui::Begin(name.c_str(), &window->isOpen);
+                        window->Render();
+                        ImGui::End();
+                    }
+                }
+            } else { //IF NOT LOGGED IN
+                m_loginWindow.Render();
             }
         }
 
-        // End the dockspace
+        //End the fullscreen window
         ImGui::End();
 
-        // rendering
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -251,6 +292,7 @@ namespace KBTools {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         SDL_Event event;
+
         while (SDL_PollEvent(&event)) {
             // without it you won't have keyboard input and other things
             ImGui_ImplSDL2_ProcessEvent(&event);
@@ -281,7 +323,9 @@ namespace KBTools {
                     break;
             }
         }
+
         RenderUI();
+
 
         SDL_GL_SwapWindow(s_window);
     }

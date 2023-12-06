@@ -65,7 +65,7 @@ namespace KBTools {
                         DoughBkins_White();
                         break;
                 };
-                SetWindowBGAlpha(130);
+                SetWindowBGAlpha(156);
             }
 
         };

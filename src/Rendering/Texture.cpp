@@ -35,7 +35,6 @@ void Texture::Load(){
 
 Texture::~Texture() {
     glDeleteTextures(1, &m_rendererID);
-    delete m_localBuffer;
 }
 
 void Texture::Bind(unsigned int slot) const {
