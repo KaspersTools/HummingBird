@@ -22,9 +22,10 @@
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
 
-
+// spdlog
 #include "spdlog/logger.h"
 
+// UIWindows
 #include "UIWindows/UIWindow.h"
 
 #include "Terminal/TerminalWindow.h"
@@ -32,8 +33,12 @@
 #include "Security/LoginManager.h"
 
 #include "UIWindows/Themes/ThemeManager.h"
+
+// Rendering
 #include "Rendering/Texture.h"
 
+// Sql
+#include "Sql/SqlManager.h"
 
 namespace KBTools {
     class Application {
@@ -74,19 +79,20 @@ namespace KBTools {
         }
 
     private:
-        std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
         inline static SDL_Window *s_window;
         inline static Application *s_application = nullptr;
 
         SDL_GLContext m_gl_context{};
         bool m_exit = false;
-
         GLsizei m_windowWidth = 1920;
         GLsizei m_windowHeight = 1080;
-
         Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
-
+        // UIWindows
+        std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
         Security::LogInWindow m_loginWindow;
+
+        // Sql Manager
+        const HummingBird::Sql::SqlManager m_sqlManager;
 
     };
 

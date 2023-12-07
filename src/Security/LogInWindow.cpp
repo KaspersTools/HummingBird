@@ -11,7 +11,6 @@ namespace KBTools::Security {
         //Center the window
         Application* app = KBTools::Application::GetApplication();
 
-
         ImGui::SetNextWindowSize(ImVec2(400, 200));
 
         //Center the window
@@ -25,9 +24,9 @@ namespace KBTools::Security {
         ImGui::Begin("Login Panel", &isOpen, flags);
         ImGui::AlignTextToFramePadding();
         ImGui::Text("Username:");
-        ImGui::InputText("##username", m_username, sizeof(m_username), 0, 0, 0);
+        ImGui::InputText("##username", m_username, sizeof(m_username), 0, nullptr, nullptr);
         ImGui::Text("Password:");
-        ImGui::InputText("##password", m_password, sizeof(m_password), 0, 0, 0);
+        ImGui::InputText("##password", m_password, sizeof(m_password), 0, nullptr, nullptr);
         ImGui::Checkbox("Remember login details", &m_remember);
 
         if(ImGui::Button("Login")){
@@ -36,18 +35,10 @@ namespace KBTools::Security {
             }
         }
 
+//        CORE_INFO("Username: {}", m_username);
+//        CORE_INFO("Password: {}", m_password);
+
         ImGui::End();
-
-
-//        ImGui::Begin("Log In", &isOpen,
-//                     ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-//
-//        ImGui::Text("Hello, world!");
-//
-//        if (ImGui::Button("LOGIN")) {
-//
-//        };
-//        ImGui::End();
     }
 
     LogInWindow::LogInWindow() {

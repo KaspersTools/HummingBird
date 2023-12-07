@@ -14,7 +14,6 @@ namespace KBTools {
         }
 
         s_application = this;
-        Log::Init();
         InitSDL();
         InitImGui();
 
@@ -22,10 +21,18 @@ namespace KBTools {
 
         m_backgroundTexture.Load();
 
+        //TODO: Load from config file
+        HummingBird::Sql::SqlManager::Init(
+                  "localhost","usr","pwd"
+                );
+
         Run();
     }
 
     Application::~Application() {
+
+        HummingBird::Sql::SqlManager::Shutdown();
+
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
@@ -329,7 +336,4 @@ namespace KBTools {
 
         SDL_GL_SwapWindow(s_window);
     }
-
-
-
 }

@@ -22,6 +22,8 @@ find_path(SDL2_IMAGE_INCLUDE_DIR SDL_image.h
         include/SDL2 include
 )
 
+# Find MySQL Connector/C++
+#find_package(MySQL REQUIRED)
 
 # Find SDL2
 find_package(SDL2 REQUIRED)
@@ -29,13 +31,10 @@ find_package(SDL2_image REQUIRED)
 
 # Find libvncserver
 find_package(libvncserver REQUIRED)
-
-
-include_directories(/usr/local/include)
-link_directories(/usr/local/lib)
+#include_directories(/usr/local/include)
+#link_directories(/usr/local/lib)
 
 set(GLAD_SOURCES vendor/glad/src/glad.c)
-
 
 set(IMGUI_SOURCES
 
@@ -77,8 +76,11 @@ set(SOURCES
         src/Security/LogInWindow.h
         src/Security/LoginManager.cpp
         src/Security/LoginManager.h
-        src/SqlConnection.cpp
-        src/SqlConnection.h
+        src/Sql/SqlConnection.cpp
+        src/Sql/SqlConnection.h
+        src/Sql/SqlExample.h
+        src/Sql/SqlManager.cpp
+        src/Sql/SqlManager.h
 )
 
 # Include directories
@@ -86,8 +88,16 @@ set(SOURCES
 include_directories(${SDL2_INCLUDE_DIRS})
 include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
 
+#imgui
 include_directories(vendor/imgui/)
+#glad
 include_directories(vendor/glad/include)
+#Include MySQL Connector/C++ headers
+#include_directories(${MYSQL_INCLUDE_DIR})
+
+include_directories(/usr/local/Cellar/mysql/8.2.0_1/include/)
+link_directories(/usr/local/Cellar/mysql/8.2.0_1/lib)
+
 
 add_executable(KBTools ${SOURCES} ${IMGUI_SOURCES} ${GLAD_SOURCES})
 
@@ -101,6 +111,8 @@ target_link_libraries(
         KBTools PRIVATE
         ${SDL2_LIBRARIES}
         ${SDL2_IMAGE_INCLUDE_DIRS}
+        mysqlclient
+#        ${MYSQL_LIBRARY}
 )
 
 set_target_properties(

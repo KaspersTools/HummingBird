@@ -2,7 +2,16 @@
 #include "stb_image.h"
 
 #include "Application.h"
-int main(){
-    KBTools::Application app;
 
+#include "Sql/SqlConnection.h"
+#include "Log.h"
+
+using namespace KBTools;
+using namespace HummingBird::Sql;
+
+int main(){
+  //Always initialize the logger first
+  Log::Init();
+  //Run the application
+  KBTools::Application app;
 }
