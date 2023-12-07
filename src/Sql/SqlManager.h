@@ -16,12 +16,13 @@ namespace HummingBird::Sql {
 public:
     static bool Init(const std::string &host, const std::string &username, const std::string &password);
 
-    static const SqlConnection *GetMainConnection();
+    static SqlConnection *GetMainConnection();
 
     static void Shutdown();
 
 
 private:
+    inline static bool s_initialized = false;
     inline static SqlConnection* s_mainConnection;
 
   };

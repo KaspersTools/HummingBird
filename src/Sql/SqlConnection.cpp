@@ -50,6 +50,7 @@ namespace HummingBird::Sql {
     if(m_lastResult.GetResult() != nullptr){
       m_lastResult.FreeResult();
     }
+
     mysql_close(conn);
 
     return true;

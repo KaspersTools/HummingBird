@@ -6,11 +6,16 @@
 namespace HummingBird::Sql {
 
   bool SqlManager::Init(const std::string &host, const std::string &username, const std::string &password) {
+    if(s_initialized){
+      CORE_WARN("SqlManager is already initialized");
+      return false;
+    }
     s_mainConnection = new SqlConnection(host, username, password);
     if (!s_mainConnection->Connect()) {
       CORE_ERROR("Could not connect to main sql server");
       return false;
     }
+    s_initialized = true;
     return true;
   }
 
@@ -18,7 +23,7 @@ namespace HummingBird::Sql {
     s_mainConnection->Disconnect();
     delete s_mainConnection;
   }
-  const SqlConnection *SqlManager::GetMainConnection() {
+  SqlConnection *SqlManager::GetMainConnection() {
     if (!s_mainConnection->IsConnected()) {
       CORE_ERROR("Main connection is not connected");
     }

@@ -56,6 +56,10 @@ namespace KBTools {
         }
 
 
+        const HummingBird::Sql::SqlManager &GetSqlManager() const {
+            return m_sqlManager;
+        }
+
     private:
         void InitSDL();
 
@@ -93,7 +97,6 @@ namespace KBTools {
 
         // Sql Manager
         const HummingBird::Sql::SqlManager m_sqlManager;
-
     };
 
 
