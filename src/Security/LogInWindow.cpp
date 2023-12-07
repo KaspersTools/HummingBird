@@ -7,45 +7,47 @@
 
 namespace KBTools::Security {
 
-    void KBTools::Security::LogInWindow::Render() {
-        //Center the window
-        Application* app = KBTools::Application::GetApplication();
+  void KBTools::Security::LogInWindow::Render() {
+    //Center the window
+    Application *app = KBTools::Application::GetApplication();
 
-        ImGui::SetNextWindowSize(ImVec2(400, 200));
+    ImGui::SetNextWindowSize(ImVec2(400, 200));
 
-        //Center the window
-        ImGui::SetNextWindowPos(ImVec2(app->GetWindowWidth() / 2 - 200, app->GetWindowHeight() / 2 - 100));
+    //Center the window
+    ImGui::SetNextWindowPos(ImVec2(app->GetWindowWidth() / 2 - 200, app->GetWindowHeight() / 2 - 100));
 
-        ImGuiWindowFlags flags =
-                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings |
-                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
-                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+    ImGuiWindowFlags flags =
+            ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
-        ImGui::Begin("Login Panel", &isOpen, flags);
-        ImGui::AlignTextToFramePadding();
-        ImGui::Text("Username:");
-        ImGui::InputText("##username", m_username, sizeof(m_username), 0, nullptr, nullptr);
-        ImGui::Text("Password:");
-        ImGui::InputText("##password", m_password, sizeof(m_password), 0, nullptr, nullptr);
-        ImGui::Checkbox("Remember login details", &m_remember);
+    ImGui::Begin("Login Panel", &isOpen, flags);
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("Username:");
+    ImGui::InputText("##username", m_username, sizeof(m_username), 0, nullptr, nullptr);
+    ImGui::Text("Password:");
+    ImGui::InputText("##password", m_password, sizeof(m_password), 0, nullptr, nullptr);
+    ImGui::Checkbox("Remember login details", &m_remember);
 
-        if(ImGui::Button("Login")){
-            if(LoginManager::Login(m_username, m_password)) {
-                isOpen = false;
-            }
-        }
-
-//        CORE_INFO("Username: {}", m_username);
-//        CORE_INFO("Password: {}", m_password);
-
-        ImGui::End();
+    if (ImGui::Button("Login")) {
+      if (LoginManager::Login(m_username, m_password)) {
+        isOpen = false;
+      }else{
+        CORE_WARN("Login failed");
+        //SHOW IMGUI ERROR MESSAGE
+        m_failedLogin = true;
+      }
     }
 
-    LogInWindow::LogInWindow() {
-
+    if(m_failedLogin){
+      ImGui::TextColored(ImVec4(1,0,0,1), "Login failed");
     }
+    ImGui::End();
+  }
 
-    LogInWindow::~LogInWindow() {
+  LogInWindow::LogInWindow() {
+  }
 
-    }
-} // Security
+  LogInWindow::~LogInWindow() {
+  }
+}// namespace KBTools::Security

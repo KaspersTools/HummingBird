@@ -21,6 +21,7 @@ namespace KBTools {
             char m_username[32] = "username";
             char m_password[32] = "password";
             bool m_remember;
+            bool m_failedLogin = false;
         };
 
     } // Security
