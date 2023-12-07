@@ -18,8 +18,8 @@ namespace KBTools {
             void Render() override;
 
         private:
-            char m_username[256];
-            char m_password[256];
+            char m_username[32] = "username";
+            char m_password[32] = "password";
             bool m_remember;
         };
 
