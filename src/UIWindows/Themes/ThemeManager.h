@@ -5,6 +5,7 @@
 #ifndef KBTOOLS_THEMEMANAGER_H
 #define KBTOOLS_THEMEMANAGER_H
 #include "Themes.h"
+#include "../UIWindow.h"
 
 namespace KBTools {
     namespace Themes {
@@ -17,10 +18,17 @@ namespace KBTools {
             MONOCHROME,
             THE_0N3,
             MODERNDARK,
-            EMBRACETHEDARKNESS
+            EMBRACETHEDARKNESS,
+            DOUGHBKINS_BLACK,
+            DOUGHBKINS_WHITE,
         };
-        class ThemeManager {
+        class ThemeManager  : public UIWindow {
         public:
+            ThemeManager() = default;
+            ~ThemeManager() = default;
+            void Render() override;
+            void SelectThemeWindow();
+
             static void SetTheme(THEMES theme){
                 switch (theme) {
                     case THEMES::MAYA:
@@ -50,12 +58,16 @@ namespace KBTools {
                     case THEMES::EMBRACETHEDARKNESS:
                         EmbraceTheDarkness();
                         break;
+                    case THEMES::DOUGHBKINS_BLACK:
+                        DoughBkins_Black();
+                        break;
+                    case THEMES::DOUGHBKINS_WHITE:
+                        DoughBkins_White();
+                        break;
                 };
-
-                ImVec4 bgColor = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
-                //TODO: CHANGE CLEAR COLOR OF SDL
-//                glClearColor(bgColor.x, bgColor.y, bgColor.z, bgColor.w);
+                SetWindowBGAlpha(156);
             }
+
         };
     } // Themes
 } // KBTools

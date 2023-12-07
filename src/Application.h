@@ -16,58 +16,90 @@
 // SDL
 #include <glad/glad.h>
 #include <SDL.h>
+
 // Dear ImGui
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
 
-
+// spdlog
 #include "spdlog/logger.h"
 
+// UIWindows
 #include "UIWindows/UIWindow.h"
-#include "UIWindows/TerminalWindow.h"
+
+#include "Terminal/TerminalWindow.h"
+#include "Security/LogInWindow.h"
+#include "Security/LoginManager.h"
 
 #include "UIWindows/Themes/ThemeManager.h"
 
+// Rendering
+#include "Rendering/Texture.h"
 
-namespace KBTools{
-class Application {
-public:
-    Application();
+// Sql
+#include "Sql/SqlManager.h"
 
-    ~Application();
+namespace KBTools {
+    class Application {
+    public:
+        Application();
 
-    void AddWindow(const std::string &name, std::shared_ptr<UIWindow> uiWindow) {
-        m_uiWindows[name] = uiWindow;
-    }
+        ~Application();
 
-    void RemoveWindow(const std::string &name) {
-        m_uiWindows.erase(name);
-    }
+        void AddWindow(const std::string &name, std::shared_ptr<UIWindow> uiWindow) {
+            m_uiWindows[name] = uiWindow;
+        }
+
+        void RemoveWindow(const std::string &name) {
+            m_uiWindows.erase(name);
+        }
 
 
-private:
-    void InitSDL();
-    void InitImGui();
-    void Run();
+        const HummingBird::Sql::SqlManager &GetSqlManager() const {
+            return m_sqlManager;
+        }
 
-    void RenderUI();
-    void SetupDockspace();
+    private:
+        void InitSDL();
 
-    void Render();
+        void InitImGui();
 
-private:
-    std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
-    SDL_Window* m_window{};
-    SDL_GLContext m_gl_context{};
-    bool m_exit = false;
-    bool m_show_demo_window = false;
-    bool m_show_another_window = false;
+        void Run();
 
-    GLsizei m_windowWidth = 1280;
-    GLsizei m_windowHeight = 720;
-};
+        void RenderUI();
+
+        void SetupDockspace();
+
+        void Render();
+
+    public:
+        const int GetWindowWidth() const { return m_windowWidth; }
+        const int GetWindowHeight() const { return m_windowHeight; }
+
+        static SDL_Window *GetWindow() { return s_window; }
+        static Application *GetApplication() {
+            return s_application;
+        }
+
+    private:
+        inline static SDL_Window *s_window;
+        inline static Application *s_application = nullptr;
+
+        SDL_GLContext m_gl_context{};
+        bool m_exit = false;
+        GLsizei m_windowWidth = 1920;
+        GLsizei m_windowHeight = 1080;
+        Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
+        // UIWindows
+        std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
+        Security::LogInWindow m_loginWindow;
+
+        // Sql Manager
+        const HummingBird::Sql::SqlManager m_sqlManager;
+    };
 
 
 #endif //KBTOOLS_APPLICATION_H
-}
+
+}// namespace KBTools

@@ -36,7 +36,8 @@ namespace KBTools {
     public:
         static void Init();
 
-        static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+        static Ref<spdlog::logger>& GetCoreLogger() {
+          return s_CoreLogger; }
     private:
         static Ref<spdlog::logger> s_CoreLogger;
     };
@@ -46,6 +47,7 @@ namespace KBTools {
 #define CORE_TRACE(...)    ::KBTools::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define CORE_INFO(...)     ::KBTools::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define CORE_WARN(...)     ::KBTools::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define CORE_TRACE(...)    ::KBTools::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define CORE_ERROR(...)    ::KBTools::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define CORE_CRITICAL(...) ::KBTools::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
