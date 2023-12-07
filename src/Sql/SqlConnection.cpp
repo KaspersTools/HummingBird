@@ -42,6 +42,7 @@ namespace HummingBird::Sql {
   }
 
   bool SqlConnection::Disconnect() {
+    //TODO: Look ar pointer free and delete errors
     CORE_TRACE("Disconnecting from mysql server");
     if (!m_isConnected) {
       return true;
@@ -52,6 +53,8 @@ namespace HummingBird::Sql {
     }
 
     mysql_close(conn);
+
+    m_isConnected = false;
 
     return true;
   }
