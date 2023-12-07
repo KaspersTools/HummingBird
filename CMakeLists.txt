@@ -77,6 +77,8 @@ set(SOURCES
         src/Security/LogInWindow.h
         src/Security/LoginManager.cpp
         src/Security/LoginManager.h
+        src/SqlConnection.cpp
+        src/SqlConnection.h
 )
 
 # Include directories
