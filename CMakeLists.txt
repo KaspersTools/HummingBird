@@ -121,3 +121,4 @@ set_target_properties(
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF)
 
+file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/build/bin)
