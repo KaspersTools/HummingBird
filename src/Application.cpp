@@ -6,7 +6,6 @@
 #include "Log.h"
 
 namespace KBTools {
-
     Application::Application() {
         if(s_application != nullptr){
             CORE_WARN("Application already exists!");
@@ -50,7 +49,7 @@ namespace KBTools {
         }
 
         SDL_version compiled;
-        SDL_VERSION(&compiled);
+        SDL_VERSION(&compiled)
         SDL_version linked;
         SDL_GetVersion(&linked);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
