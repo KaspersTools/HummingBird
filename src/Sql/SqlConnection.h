@@ -6,7 +6,7 @@
 #define KBTOOLS_SQLCONNECTION_H
 
 #include <iostream>
-#include <mysql/mysql.h>
+#include <mysql.h>
 
 #include "../Log.h"
 
