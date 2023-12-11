@@ -15,6 +15,6 @@
     path = vendor/glad
     url = https://github.com/kasperhbo/Glad.git
 [submodule "vendor/imgui"]
-    path = vendor/imgui
-    url = https://github.com/kasperhbo/imgui.git
-    branch = docking
+	path = vendor/imgui
+	url = https://github.com/kasperhbo/imgui.git
+	branch = docking
