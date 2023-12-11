@@ -3,61 +3,63 @@ project(KBTools)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 
-#basic libraries
-include(cmake/common.cmake)
-include(cmake/fmt.cmake)
-include(cmake/spdlog.cmake)
-include(cmake/config.cmake)
-include(cmake/opengl.cmake)
+###################################
+########## Modules ################
+###################################
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-find_path(SDL2_IMAGE_INCLUDE_DIR SDL_image.h
-        HINTS
-        ENV SDL2IMAGEDIR
-        ENV SDL2DIR
-        ${SDL2_DIR}
-        "/usr/local/Cellar/sdl2_image/2.8.0"
-        PATH_SUFFIXES SDL2
-        # path suffixes to search inside ENV{SDL2DIR}
-        include/SDL2 include
-)
+###################################
+###### 3rd party libraries ########
+###################################
+######preinstalled########
+#mysql
+find_package(MySql REQUIRED)
 
-# Find MySQL Connector/C++
-#find_package(MySQL REQUIRED)
-
-# Find SDL2
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-
-# Find libvncserver
-find_package(libvncserver REQUIRED)
-#include_directories(/usr/local/include)
-#link_directories(/usr/local/lib)
-
-set(GLAD_SOURCES vendor/glad/src/glad.c)
-
+######submodules##########
+#sdl2
+add_subdirectory(vendor/sdl)
+set ( SDL2_INCLUDE_DIR vendor/sdl/include )
+set ( SDL2_LIBRARY SDL2 )
+#fmt
+add_subdirectory(vendor/fmt)
+#spdlog
+add_subdirectory(vendor/spdlog)
+#glad
+# Add GLAD source
+add_library(glad STATIC vendor/glad/src/glad.c)
+target_include_directories(glad PUBLIC vendor/glad/include)
+# Add ImGui source
 set(IMGUI_SOURCES
+            vendor/imgui/imconfig.h
+            vendor/imgui/imgui.cpp
+            vendor/imgui/imgui.h
+            vendor/imgui/imgui_demo.cpp
+            vendor/imgui/imgui_draw.cpp
+            vendor/imgui/imgui_internal.h
+            vendor/imgui/imgui_tables.cpp
+            vendor/imgui/imgui_widgets.cpp
+            vendor/imgui/imstb_rectpack.h
+            vendor/imgui/imstb_textedit.h
+            vendor/imgui/imstb_truetype.h
 
-        vendor/imgui/imconfig.h
-        vendor/imgui/imgui.cpp
-        vendor/imgui/imgui.h
-        vendor/imgui/imgui_demo.cpp
-        vendor/imgui/imgui_draw.cpp
-        vendor/imgui/imgui_internal.h
-        vendor/imgui/imgui_tables.cpp
-        vendor/imgui/imgui_widgets.cpp
-        vendor/imgui/imstb_rectpack.h
-        vendor/imgui/imstb_textedit.h
-        vendor/imgui/imstb_truetype.h
-        vendor/imgui/backends/imgui_impl_opengl3.cpp
-        vendor/imgui/backends/imgui_impl_opengl3.h
-        vendor/imgui/backends/imgui_impl_sdl2.cpp
-        vendor/imgui/backends/imgui_impl_sdlrenderer2.h
-        vendor/imgui/backends/imgui_impl_sdlrenderer2.cpp
+            vendor/imgui/backends/imgui_impl_opengl3.cpp
+            vendor/imgui/backends/imgui_impl_opengl3.h
+            vendor/imgui/backends/imgui_impl_sdl2.cpp
+            vendor/imgui/backends/imgui_impl_sdl2.h
 
-        #TODO: REPLACE WITH SDL
-)
 
+
+            vendor/imgui/vendor/filedialog/FileBrowser/ImGuiFileBrowser.h
+            vendor/imgui/vendor/filedialog/FileBrowser/ImGuiFileBrowser.cpp
+        )
+
+
+
+###################################
+########## Main Project ###########
+###################################
 set(SOURCES
         src/main.cpp
         src/Application.cpp
@@ -83,42 +85,43 @@ set(SOURCES
         src/Sql/SqlManager.h
 )
 
-# Include directories
-#include_directories(vendor/imgui/ vendor/glad/include)
-include_directories(${SDL2_INCLUDE_DIRS})
-include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
+#create executable
+add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES})
 
-#imgui
-include_directories(vendor/imgui/)
+###################################
+########## Linking ################
+###################################
+#logging
+target_link_libraries(${PROJECT_NAME} fmt::fmt spdlog::spdlog)
 #glad
-include_directories(vendor/glad/include)
-#Include MySQL Connector/C++ headers
-#include_directories(${MYSQL_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} glad)
+#mysqlx
+target_link_libraries(${PROJECT_NAME} ${MySQL_LIBRARIES})
+#sdl2
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY})
 
-include_directories(/usr/local/Cellar/mysql/8.2.0_1/include/)
-link_directories(/usr/local/Cellar/mysql/8.2.0_1/lib)
 
+###################################
+########## INCLUDE ################
+###################################
+#imgui
+include_directories(vendor/imgui)
+#sdl2
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR})
+#mysql
+target_include_directories(${PROJECT_NAME} PRIVATE ${MySQL_INCLUDE_DIR})
 
-add_executable(KBTools ${SOURCES} ${IMGUI_SOURCES} ${GLAD_SOURCES})
-
-target_include_directories(
-        KBTools SYSTEM PRIVATE
-        ${SPDLOG_INCLUDE_DIR}
-        ${FMT_INCLUDE_DIR}
-)
-
-target_link_libraries(
-        KBTools PRIVATE
-        ${SDL2_LIBRARIES}
-        ${SDL2_IMAGE_INCLUDE_DIRS}
-        mysqlclient
-#        ${MYSQL_LIBRARY}
-)
-
+###################################
+########## Settings ###############
+###################################
 set_target_properties(
-        KBTools PROPERTIES
+        ${PROJECT_NAME} PROPERTIES
         CXX_STANDARD 23
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF)
 
+
+###################################
+########## Copy Assets ############
+###################################
 file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/build/bin)

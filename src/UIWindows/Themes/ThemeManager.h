@@ -64,7 +64,8 @@ namespace KBTools {
                     case THEMES::DOUGHBKINS_WHITE:
                         DoughBkins_White();
                         break;
-                };
+                }
+
                 SetWindowBGAlpha(156);
             }
 

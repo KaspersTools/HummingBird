@@ -18,16 +18,15 @@
 #include <SDL.h>
 
 // Dear ImGui
-#include "imgui.h"
-#include "backends/imgui_impl_sdl2.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
+#include <backends/imgui_impl_sdl2.h>
+#include <backends/imgui_impl_opengl3.h>
 
 // spdlog
 #include "spdlog/logger.h"
 
 // UIWindows
 #include "UIWindows/UIWindow.h"
-
 #include "Terminal/TerminalWindow.h"
 #include "Security/LogInWindow.h"
 #include "Security/LoginManager.h"

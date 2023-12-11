@@ -41,7 +41,7 @@ namespace KBTools {
     private:
         static Ref<spdlog::logger> s_CoreLogger;
     };
-};
+}
 
 // Core log macros
 #define CORE_TRACE(...)    ::KBTools::Log::GetCoreLogger()->trace(__VA_ARGS__)
