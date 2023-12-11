@@ -16,12 +16,10 @@ namespace KBTools::Security {
     //Center the window
     ImGui::SetNextWindowPos(ImVec2(app->GetWindowWidth() / 2 - 200, app->GetWindowHeight() / 2 - 100));
 
-    ImGuiWindowFlags flags =
-            ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
-            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+//    ImGuiWindowFlags flags =
+//           ;
 
-    ImGui::Begin("Login Panel", &isOpen, flags);
+    ImGui::Begin("Login Panel", &isOpen, m_flags);
     ImGui::AlignTextToFramePadding();
     ImGui::Text("Username:");
     ImGui::InputText("##username", m_username, sizeof(m_username), 0, nullptr, nullptr);
@@ -45,7 +43,9 @@ namespace KBTools::Security {
     ImGui::End();
   }
 
-  LogInWindow::LogInWindow() {
+  LogInWindow::LogInWindow() : UIWindow( ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings |
+                                        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
+                                        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse){
   }
 
   LogInWindow::~LogInWindow() {

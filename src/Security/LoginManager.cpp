@@ -3,8 +3,8 @@
 //
 
 #include "LoginManager.h"
-#include <cstring>
 #include "../Application.h"
+#include <cstring>
 
 bool KBTools::Security::LoginManager::m_isLoggedIn = false;
 

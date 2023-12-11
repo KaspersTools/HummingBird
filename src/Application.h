@@ -39,6 +39,16 @@
 // Sql
 #include "Sql/SqlManager.h"
 
+//Edit Hosts
+#include "System/Hosts/EditHosts.h"
+
+// Text Editor
+#include <TextEditor.h>
+
+// General Tools
+#include "GeneralTools/TextEditting/TextEditorWindow.h"
+#include "GeneralTools/FileDialog.h"
+
 namespace KBTools {
     class Application {
     public:
@@ -86,13 +96,18 @@ namespace KBTools {
         inline static Application *s_application = nullptr;
 
         SDL_GLContext m_gl_context{};
+
         bool m_exit = false;
+
         GLsizei m_windowWidth = 1920;
         GLsizei m_windowHeight = 1080;
         Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
         // UIWindows
         std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
         Security::LogInWindow m_loginWindow;
+
+        //Text Editor
+        TextEditor m_textEditor = TextEditor();
 
         // Sql Manager
         const HummingBird::Sql::SqlManager m_sqlManager;
