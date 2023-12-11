@@ -58,7 +58,15 @@ set(IMGUI_SOURCES
         #TODO: REPLACE WITH SDL
 )
 
-set(SOURCES
+set(ImGuiExtensions
+        vendor/imguiext/imguicolortextedit/TextEditor.h
+        vendor/imguiext/imguicolortextedit/TextEditor.cpp
+
+        vendor/ImGui-Addons/FileBrowser/ImGuiFileBrowser.h
+        vendor/ImGui-Addons/FileBrowser/ImGuiFileBrowser.cpp
+)
+
+set(HUMMINGBIRD_SOURCES
         src/main.cpp
         src/Application.cpp
         src/Application.h
@@ -81,7 +89,17 @@ set(SOURCES
         src/Sql/SqlExample.h
         src/Sql/SqlManager.cpp
         src/Sql/SqlManager.h
+        src/System/Hosts/EditHosts.cpp
+        src/System/Hosts/EditHosts.h
+        src/Utils/Utils.h
+        src/GeneralTools/TextEditting/TextEditorWindow.h
 )
+
+#sources combined
+set(SOURCES ${HUMMINGBIRD_SOURCES} ${GLAD_SOURCES} ${IMGUI_SOURCES} ${ImGuiExtensions}
+        src/GeneralTools/TextEditting/TextEditorWindow.cpp
+        src/GeneralTools/TextEditting/TextEditorWindow.h
+        src/GeneralTools/FileDialog.h)
 
 # Include directories
 #include_directories(vendor/imgui/ vendor/glad/include)
@@ -90,16 +108,21 @@ include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
 
 #imgui
 include_directories(vendor/imgui/)
+
+#imgui color text edit
+include_directories(vendor/imguiext/imguicolortextedit/)
+
+#imgui file browser
+include_directories(vendor/ImGui-Addons/FileBrowser/)
+
 #glad
 include_directories(vendor/glad/include)
-#Include MySQL Connector/C++ headers
-#include_directories(${MYSQL_INCLUDE_DIR})
 
 include_directories(/usr/local/Cellar/mysql/8.2.0_1/include/)
 link_directories(/usr/local/Cellar/mysql/8.2.0_1/lib)
 
 
-add_executable(KBTools ${SOURCES} ${IMGUI_SOURCES} ${GLAD_SOURCES})
+add_executable(KBTools ${SOURCES})
 
 target_include_directories(
         KBTools SYSTEM PRIVATE

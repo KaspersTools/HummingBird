@@ -5,7 +5,7 @@
 #include "TerminalWindow.h"
 
 namespace KBTools::Terminal {
-    TerminalWindow::TerminalWindow() {
+    TerminalWindow::TerminalWindow(const ImGuiWindowFlags flags) : UIWindow(flags) {
         s_terminalCount++;
         m_logs.emplace_back("Welcome to the KBTools Terminal!");
         m_logs.emplace_back("Type 'help' for a list of commands.");

@@ -21,7 +21,8 @@ namespace KBTools {
     namespace Terminal {
         class TerminalWindow : public UIWindow {
         public:
-            TerminalWindow();
+            TerminalWindow(): TerminalWindow(ImGuiWindowFlags_None) {}
+            TerminalWindow(const ImGuiWindowFlags flags);
 
             ~TerminalWindow();
 

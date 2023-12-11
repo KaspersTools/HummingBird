@@ -3,8 +3,8 @@
 
 #include "Application.h"
 
-#include "Sql/SqlConnection.h"
 #include "Log.h"
+#include "Sql/SqlConnection.h"
 
 using namespace KBTools;
 using namespace HummingBird::Sql;

@@ -9,3 +9,9 @@
 	path = vendor/fmt
 	url = https://github.com/fmtlib/fmt.git
 
+[submodule "vendor/imguiext/imguicolortextedit"]
+	path = vendor/imguiext/imguicolortextedit
+	url = https://github.com/BalazsJako/ImGuiColorTextEdit.git
+[submodule "vendor/ImGui-Addons"]
+	path = vendor/ImGui-Addons
+	url = https://github.com/gallickgunner/ImGui-Addons.git

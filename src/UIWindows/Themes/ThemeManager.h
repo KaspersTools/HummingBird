@@ -24,7 +24,7 @@ namespace KBTools {
         };
         class ThemeManager  : public UIWindow {
         public:
-            ThemeManager() = default;
+            ThemeManager() : UIWindow(ImGuiWindowFlags_MenuBar) {}
             ~ThemeManager() = default;
             void Render() override;
             void SelectThemeWindow();
