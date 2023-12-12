@@ -24,9 +24,10 @@ namespace KBTools {
     m_backgroundTexture.Load();
 
     //TODO: Load from config file
-    HummingBird::Sql::SqlManager::Init(
-            "localhost", "usr", "pwd");
-    HummingBird::Sql::SqlManager::GetMainConnection()->SetDatabase("HUMMINGBIRD_USERMANAGEMENT");
+//    HummingBird::Sql::SqlManager::Init(
+//            "localhost", "usr", "pwd");
+    //TODO: Implement this
+//    HummingBird::Sql::SqlManager::GetMainConnection()->SetDatabase("HUMMINGBIRD_USERMANAGEMENT");
 
 
     Run();

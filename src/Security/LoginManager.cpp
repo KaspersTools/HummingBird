@@ -21,14 +21,15 @@ bool KBTools::Security::LoginManager::Login(const char *username, const char *pa
 
 
     std::string query = fmt::format("SELECT * FROM User WHERE name = '{}' AND password = '{}';", username, password);
-
-    HummingBird::Sql::SqlResult result = HummingBird::Sql::SqlManager::GetMainConnection()->Query(query);
-    if(result.WasSuccessful()){
-        if(result.GetResult()->row_count == 1) {
-            m_isLoggedIn = true;
-            return true;
-        }
-      }
+    //TODO: Implement query
+//    HummingBird::Sql::SqlResult result = HummingBird::Sql::SqlManager::GetMainConnection()->Query(query);
+//    if(result.WasSuccessful()){
+//        if(result.GetResult()->row_count == 1) {
+//            m_isLoggedIn = true;
+//            return true;
+//        }
+//      }
+    m_isLoggedIn = true;
     return false;
 }
 

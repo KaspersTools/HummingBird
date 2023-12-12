@@ -12,8 +12,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-
-
 ###################################
 ###### 3rd party libraries ########
 ###################################
@@ -121,8 +119,9 @@ target_link_libraries(${PROJECT_NAME} fmt::fmt spdlog::spdlog)
 #glad
 target_link_libraries(${PROJECT_NAME} glad)
 #mysqlx
+#TODO; fix mysql linking
 #target_link_libraries(${PROJECT_NAME} ${MySQL_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} mysqlclient)
+#target_link_libraries(${PROJECT_NAME} mysqlclient)
 #sdl2
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY})
 
