@@ -8,6 +8,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 ###################################
 ########## Modules ################
 ###################################
+#MYSQL
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 ###################################
@@ -15,21 +17,28 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ###################################
 ######preinstalled########
 #mysql
-find_package(MySql REQUIRED)
+# Add the mysqlclient submodule
+add_subdirectory(vendor/mysqlclient)
+# Include directories for mysqlclient
+include_directories(vendor/mysqlclient/include)
 
 ######submodules##########
 #sdl2
 add_subdirectory(vendor/sdl)
 set ( SDL2_INCLUDE_DIR vendor/sdl/include )
 set ( SDL2_LIBRARY SDL2 )
+
 #fmt
 add_subdirectory(vendor/fmt)
+
 #spdlog
 add_subdirectory(vendor/spdlog)
+
 #glad
 # Add GLAD source
 add_library(glad STATIC vendor/glad/src/glad.c)
 target_include_directories(glad PUBLIC vendor/glad/include)
+
 # Add ImGui source
 set(IMGUI_SOURCES
         vendor/imgui/imconfig.h
@@ -113,7 +122,9 @@ target_link_libraries(${PROJECT_NAME} fmt::fmt spdlog::spdlog)
 #glad
 target_link_libraries(${PROJECT_NAME} glad)
 #mysqlx
-target_link_libraries(${PROJECT_NAME} ${MySQL_LIBRARIES})
+#TODO; fix mysql linking
+#target_link_libraries(${PROJECT_NAME} ${MySQL_LIBRARIES})
+#target_link_libraries(${PROJECT_NAME} mysqlclient)
 #sdl2
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY})
 
@@ -123,10 +134,10 @@ target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY})
 ###################################
 #imgui
 include_directories(vendor/imgui)
+#mysql
+#target_include_directories(${PROJECT_NAME} PRIVATE ${MySQL_INCLUDE_DIR})
 #sdl2
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR})
-#mysql
-target_include_directories(${PROJECT_NAME} PRIVATE ${MySQL_INCLUDE_DIR})
 
 ###################################
 ########## Settings ###############

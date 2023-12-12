@@ -10,7 +10,7 @@ namespace HummingBird::Sql {
       CORE_WARN("SqlManager is already initialized");
       return false;
     }
-    s_mainConnection = new SqlConnection(host, username, password);
+    s_mainConnection = new SqlConnection(host);
     if (!s_mainConnection->Connect()) {
       CORE_ERROR("Could not connect to main sql server");
       return false;

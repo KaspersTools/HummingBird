@@ -15,7 +15,7 @@
 #include <iostream>
 // SDL
 #include <glad/glad.h>
-#include <SDL.h>
+#include <SDL.H>
 
 // Dear ImGui
 #include <imgui.h>
