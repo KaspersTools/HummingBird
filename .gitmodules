@@ -15,3 +15,7 @@
     path = vendor/imgui
     url = git@github.com:kasperhbo/imgui.git
     branch = docking
+[submodule "vendor/mysqlclient"]
+    path = vendor/mysqlclient
+    url = https://github.com/mysql/mysql-connector-cpp.git
+    branch = 8.0
