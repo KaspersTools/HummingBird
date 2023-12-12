@@ -30,6 +30,7 @@
 #include "Terminal/TerminalWindow.h"
 #include "Security/LogInWindow.h"
 #include "Security/LoginManager.h"
+#include "GeneralTools/TextEditting/TextEditorWindow.h"
 
 #include "UIWindows/Themes/ThemeManager.h"
 
@@ -39,79 +40,64 @@
 // Sql
 #include "Sql/SqlManager.h"
 
-//Edit Hosts
-#include "System/Hosts/EditHosts.h"
-
-// Text Editor
-#include <TextEditor.h>
-
-// General Tools
-#include "GeneralTools/TextEditting/TextEditorWindow.h"
-#include "GeneralTools/FileDialog.h"
-
 namespace KBTools {
-    class Application {
-    public:
-        Application();
+  class Application {
+public:
+    Application();
 
-        ~Application();
+    ~Application();
 
-        void AddWindow(const std::string &name, std::shared_ptr<UIWindow> uiWindow) {
-            m_uiWindows[name] = uiWindow;
-        }
+    void AddWindow(const std::string &name, std::shared_ptr<UIWindow> uiWindow) {
+      m_uiWindows[name] = uiWindow;
+    }
 
-        void RemoveWindow(const std::string &name) {
-            m_uiWindows.erase(name);
-        }
+    void RemoveWindow(const std::string &name) {
+      m_uiWindows.erase(name);
+    }
 
 
-        const HummingBird::Sql::SqlManager &GetSqlManager() const {
-            return m_sqlManager;
-        }
+    const HummingBird::Sql::SqlManager &GetSqlManager() const {
+      return m_sqlManager;
+    }
 
-    private:
-        void InitSDL();
+private:
+    void InitSDL();
 
-        void InitImGui();
+    void InitImGui();
 
-        void Run();
+    void Run();
 
-        void RenderUI();
+    void RenderUI();
 
-        void SetupDockspace();
+    void SetupDockspace();
 
-        void Render();
+    void Render();
 
-    public:
-        const int GetWindowWidth() const { return m_windowWidth; }
-        const int GetWindowHeight() const { return m_windowHeight; }
+public:
+    const int GetWindowWidth() const { return m_windowWidth; }
+    const int GetWindowHeight() const { return m_windowHeight; }
 
-        static SDL_Window *GetWindow() { return s_window; }
-        static Application *GetApplication() {
-            return s_application;
-        }
+    static SDL_Window *GetWindow() { return s_window; }
+    static Application *GetApplication() {
+      return s_application;
+    }
 
-    private:
-        inline static SDL_Window *s_window;
-        inline static Application *s_application = nullptr;
+private:
+    inline static SDL_Window *s_window;
+    inline static Application *s_application = nullptr;
 
-        SDL_GLContext m_gl_context{};
+    SDL_GLContext m_gl_context{};
+    bool m_exit = false;
+    GLsizei m_windowWidth = 1920;
+    GLsizei m_windowHeight = 1080;
+    Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
+    // UIWindows
+    std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
+    Security::LogInWindow m_loginWindow;
 
-        bool m_exit = false;
-
-        GLsizei m_windowWidth = 1920;
-        GLsizei m_windowHeight = 1080;
-        Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
-        // UIWindows
-        std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
-        Security::LogInWindow m_loginWindow;
-
-        //Text Editor
-        TextEditor m_textEditor = TextEditor();
-
-        // Sql Manager
-        const HummingBird::Sql::SqlManager m_sqlManager;
-    };
+    // Sql Manager
+    const HummingBird::Sql::SqlManager m_sqlManager;
+  };
 
 
 #endif //KBTOOLS_APPLICATION_H

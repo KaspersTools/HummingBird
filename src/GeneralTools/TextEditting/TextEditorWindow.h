@@ -5,10 +5,11 @@
 #ifndef KBTOOLS_TEXTEDITORWINDOW_H
 #define KBTOOLS_TEXTEDITORWINDOW_H
 
-#include "../../UIWindows/UIWindow.h"
-#include "ImGuiFileBrowser.h"
+#include <vendor/filedialog/FileBrowser/ImGuiFileBrowser.h>
+#include <vendor/ImGuiColorTextEdit/TextEditor.h>
 
-#include <TextEditor.h>
+#include "../../UIWindows/UIWindow.h"
+#include "../../Utils/Utils.h"
 
 namespace HummingBird::GeneralTools {
   class TextEditorWindow : public KBTools::UIWindow {

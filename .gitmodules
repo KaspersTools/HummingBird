@@ -1,17 +1,17 @@
-[submodule "vendor/imgui"]
-	path = vendor/imgui
-	url = https://github.com/ocornut/imgui
-	branch = docking
-[submodule "vendor/spdlog"]
-	path = vendor/spdlog
-	url = https://github.com/gabime/spdlog.git
+[submodule "vendor/sdl"]
+	path = vendor/sdl
+	url = https://github.com/kasperhbo/SDL.git
+	branch = release-2.28.x
 [submodule "vendor/fmt"]
 	path = vendor/fmt
-	url = https://github.com/fmtlib/fmt.git
-
-[submodule "vendor/imguiext/imguicolortextedit"]
-	path = vendor/imguiext/imguicolortextedit
-	url = https://github.com/BalazsJako/ImGuiColorTextEdit.git
-[submodule "vendor/ImGui-Addons"]
-	path = vendor/ImGui-Addons
-	url = https://github.com/gallickgunner/ImGui-Addons.git
+	url = https://github.com/kasperhbo/fmt.git
+[submodule "vendor/spdlog"]
+	path = vendor/spdlog
+	url = https://github.com/kasperhbo/spdlog.git
+[submodule "vendor/glad"]
+    path = vendor/glad
+    url = https://github.com/kasperhbo/Glad.git
+[submodule "vendor/imgui"]
+    path = vendor/imgui
+    url = git@github.com:kasperhbo/imgui.git
+    branch = docking

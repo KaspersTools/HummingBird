@@ -5,6 +5,7 @@
     <mapping directory="$PROJECT_DIR$/vendor/fmt" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/glad" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/imgui/vendor/filedialog" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/sdl" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/spdlog" vcs="Git" />
   </component>
