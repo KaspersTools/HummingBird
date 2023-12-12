@@ -97,6 +97,9 @@ set(SOURCES
         src/GeneralTools/FileDialog.h
         src/GeneralTools/TextEditting/TextEditorWindow.h
         src/GeneralTools/TextEditting/TextEditorWindow.cpp
+
+        src/System/Hosts/EditHostsWindow.h
+        src/System/Hosts/EditHostsWindow.cpp
 )
 
 #create executable

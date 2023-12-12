@@ -5,8 +5,6 @@
 #include "Application.h"
 #include "Log.h"
 
-#include "GeneralTools/FileDialog.h"
-
 namespace KBTools {
 
   Application::Application() {
@@ -175,9 +173,10 @@ namespace KBTools {
           AddWindow(Terminal::TerminalWindow::GetTerminalName(), std::make_shared<Terminal::TerminalWindow>());
         }
 
-        if (ImGui::BeginMenu("Hosts")) {
+        if (ImGui::BeginMenu("Networking")) {
           if (ImGui::MenuItem("Edit Hosts")) {
-            //            AddWindow("Edit Hosts", std::make_shared<HummingBird::System::EditHosts>("/etc/hosts"));
+//            AddWindow("Edit Hosts", std::make_shared<HummingBird::System::EditHosts>());
+            AddWindow("Edit Hosts", std::make_shared<HummingBird::System::EditHostsWindow>());
           }
           ImGui::EndMenu();
         }

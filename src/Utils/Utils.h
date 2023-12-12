@@ -1,11 +1,7 @@
 //
 // Created by Kasper de Bruin on 10/12/2023.
 //
-
-#ifndef KBTOOLS_UTILS_H
-#define KBTOOLS_UTILS_H
-
-#endif//KBTOOLS_UTILS_H
+#pragma once
 
 #include <string>
 #include <fstream>
@@ -36,10 +32,9 @@ public:
       myFile.close();
     }
     else {
-      filecontent = "Unable to open file";
-      CORE_ERROR("Unable to open file");
+      filecontent = "Unable to open file " + filelocation + "\n";
+      CORE_ERROR("Unable to open file {0}", filelocation);
     }
     return filecontent;
   }
-
 };

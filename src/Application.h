@@ -27,10 +27,16 @@
 
 // UIWindows
 #include "UIWindows/UIWindow.h"
+
 #include "Terminal/TerminalWindow.h"
+
 #include "Security/LogInWindow.h"
 #include "Security/LoginManager.h"
+
 #include "GeneralTools/TextEditting/TextEditorWindow.h"
+#include "GeneralTools/FileDialog.h"
+
+#include "System/Hosts/EditHostsWindow.h"
 
 #include "UIWindows/Themes/ThemeManager.h"
 
