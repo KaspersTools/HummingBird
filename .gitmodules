@@ -1,21 +1,17 @@
-[submodule "vendor/sdl"]
-	path = vendor/sdl
-	url = https://github.com/kasperhbo/SDL.git
-	branch = release-2.28.x
-[submodule "vendor/fmt"]
-	path = vendor/fmt
-	url = https://github.com/kasperhbo/fmt.git
-[submodule "vendor/spdlog"]
-	path = vendor/spdlog
-	url = https://github.com/kasperhbo/spdlog.git
-[submodule "vendor/glad"]
-    path = vendor/glad
-    url = https://github.com/kasperhbo/Glad.git
-[submodule "vendor/imgui"]
-    path = vendor/imgui
-    url = git@github.com:kasperhbo/imgui.git
-    branch = docking
 [submodule "vendor/mysqlclient"]
-    path = vendor/mysqlclient
-    url = https://github.com/mysql/mysql-connector-cpp.git
-    branch = 8.0
+	url = https://github.com/mysql/mysql-connector-cpp.git
+[submodule "vendor/imgui"]
+	url = https://github.com/kasperhbo/imgui.git
+	branch = docking
+[submodule "vendor/fmt"]
+    url = https://github.com/kasperhbo/fmt.git
+    branch = master
+[submodule "vendor/spdlog"]
+    url = https://github.com/kasperhbo/spdlog.git
+    branch = master
+[submodule "vendor/glad"]
+    url = https://github.com/kasperhbo/Glad.git
+    branch = master
+[submodule "vendor/sdl"]
+    url = https://github.com/kasperhbo/SDL.git
+    branch = release-2.28.x

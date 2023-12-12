@@ -11,35 +11,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 #MYSQL
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-#add_subdirectory(vendor/mysql)
-#include(ExternalProject)
-#ExternalProject_Add(mysql
-#        SOURCE_DIR "${CMAKE_SOURCE_DIR}/vendor/mysql"
-#
-#        # Specify build configuration options
-#        CMAKE_ARGS -DDOWNLOAD_BOOST=1 -DWITH_BOOST=${CMAKE_BINARY_DIR}/boost -DWITH_LIBEVENT=bundled -DWITH_ICU=bundled
-#
-#        # Disable install step if not needed
-#        INSTALL_COMMAND ""
-#
-#        # Disable update step to speed up build
-#        UPDATE_COMMAND ""
-#
-#        # Add other necessary configuration options
-#        # ...
-#)
+
 
 
 ###################################
 ###### 3rd party libraries ########
 ###################################
-#boost
-set(DOWNLOAD_BOOST "1" CACHE INTERNAL "")
-set(WITH_BOOST "${CMAKE_SOURCE_DIR}/vendor/boost" CACHE INTERNAL "")
-
 ######preinstalled########
 #mysql
-add_subdirectory(vendor/mysql)
+# Add the mysqlclient submodule
+add_subdirectory(vendor/mysqlclient)
+# Include directories for mysqlclient
+include_directories(vendor/mysqlclient/include)
 
 ######submodules##########
 #sdl2
