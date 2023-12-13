@@ -4,7 +4,7 @@
 
 #include "ThemeManager.h"
 
-namespace KBTools {
+namespace HummingBirdCore {
     namespace Themes{
 
         void ThemeManager::Render() {

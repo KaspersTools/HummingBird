@@ -2,8 +2,7 @@
 // Created by Kasper de Bruin on 06/12/2023.
 //
 
-#ifndef KBTOOLS_TEXTURE_H
-#define KBTOOLS_TEXTURE_H
+#pragma once
 
 #include <string>
 
@@ -29,6 +28,3 @@ private:
     int m_width, m_height, m_BPP;
 
 };
-
-
-#endif //KBTOOLS_TEXTURE_H

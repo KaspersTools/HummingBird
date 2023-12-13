@@ -6,7 +6,7 @@
 #include "../Log.h"
 
 
-namespace HummingBird::Sql {
+namespace HummingBirdCore::Sql {
   //TODO: Implement this class
   SqlConnection::SqlConnection(const std::string &uri) {
 
@@ -25,4 +25,4 @@ namespace HummingBird::Sql {
   bool SqlConnection::IsConnected() {
     return true;
   }
-}// namespace HummingBird::Sql
+}// namespace HummingBirdCore::Sql

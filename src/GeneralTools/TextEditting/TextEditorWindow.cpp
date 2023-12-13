@@ -4,16 +4,16 @@
 
 #include "TextEditorWindow.h"
 
-namespace HummingBird {
+namespace HummingBirdCore {
   namespace GeneralTools {
 
     void TextEditorWindow::Render() {
-      bool open = false, save = false;
+      bool open = false;
       if(ImGui::BeginMenuBar())
       {
         if (ImGui::BeginMenu("Menu"))
         {
-          if (ImGui::MenuItem("Open", NULL))
+          if (ImGui::MenuItem("Open"))
             open = true;
           ImGui::EndMenu();
         }
@@ -28,10 +28,7 @@ namespace HummingBird {
      * Opening any other file will show error, return false and won't close the dialog.
      */
       if (file_dialog.showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310))) {
-//        std::cout << file_dialog.selected_fn << std::endl;  // The name of the selected file or directory in case of Select Directory dialog mode
-//        std::cout << file_dialog.selected_path << std::endl;// The absolute path to the selected file
-
-        std::string fileContent = FileUtils::readFromFile(file_dialog.selected_path);
+        std::string fileContent = FileUtils::readFromFile(file_dialog.selected_path, false);
                 m_textEditor.SetText(fileContent);
       }
 
@@ -42,4 +39,4 @@ namespace HummingBird {
 
 
   }// namespace GeneralTools
-}// namespace HummingBird
+}// namespace  HummingBirdCore

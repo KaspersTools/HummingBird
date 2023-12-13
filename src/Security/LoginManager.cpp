@@ -6,9 +6,9 @@
 #include "../Application.h"
 #include <cstring>
 
-bool KBTools::Security::LoginManager::m_isLoggedIn = false;
+bool HummingBirdCore::Security::LoginManager::m_isLoggedIn = false;
 
-bool KBTools::Security::LoginManager::Login(const char *username, const char *password) {
+bool HummingBirdCore::Security::LoginManager::Login(const char *username, const char *password) {
     //TODO: Implement login with database
 //    if(strcmp(username, "admin") != 0 || strcmp(password, "admin") != 0) {
 //        return false;
@@ -22,7 +22,7 @@ bool KBTools::Security::LoginManager::Login(const char *username, const char *pa
 
     std::string query = fmt::format("SELECT * FROM User WHERE name = '{}' AND password = '{}';", username, password);
     //TODO: Implement query
-//    HummingBird::Sql::SqlResult result = HummingBird::Sql::SqlManager::GetMainConnection()->Query(query);
+//    HummingBirdCore::Sql::SqlResult result = HummingBirdCore::Sql::SqlManager::GetMainConnection()->Query(query);
 //    if(result.WasSuccessful()){
 //        if(result.GetResult()->row_count == 1) {
 //            m_isLoggedIn = true;
@@ -33,18 +33,18 @@ bool KBTools::Security::LoginManager::Login(const char *username, const char *pa
     return false;
 }
 
-bool KBTools::Security::LoginManager::Register(const char *username, const char *password) {
+bool HummingBirdCore::Security::LoginManager::Register(const char *username, const char *password) {
     //TODO: Implement register with database
     return true;
 }
 
-bool KBTools::Security::LoginManager::Logout() {
+bool HummingBirdCore::Security::LoginManager::Logout() {
     //TODO: Implement logout with database
     m_isLoggedIn = false;
     return true;
 }
 
-bool KBTools::Security::LoginManager::IsLoggedIn() {
+bool HummingBirdCore::Security::LoginManager::IsLoggedIn() {
     return m_isLoggedIn;
 }
 

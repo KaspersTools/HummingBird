@@ -5,9 +5,7 @@
 #include "Application.h"
 #include "Log.h"
 
-#include "GeneralTools/FileDialog.h"
-
-namespace KBTools {
+namespace HummingBirdCore {
 
   Application::Application() {
     if (s_application != nullptr) {
@@ -24,10 +22,10 @@ namespace KBTools {
     m_backgroundTexture.Load();
 
     //TODO: Load from config file
-//    HummingBird::Sql::SqlManager::Init(
+//    HummingBirdCore::Sql::SqlManager::Init(
 //            "localhost", "usr", "pwd");
     //TODO: Implement this
-//    HummingBird::Sql::SqlManager::GetMainConnection()->SetDatabase("HUMMINGBIRD_USERMANAGEMENT");
+//    HummingBirdCore::Sql::SqlManager::GetMainConnection()->SetDatabase("HUMMINGBIRD_USERMANAGEMENT");
 
 
     Run();
@@ -35,7 +33,7 @@ namespace KBTools {
 
   Application::~Application() {
 
-    HummingBird::Sql::SqlManager::Shutdown();
+    HummingBirdCore::Sql::SqlManager::Shutdown();
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
@@ -69,6 +67,7 @@ namespace KBTools {
             SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+//    SDL_WINDOW_ALLOW_HIGHDPI
 
     auto window_flags = (SDL_WindowFlags) (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     s_window = SDL_CreateWindow(
@@ -167,7 +166,7 @@ namespace KBTools {
       if (ImGui::BeginMenu("Tools")) {
         if (ImGui::BeginMenu("General Tools")) {
           if (ImGui::MenuItem("Text Editor")) {
-            AddWindow("Text Editor", std::make_shared<HummingBird::GeneralTools::TextEditorWindow>());
+            AddWindow("Text Editor", std::make_shared<HummingBirdCore::GeneralTools::TextEditorWindow>());
           }
           ImGui::EndMenu();
         }
@@ -176,9 +175,10 @@ namespace KBTools {
           AddWindow(Terminal::TerminalWindow::GetTerminalName(), std::make_shared<Terminal::TerminalWindow>());
         }
 
-        if (ImGui::BeginMenu("Hosts")) {
+        if (ImGui::BeginMenu("Networking")) {
           if (ImGui::MenuItem("Edit Hosts")) {
-            //            AddWindow("Edit Hosts", std::make_shared<HummingBird::System::EditHosts>("/etc/hosts"));
+//            AddWindow("Edit Hosts", std::make_shared<HummingBirdCore::System::EditHosts>());
+            AddWindow("Edit Hosts", std::make_shared<HummingBirdCore::System::EditHostsWindow>());
           }
           ImGui::EndMenu();
         }
@@ -243,7 +243,7 @@ namespace KBTools {
 
     //Render file dialog
     {
-      HummingBird::GeneralTools::FileDialog::Render();
+      HummingBirdCore::GeneralTools::FileDialog::Render();
     }
 
     // Setup the fullscreen window
@@ -345,5 +345,5 @@ namespace KBTools {
 
     SDL_GL_SwapWindow(s_window);
   }
-}// namespace KBTools
+}// namespace HummingBirdCore
 

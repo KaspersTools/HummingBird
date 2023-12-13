@@ -4,7 +4,7 @@
 
 #include "TerminalWindow.h"
 
-namespace KBTools::Terminal {
+namespace HummingBirdCore::Terminal {
     TerminalWindow::TerminalWindow(const ImGuiWindowFlags flags) : UIWindow(flags) {
         s_terminalCount++;
         m_logs.emplace_back("Welcome to the KBTools Terminal!");

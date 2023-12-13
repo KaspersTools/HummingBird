@@ -2,11 +2,10 @@
 // Created by Kasper de Bruin on 06/12/2023.
 //
 
-#ifndef KBTOOLS_LOGINWINDOW_H
-#define KBTOOLS_LOGINWINDOW_H
+#pragma once
 #include "../UIWindows/UIWindow.h"
 
-namespace KBTools {
+namespace HummingBirdCore {
     namespace Security {
 
         class LogInWindow : public UIWindow {
@@ -26,4 +25,3 @@ namespace KBTools {
 
     } // Security
 } // KBTools
-#endif //KBTOOLS_LOGINWINDOW_H

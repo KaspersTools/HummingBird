@@ -2,12 +2,11 @@
 // Created by Kasper de Bruin on 11/12/2023.
 //
 
-#ifndef KBTOOLS_FILEDIALOG_H
-#define KBTOOLS_FILEDIALOG_H
+#pragma once
 
 #include <vendor/filedialog/FileBrowser/ImGuiFileBrowser.h>
 
-namespace HummingBird::GeneralTools {
+namespace HummingBirdCore::GeneralTools {
 //Everything in this class is static
   class FileDialog {
 public:
@@ -37,6 +36,5 @@ private:
     inline static imgui_addons::ImGuiFileBrowser s_fileDialog;
     inline static bool s_isOpen = false;
   };
-}// namespace HummingBird::GeneralTools
+}// namespace HummingBirdCore::GeneralTools
 
-#endif//KBTOOLS_FILEDIALOG_H
