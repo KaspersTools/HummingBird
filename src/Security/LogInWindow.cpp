@@ -5,11 +5,11 @@
 #include "LogInWindow.h"
 #include "../Application.h"
 
-namespace KBTools::Security {
+namespace HummingBirdCore::Security {
 
-  void KBTools::Security::LogInWindow::Render() {
+  void HummingBirdCore::Security::LogInWindow::Render() {
     //Center the window
-    Application *app = KBTools::Application::GetApplication();
+    Application *app = HummingBirdCore::Application::GetApplication();
 
     ImGui::SetNextWindowSize(ImVec2(400, 200));
 

@@ -2,10 +2,10 @@
 // Created by Kasper de Bruin on 01/11/2023.
 //
 
-#ifndef KBTOOLS_THEMES_H
-#define KBTOOLS_THEMES_H
+#pragma once
+
 #include <imgui.h>
-namespace KBTools {
+namespace HummingBirdCore {
     namespace Themes {
         inline void Maya() {
             // Credits: https://gist.github.com/ongamex/4ee36fb23d6c527939d0f4ba72144d29
@@ -527,4 +527,4 @@ namespace KBTools {
     } // Themes
 } // KBTools
 
-#endif //KBTOOLS_THEMES_H
+

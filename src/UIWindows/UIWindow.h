@@ -2,13 +2,12 @@
 // Created by Kasper de Bruin on 01/11/2023.
 //
 
-#ifndef KBTOOLS_UIWINDOW_H
-#define KBTOOLS_UIWINDOW_H
+#pragma once
 
 #include <ImGui.h>
 
 // Define a UI window structure
-namespace KBTools {
+namespace HummingBirdCore {
     class UIWindow {
     public:
         UIWindow(const ImGuiWindowFlags flags) : m_flags(flags) {}
@@ -21,5 +20,3 @@ namespace KBTools {
       ImGuiWindowFlags m_flags;
     };
 }
-
-#endif //KBTOOLS_UIWINDOW_H

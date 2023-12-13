@@ -2,10 +2,9 @@
 // Created by Kasper de Bruin on 06/12/2023.
 //
 
-#ifndef KBTOOLS_LOGINMANAGER_H
-#define KBTOOLS_LOGINMANAGER_H
+#pragma once
 
-namespace KBTools::Security {
+namespace HummingBirdCore::Security {
     class LoginManager {
     public:
         static bool Login(const char *username, const char *password);
@@ -20,6 +19,3 @@ namespace KBTools::Security {
         static bool m_isLoggedIn;
     };
 }
-
-
-#endif //KBTOOLS_LOGINMANAGER_H

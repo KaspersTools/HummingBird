@@ -2,8 +2,7 @@
 // Created by Kasper de Bruin on 01/11/2023.
 //
 
-#ifndef KBTOOLS_APPLICATION_H
-#define KBTOOLS_APPLICATION_H
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -46,7 +45,7 @@
 // Sql
 #include "Sql/SqlManager.h"
 
-namespace KBTools {
+namespace HummingBirdCore {
   class Application {
 public:
     Application();
@@ -62,7 +61,7 @@ public:
     }
 
 
-    const HummingBird::Sql::SqlManager &GetSqlManager() const {
+    const HummingBirdCore::Sql::SqlManager &GetSqlManager() const {
       return m_sqlManager;
     }
 
@@ -102,10 +101,7 @@ private:
     Security::LogInWindow m_loginWindow;
 
     // Sql Manager
-    const HummingBird::Sql::SqlManager m_sqlManager;
+    const HummingBirdCore::Sql::SqlManager m_sqlManager;
   };
-
-
-#endif //KBTOOLS_APPLICATION_H
 
 }// namespace KBTools

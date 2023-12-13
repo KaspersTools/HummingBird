@@ -2,12 +2,11 @@
 // Created by Kasper de Bruin on 01/11/2023.
 //
 
-#ifndef KBTOOLS_THEMEMANAGER_H
-#define KBTOOLS_THEMEMANAGER_H
+#pragma once
 #include "Themes.h"
 #include "../UIWindow.h"
 
-namespace KBTools {
+namespace HummingBirdCore {
     namespace Themes {
         enum class THEMES {
             MAYA,
@@ -72,5 +71,3 @@ namespace KBTools {
         };
     } // Themes
 } // KBTools
-
-#endif //KBTOOLS_THEMEMANAGER_H

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(KBTools)
+project(HUMMINGBIRD_CORE)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,8 +9,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 ########## Modules ################
 ###################################
 #MYSQL
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+###################################
+########## Dependencies ###########
+###################################
+#security
+find_library(SECURITY_FRAMEWORK Security)
 
 ###################################
 ###### 3rd party libraries ########
@@ -72,7 +77,7 @@ set(IMGUI_SOURCES
 ########## Main Project ###########
 ###################################
 set(SOURCES
-        src/main.cpp
+#        src/main.cpp
 
         src/Application.cpp
         src/Application.h
@@ -112,7 +117,9 @@ set(SOURCES
 )
 
 #create executable
-add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES})
+#add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES})
+#create lib
+add_library(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES})
 
 ###################################
 ########## Linking ################
@@ -127,7 +134,8 @@ target_link_libraries(${PROJECT_NAME} glad)
 #target_link_libraries(${PROJECT_NAME} mysqlclient)
 #sdl2
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY})
-
+#security
+target_link_libraries(${PROJECT_NAME} ${SECURITY_FRAMEWORK})
 
 ###################################
 ########## INCLUDE ################

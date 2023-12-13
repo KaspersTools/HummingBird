@@ -3,8 +3,8 @@
 //
 
 #include "SqlManager.h"
-namespace HummingBird::Sql {
 
+namespace HummingBirdCore::Sql {
   bool SqlManager::Init(const std::string &host, const std::string &username, const std::string &password) {
     if(s_initialized){
       CORE_WARN("SqlManager is already initialized");
@@ -29,4 +29,4 @@ namespace HummingBird::Sql {
     }
     return s_mainConnection;
   }
-}// namespace HummingBird::Sql
+}// namespace HummingBirdCore::Sql

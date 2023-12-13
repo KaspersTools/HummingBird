@@ -2,8 +2,7 @@
 // Created by Kasper de Bruin on 11/12/2023.
 //
 
-#ifndef KBTOOLS_TEXTEDITORWINDOW_H
-#define KBTOOLS_TEXTEDITORWINDOW_H
+#pragma once
 
 #include <vendor/filedialog/FileBrowser/ImGuiFileBrowser.h>
 #include <vendor/ImGuiColorTextEdit/TextEditor.h>
@@ -11,8 +10,8 @@
 #include "../../UIWindows/UIWindow.h"
 #include "../../Utils/Utils.h"
 
-namespace HummingBird::GeneralTools {
-  class TextEditorWindow : public KBTools::UIWindow {
+namespace HummingBirdCore::GeneralTools {
+  class TextEditorWindow : public HummingBirdCore::UIWindow {
 public:
     TextEditorWindow() : UIWindow(ImGuiWindowFlags_MenuBar) {}
 
@@ -25,7 +24,4 @@ private:
     imgui_addons::ImGuiFileBrowser file_dialog; // As a class member or globally
   };
 
-}// namespace HummingBird::GeneralTools
-
-
-#endif//KBTOOLS_TEXTEDITORWINDOW_H
+}// namespace HummingBirdCore::GeneralTools

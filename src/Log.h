@@ -2,8 +2,8 @@
 // Created by Kasper de Bruin on 02/11/2023.
 //
 
-#ifndef KBTOOLS_LOG_H
-#define KBTOOLS_LOG_H
+#pragma once
+
 #include <memory>
 
 // This ignores all warnings raised inside External headers
@@ -13,8 +13,7 @@
 #pragma warning(pop)
 
 //Thanks @TheCherno
-
-namespace KBTools {
+namespace HummingBirdCore {
     template<typename T>
     using Scope = std::unique_ptr<T>;
     template<typename T, typename ... Args>
@@ -42,14 +41,10 @@ namespace KBTools {
         static Ref<spdlog::logger> s_CoreLogger;
     };
 }
-
 // Core log macros
-#define CORE_TRACE(...)    ::KBTools::Log::GetCoreLogger()->trace(__VA_ARGS__)
-#define CORE_INFO(...)     ::KBTools::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define CORE_WARN(...)     ::KBTools::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define CORE_TRACE(...)    ::KBTools::Log::GetCoreLogger()->trace(__VA_ARGS__)
-#define CORE_ERROR(...)    ::KBTools::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define CORE_TRACE(...)    ::HummingBirdCore::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define CORE_INFO(...)     ::HummingBirdCore::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define CORE_WARN(...)     ::HummingBirdCore::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define CORE_TRACE(...)    ::HummingBirdCore::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define CORE_ERROR(...)    ::HummingBirdCore::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define CORE_CRITICAL(...) ::KBTools::Log::GetCoreLogger()->critical(__VA_ARGS__)
-
-
-#endif //KBTOOLS_LOG_H

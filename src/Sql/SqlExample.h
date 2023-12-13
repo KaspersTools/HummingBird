@@ -2,12 +2,11 @@
 // Created by Kasper de Bruin on 07/12/2023.
 //
 
-#ifndef KBTOOLS_SQLEXAMPLE_H
-#define KBTOOLS_SQLEXAMPLE_H
+#pragma once
 
 #include "SqlConnection.h"
 
-namespace HummingBird::Sql {
+namespace HummingBirdCore::Sql {
     class SqlExample {
     public:
         SqlExample(){
@@ -33,5 +32,3 @@ namespace HummingBird::Sql {
         }
     };
 }
-
-#endif//KBTOOLS_SQLEXAMPLE_H

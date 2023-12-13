@@ -1,14 +1,12 @@
 //
 // Created by Kasper de Bruin on 06/12/2023.
 //
-
-#ifndef KBTOOLS_SQLCONNECTION_H
-#define KBTOOLS_SQLCONNECTION_H
+#pragma once
 
 #include <iostream>
 #include "../Log.h"
 
-namespace HummingBird::Sql {
+namespace HummingBirdCore::Sql {
   class SqlConnection {
 public:
     SqlConnection(const std::string &uri);
@@ -18,7 +16,4 @@ public:
     void Disconnect();
     bool IsConnected();
   };
-}// namespace HummingBird::Sql
-
-
-#endif//KBTOOLS_SQLCONNECTION_H
+}// namespace HummingBirdCore::Sql
