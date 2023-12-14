@@ -5,23 +5,22 @@
 #pragma once
 #include "../UIWindows/UIWindow.h"
 
-namespace HummingBirdCore {
-    namespace Security {
 
-        class LogInWindow : public UIWindow {
-        public:
-            LogInWindow();
+namespace HummingBirdCore::Security {
 
-            ~LogInWindow();
+  class LogInWindow : public UIWindow {
+public:
+    LogInWindow();
 
-            void Render() override;
+    ~LogInWindow();
 
-        private:
-            char m_username[32] = "admin";
-            char m_password[32] = "admin";
-            bool m_remember;
-            bool m_failedLogin = false;
-        };
+    void render() override;
 
-    } // Security
-} // KBTools
+private:
+    char m_username[32] = "admin";
+    char m_password[32] = "admin";
+    bool m_remember;
+    bool m_failedLogin = false;
+  };
+
+}// namespace HummingBirdCore::Security

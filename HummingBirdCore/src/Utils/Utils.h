@@ -4,8 +4,8 @@
 #pragma once
 
 #include <fstream>
-#include <string>
 #include <iostream>
+#include <string>
 
 #ifdef __APPLE__
 #include <Security/Security.h>
@@ -23,18 +23,18 @@ public:
 
       std::ifstream myFile(fileLocation);
 
-        if (!myFile.is_open()) {
-            std::cerr << "Unable to open file: " << fileLocation << std::endl;
-            return fileContent;
-        }
-
-        while (std::getline(myFile, line)) {
-            fileContent += line + "\n";
-        }
-
-        myFile.close();
-
+      if (!myFile.is_open()) {
+        std::cerr << "Unable to open file: " << fileLocation << std::endl;
         return fileContent;
+      }
+
+      while (std::getline(myFile, line)) {
+        fileContent += line + "\n";
+      }
+
+      myFile.close();
+
+      return fileContent;
     }
   };// namespace HummingBirdCore
-}
+}// namespace HummingBirdCore

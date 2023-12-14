@@ -25,77 +25,76 @@ private:
 
     struct HostsFileLine {
   public:
-        HostsFileLine(TokenType type, std::string ip, std::string hostname, bool enabled) :
-                                                                            type(type),
-                                                                            originalIP(ip), originalHostname(hostname),
-                                                                            ip(ip), hostname(hostname),
-                                                                            originalEnabled(enabled), enabled(enabled)
-      {}
+      HostsFileLine(TokenType type, std::string ip, std::string hostname, bool enabled) : c_type(type), c_originalIP(ip),
+                                                                                          c_originalHostname(hostname),
+                                                                                          c_originalEnabled(enabled),
+                                                                                          m_ip(ip), m_hostname(hostname),
+                                                                                          enabled(enabled) {}
 
-        void setIP(const char string[256]) {
-          ip = string;
-        }
+      void setIP(const char string[256]) {
+        m_ip = string;
+      }
 
-        void setHostname(const char string[256]) {
-          hostname = string;
-        }
+      void setHostname(const char string[256]) {
+        m_hostname = string;
+      }
 
-        const std::string getOriginalIP() const {
-            return originalIP;
-        }
+      std::string getOriginalIP() const {
+        return c_originalIP;
+      }
 
-        const std::string getOriginalHostname() const {
-            return originalHostname;
-        }
+      std::string getOriginalHostname() const {
+        return c_originalHostname;
+      }
 
-        const std::string getHostname() const {
-            return hostname;
-        }
-        const std::string getIP() const {
-            return ip;
-        }
+      std::string getHostname() const {
+        return m_hostname;
+      }
+      std::string getIP() const {
+        return m_ip;
+      }
 
-        const bool isCommnent() const {
-            return type == COMMENT;
-        }
+      bool isCommnent() const {
+        return c_type == COMMENT;
+      }
 
-        const bool isHostname() const {
-            return type == HOSTNAME;
-        }
+      bool isHostname() const {
+        return c_type == HOSTNAME;
+      }
 
-        const bool isIPv4() const {
-            return type == IPV4_str;
-        }
+      bool isIPv4() const {
+        return c_type == IPV4_str;
+      }
 
-        const bool isIPv6() const {
-            return type == IPV6_str;
-        }
+      bool isIPv6() const {
+        return c_type == IPV6_str;
+      }
 
-        const bool isNewline() const {
-            return type == NEWLINE;
-        }
+      bool isNewline() const {
+        return c_type == NEWLINE;
+      }
 
-        const bool isUnknown() const {
-            return type == UNKNOWN;
-        }
+      bool isUnknown() const {
+        return c_type == UNKNOWN;
+      }
 
-        void reset() {
-          ip = originalIP;
-          hostname = originalHostname;
-          enabled = originalEnabled;
-        }
+      void reset() {
+        m_ip = c_originalIP;
+        m_hostname = c_originalHostname;
+        enabled = c_originalEnabled;
+      }
 
-    public:
+  public:
       bool enabled;
-    private:
-        TokenType type;
-        const std::string originalIP;
-        const std::string originalHostname;
-        const bool originalEnabled;
 
-        std::string ip;
-        std::string hostname;
+  private:
+      const std::string c_originalIP;
+      const std::string c_originalHostname;
+      const bool c_originalEnabled;
+      const TokenType c_type;
 
+      std::string m_ip;
+      std::string m_hostname;
     };
 
 public:
@@ -104,58 +103,58 @@ public:
       parseHostsFile();
     }
 
-    void Render() override;
+    void render() override;
 
 private:
-    const bool isIPv4str(const std::string &str) const {
-      return std::regex_match(str, ipv4_regex);
+    [[nodiscard]] const bool isIPv4str(const std::string &str) const {
+      return std::regex_match(str, c_ipv4_regex);
     }
 
-    const bool isIPv6str(const std::string &str) const {
-      return std::regex_match(str, ipv6_regex);
+    [[nodiscard]] const bool isIPv6str(const std::string &str) const {
+      return std::regex_match(str, c_ipv6_regex);
     }
 
-    const bool isComment(const std::string &str) const {
-      return std::regex_match(str, comment_regex);
+    [[nodiscard]] const bool isComment(const std::string &str) {
+      return std::regex_match(str, c_comment_regex);
     }
 
-    const bool isHostname(const std::string &str) const {
-      return std::regex_match(str, hostname_regex);
+    [[nodiscard]] const bool isHostname(const std::string &str) const {
+      return std::regex_match(str, c_hostname_regex);
     }
 
-    const bool isUnknown(const std::string &str) const {
-      return std::regex_match(str, hostname_regex);
+    [[nodiscard]] const bool isUnknown(const std::string &str) const {
+      return std::regex_match(str, c_hostname_regex);
     }
 
-    const bool isNewline(const std::string &str) const {
-      return std::regex_match(str, hostname_regex);
+    [[nodiscard]] const bool isNewline(const std::string &str) const {
+      return std::regex_match(str, c_hostname_regex);
     }
 
 private:
-    const std::string askPassPath = "Assets/scripts/askpass.sh"; // Update with your script's path
-#ifdef __linux__ // Linux specific code
-    const std::string m_hostsPath = "/etc/hosts";
-    const std::string tempFilePath = "/tmp/hosts_temp";
-#elif __APPLE__ // macOS specific code
-    const std::string tempFilePath = "/tmp/hosts_temp";
-    const std::string m_hostsPath = "/etc/hosts";
-#elif _WIN64 // Windows specific code
-    const std::string m_hostsPath = "C:\\Windows\\System32\\drivers\\etc\\hosts";
-    const std::string tempFilePath = "C:\\AppData\\Local\\Temp\\hosts_temp";
+    const std::string c_askPassPath = "Assets/scripts/askpass.sh";
+#ifdef __linux__
+    const std::string c_hostsPath = "/etc/hosts";
+    const std::string c_tempFilePath = "/tmp/hosts_temp";
+#elif __APPLE__// macOS specific code
+    const std::string c_tempFilePath = "/tmp/hosts_temp";
+    const std::string c_hostsPath = "/etc/hosts";
+#elif _WIN64   // Windows specific code
+    const std::string c_hostsPath = "C:\\Windows\\System32\\drivers\\etc\\hosts";
+    const std::string c_tempFilePath = "C:\\AppData\\Local\\Temp\\hosts_temp";
 #endif
 
 
     std::vector<HostsFileLine> m_hostsFileLines;
 
-    const std::regex ipv4_regex     = std::regex(R"((\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})");
-    const std::regex ipv6_regex     = std::regex(R"((([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))");
-    const std::regex hostname_regex = std::regex(R"(([A-Za-z0-9]+[^#\n: \t]*))");
-    const std::regex comment_regex  = std::regex(R"((#[^\n]*))");
+    const std::regex c_ipv4_regex = std::regex(R"((\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})");
+    const std::regex c_ipv6_regex = std::regex(R"((([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))");
+    const std::regex c_hostname_regex = std::regex(R"(([A-Za-z0-9]+[^#\n: \t]*))");
+    const std::regex c_comment_regex = std::regex(R"((#[^\n]*))");
 
 
     void parseHostsFile() {
       //open /etc/hosts
-      std::ifstream hostsFile(m_hostsPath);
+      std::ifstream hostsFile(c_hostsPath);
       std::string line;
 
       while (std::getline(hostsFile, line)) {
@@ -169,8 +168,8 @@ private:
               // Expecting a hostname after the IP address
               std::string hostname;
               if (ss >> hostname) {
-                  HostsFileLine hostsLine = {type, token, hostname, true};
-                  m_hostsFileLines.push_back(hostsLine);
+                HostsFileLine hostsLine = {type, token, hostname, true};
+                m_hostsFileLines.push_back(hostsLine);
               }
               break;
             }
@@ -186,25 +185,25 @@ private:
             case COMMENT: {
               //Do another check to see if it's a ipv4 or ipv6 address from the comment\
                 // Expecting a hostname after the IP address
-                std::string to_check = token.substr(1, token.size() - 1);
-                TokenType type = getTokenType(to_check);
+              std::string toCheck = token.substr(1, token.size() - 1);
+              TokenType type = getTokenType(toCheck);
 
-                if(type == IPV4_str) {
-                  std::string hostname;
-                  if (ss >> hostname) {
-                    HostsFileLine hostsLine = {type, to_check, hostname, false};
-                    m_hostsFileLines.push_back(hostsLine);
-                  }
-                } else if(type == IPV6_str) {
-                  std::string hostname;
-                  if (ss >> hostname) {
-                    HostsFileLine hostsLine = {type, to_check, hostname, false};
-                    m_hostsFileLines.push_back(hostsLine);
-                  }
-                }else {
-                  HostsFileLine hostsLine = {TokenType::COMMENT, token, "", true};
+              if (type == IPV4_str) {
+                std::string hostname;
+                if (ss >> hostname) {
+                  HostsFileLine hostsLine = {type, toCheck, hostname, false};
                   m_hostsFileLines.push_back(hostsLine);
                 }
+              } else if (type == IPV6_str) {
+                std::string hostname;
+                if (ss >> hostname) {
+                  HostsFileLine hostsLine = {type, toCheck, hostname, false};
+                  m_hostsFileLines.push_back(hostsLine);
+                }
+              } else {
+                HostsFileLine hostsLine = {TokenType::COMMENT, token, "", true};
+                m_hostsFileLines.push_back(hostsLine);
+              }
 
               break;
             }
@@ -223,7 +222,7 @@ private:
       hostsFile.close();
     }
 
-    TokenType getTokenType(const std::string& str) {
+    TokenType getTokenType(const std::string &str) {
       if (isIPv6str(str)) {
         return IPV6_str;
       } else if (isIPv4str(str)) {

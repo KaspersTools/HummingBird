@@ -25,7 +25,7 @@ namespace HummingBirdCore {
         public:
             ThemeManager() : UIWindow(ImGuiWindowFlags_MenuBar) {}
             ~ThemeManager() = default;
-            void Render() override;
+            void render() override;
             void SelectThemeWindow();
 
             static void SetTheme(THEMES theme){

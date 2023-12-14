@@ -15,13 +15,13 @@ namespace HummingBirdCore::GeneralTools {
 public:
     TextEditorWindow() : UIWindow(ImGuiWindowFlags_MenuBar) {}
 
-    const TextEditor getTextEditor() const { return m_textEditor; }
+    [[nodiscard]] TextEditor getTextEditor() const { return m_textEditor; }
 
-    void Render() override;
+    void render() override;
 
 private:
     TextEditor m_textEditor;
-    imgui_addons::ImGuiFileBrowser file_dialog; // As a class member or globally
+    imgui_addons::ImGuiFileBrowser m_fileDialog;
   };
 
 }// namespace HummingBirdCore::GeneralTools

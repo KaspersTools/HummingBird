@@ -1,0 +1,47 @@
+Checks: '-*,readability-identifier-naming'
+CheckOptions:
+  # Member variables prefixed with m_
+  - key: readability-identifier-naming.MemberVariablePrefix
+    value: 'm_'
+  - key: readability-identifier-naming.MemberVariableCase
+    value: 'camelBack'
+  - key: readability-identifier-naming.MemberVariableSuffix
+    value: ''
+
+  # Static member variables prefixed with s_
+  - key: readability-identifier-naming.StaticMemberPrefix
+    value: 's_'
+  - key: readability-identifier-naming.StaticMemberCase
+    value: 'camelBack'
+  - key: readability-identifier-naming.StaticMemberSuffix
+    value: ''
+
+  # Function names in lowerCamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: 'camelBack'
+  - key: readability-identifier-naming.FunctionIsConstexpr
+    value: 'camelBack'
+
+  # General variable names in lower_case (can be adjusted as needed)
+  - key: readability-identifier-naming.VariableCase
+    value: 'lower_case'
+
+  # Constants in UPPER_CASE (can be adjusted as needed)
+  - key: readability-identifier-naming.ConstantCase
+    value: 'UPPER_CASE'
+
+  # Private member variables are also prefixed with m_
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: 'm_'
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: 'camelBack'
+
+  # Global variables (if needed, can be adjusted)
+  - key: readability-identifier-naming.GlobalVariablePrefix
+    value: 'g_'
+  - key: readability-identifier-naming.GlobalVariableCase
+    value: 'UPPER_CASE'
+
+  # Local variables in camelBack
+  - key: readability-identifier-naming.LocalVariableCase
+    value: 'camelBack'

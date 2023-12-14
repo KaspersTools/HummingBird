@@ -5,17 +5,17 @@
 #pragma once
 
 namespace HummingBirdCore::Security {
-    class LoginManager {
-    public:
-        static bool Login(const char *username, const char *password);
+  class LoginManager {
+public:
+    static bool login(const char *username, const char *password);
 
-        static bool Register(const char *username, const char *password);
+//    static bool register(const char *username, const char *password);
 
-        static bool Logout();
+    static bool logout();
 
-        static bool IsLoggedIn();
+    static bool isLoggedIn();
 
-    private:
-        static bool m_isLoggedIn;
-    };
-}
+private:
+    static bool s_isLoggedIn;
+  };
+}// namespace HummingBirdCore::Security

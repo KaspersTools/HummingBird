@@ -5,7 +5,7 @@
 #include "EditHostsWindow.h"
 #include <Security/Security.h>
 
-void HummingBirdCore::System::EditHostsWindow::Render() {
+void HummingBirdCore::System::EditHostsWindow::render() {
   //Make imgui table
   if(ImGui::Button("Save")){
     std::string finalString;
@@ -24,11 +24,11 @@ void HummingBirdCore::System::EditHostsWindow::Render() {
     }
 
     // Set the SUDO_ASKPASS environment variable
-    setenv("SUDO_ASKPASS", askPassPath.c_str(), 1);
+    setenv("SUDO_ASKPASS", c_askPassPath.c_str(), 1);
 
     //che
     // Write the host entries to a temporary file
-    std::ofstream tempFile(tempFilePath);
+    std::ofstream tempFile(c_tempFilePath);
     if (!tempFile.is_open()) {
       std::cerr << "Failed to open temporary file for writing." << std::endl;
       return;
@@ -39,14 +39,14 @@ void HummingBirdCore::System::EditHostsWindow::Render() {
     tempFile.close();
 
     // Use sudo with the -A option to trigger askpass
-    std::string command = "sudo -A mv " + tempFilePath + " " + hostsFilePath;
+    std::string command = "sudo -A mv " + c_tempFilePath + " " + c_hostsPath;
     int result = system(command.c_str());
 //    int result = system(command.c_str());
 
     if (result != 0) {
-      std::cerr << "Failed to write to " << hostsFilePath << ". Ensure you have sudo privileges." << std::endl;
+      std::cerr << "Failed to write to " << c_hostsPath << ". Ensure you have sudo privileges." << std::endl;
     } else {
-      std::cout << "Successfully wrote to " << hostsFilePath << "." << std::endl;
+      std::cout << "Successfully wrote to " << c_hostsPath << "." << std::endl;
     }
   }
   if (ImGui::BeginTable("Hosts", 6, ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable)) {

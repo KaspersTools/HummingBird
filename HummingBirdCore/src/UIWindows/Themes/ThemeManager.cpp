@@ -7,7 +7,7 @@
 namespace HummingBirdCore {
     namespace Themes{
 
-        void ThemeManager::Render() {
+        void ThemeManager::render() {
             SelectThemeWindow();
             ImGui::ShowStyleEditor();
         }

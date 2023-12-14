@@ -27,7 +27,7 @@ namespace HummingBirdCore {
 
     Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
 
-    m_backgroundTexture.Load();
+    m_backgroundTexture.load();
     Run();
   }
 
@@ -67,16 +67,16 @@ namespace HummingBirdCore {
             SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-//    SDL_WINDOW_ALLOW_HIGHDPI
+    //    SDL_WINDOW_ALLOW_HIGHDPI
 
-    auto window_flags = (SDL_WindowFlags) (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+    auto mainWindowFlags = (SDL_WindowFlags) (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     s_window = SDL_CreateWindow(
             "Humming Bird",
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
             m_windowWidth,
             m_windowHeight,
-            window_flags);
+            mainWindowFlags);
     // limit to which minimum size user can resize the window
     SDL_SetWindowMinimumSize(s_window, 800, 600);
 
@@ -138,8 +138,8 @@ namespace HummingBirdCore {
   }
 
   void Application::SetupDockspace() {
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-    ImGui::DockSpace(dockspace_id, ImVec2(0, 0),
+    ImGuiID dockspaceId = ImGui::GetID("MyDockSpace");
+    ImGui::DockSpace(dockspaceId, ImVec2(0, 0),
                      ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_PassthruCentralNode);
 
 
@@ -155,7 +155,7 @@ namespace HummingBirdCore {
 
         ImGui::Separator();
         if (ImGui::MenuItem("Log Out")) {
-          Security::LoginManager::Logout();
+          Security::LoginManager::logout();
         }
         if (ImGui::MenuItem("Exit")) {
           m_exit = true;
@@ -172,12 +172,12 @@ namespace HummingBirdCore {
         }
 
         if (ImGui::MenuItem("Terminal")) {
-          AddWindow(Terminal::TerminalWindow::GetTerminalName(), std::make_shared<Terminal::TerminalWindow>());
+          //          AddWindow(Terminal::TerminalWindow::getT(), std::make_shared<Terminal::TerminalWindow>());
         }
 
         if (ImGui::BeginMenu("Networking")) {
           if (ImGui::MenuItem("Edit Hosts")) {
-//            AddWindow("Edit Hosts", std::make_shared<HummingBirdCore::System::EditHosts>());
+            //            AddWindow("Edit Hosts", std::make_shared<HummingBirdCore::System::EditHosts>());
             AddWindow("Edit Hosts", std::make_shared<HummingBirdCore::System::EditHostsWindow>());
           }
           ImGui::EndMenu();
@@ -188,7 +188,7 @@ namespace HummingBirdCore {
       if (ImGui::BeginMenu("View")) {
         if (ImGui::BeginMenu("Styles")) {
           if (ImGui::MenuItem("ThemeManager")) {
-            AddWindow("Theme Manager", std::make_shared<Themes::ThemeManager>());
+//            AddWindow("Theme Manager", std::make_shared<Themes::ThemeManager>());
           }
           if (ImGui::BeginMenu("Themes")) {
             if (ImGui::MenuItem("Maya")) {
@@ -231,9 +231,9 @@ namespace HummingBirdCore {
         ImGui::EndMenu();
       }
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
-      if(ImGui::BeginMenu("Kasper Tools")){
-        if(ImGui::MenuItem("Hello World")){
-            AddWindow("Hello World", std::make_shared<HummingBirdKasper::HelloLibrary>());
+      if (ImGui::BeginMenu("Kasper Tools")) {
+        if (ImGui::MenuItem("Hello World")) {
+//          AddWindow("Hello World", std::make_shared<HummingBirdKasper::HelloLibrary>());
         }
         ImGui::EndMenu();
       }
@@ -253,7 +253,7 @@ namespace HummingBirdCore {
     }
 
     {
-      ImGuiWindowFlags window_flags =
+      ImGuiWindowFlags mainWindowFlags =
               ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
               ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
               ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground;
@@ -264,14 +264,14 @@ namespace HummingBirdCore {
 
       ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);// Set the window size to the entire display size
       ImGui::SetNextWindowPos(ImVec2(0, 0));               // Set the window position to the top-left corner
-      ImGui::Begin("FullscreenWindow", nullptr, window_flags);
+      ImGui::Begin("FullscreenWindow", nullptr, mainWindowFlags);
 
       ImGui::PopStyleVar(3);
     }
 
     //Render background texture
     {
-      GLuint textureID = m_backgroundTexture.GetTextureID();// Replace with your actual texture ID
+      GLuint textureID = m_backgroundTexture.getTextureID();// Replace with your actual texture ID
       ImVec2 texSize = ImVec2(
               m_windowWidth,
               m_windowHeight);
@@ -286,20 +286,19 @@ namespace HummingBirdCore {
     SetupDockspace();
 
     {
-      if (Security::LoginManager::IsLoggedIn()) {
+      if (Security::LoginManager::isLoggedIn()) {
 
         for (auto &[name, window]: m_uiWindows) {
-          if (window->IsOpen()) {
-            ImGui::Begin(name.c_str(), &window->isOpen, window->GetFlags());
-            window->Render();
+          if (window->isOpen()) {
+            ImGui::Begin(name.c_str(), &window->m_isOpen, window->getFlags());
+            window->render();
             ImGui::End();
           }
         }
       } else {
-        m_loginWindow.Render();
+        m_loginWindow.render();
       }
     }
-
 
 
     ImGui::End();
@@ -350,4 +349,3 @@ namespace HummingBirdCore {
     SDL_GL_SwapWindow(s_window);
   }
 }// namespace HummingBirdCore
-
