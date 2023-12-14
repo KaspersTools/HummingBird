@@ -1,5 +1,3 @@
-[submodule "vendor/mysqlclient"]
-	url = https://github.com/mysql/mysql-connector-cpp.git
 [submodule "vendor/imgui"]
 	url = https://github.com/kasperhbo/imgui.git
 	branch = docking
