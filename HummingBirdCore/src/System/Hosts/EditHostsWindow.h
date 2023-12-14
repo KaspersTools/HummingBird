@@ -132,12 +132,16 @@ private:
     }
 
 private:
+    const std::string askPassPath = "Assets/scripts/askpass.sh"; // Update with your script's path
 #ifdef __linux__ // Linux specific code
     const std::string m_hostsPath = "/etc/hosts";
+    const std::string tempFilePath = "/tmp/hosts_temp";
 #elif __APPLE__ // macOS specific code
+    const std::string tempFilePath = "/tmp/hosts_temp";
     const std::string m_hostsPath = "/etc/hosts";
 #elif _WIN64 // Windows specific code
     const std::string m_hostsPath = "C:\\Windows\\System32\\drivers\\etc\\hosts";
+    const std::string tempFilePath = "C:\\AppData\\Local\\Temp\\hosts_temp";
 #endif
 
 

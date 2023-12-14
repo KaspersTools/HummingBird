@@ -23,11 +23,6 @@ void HummingBirdCore::System::EditHostsWindow::Render() {
       finalString += m_hostsFileLines[row].getIP() + " " + m_hostsFileLines[row].getHostname() + "\n";
     }
 
-//    CORE_TRACE("Created final string for host file: {0}", finalString);
-    const std::string tempFilePath = "/tmp/hosts_temp";
-    const std::string hostsFilePath = "/etc/hosts";
-    const std::string askPassPath = "Assets/scripts/askpass.sh"; // Update with your script's path
-
     // Set the SUDO_ASKPASS environment variable
     setenv("SUDO_ASKPASS", askPassPath.c_str(), 1);
 
