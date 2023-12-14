@@ -7,6 +7,10 @@
 #include "Application.h"
 #include "Log.h"
 
+#ifdef WITHHUMMINGBIRDKASPERSPECIFIC
+#include <HelloLibrary.h>
+#endif
+
 namespace HummingBirdCore {
 
   Application::Application() {
@@ -24,14 +28,6 @@ namespace HummingBirdCore {
     Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
 
     m_backgroundTexture.Load();
-
-    //TODO: Load from config file
-//    HummingBirdCore::Sql::SqlManager::Init(
-//            "localhost", "usr", "pwd");
-    //TODO: Implement this
-//    HummingBirdCore::Sql::SqlManager::GetMainConnection()->SetDatabase("HUMMINGBIRD_USERMANAGEMENT");
-
-
     Run();
   }
 
@@ -234,23 +230,28 @@ namespace HummingBirdCore {
         }
         ImGui::EndMenu();
       }
+#ifdef WITHHUMMINGBIRDKASPERSPECIFIC
+      if(ImGui::BeginMenu("Kasper Tools")){
+        if(ImGui::MenuItem("Hello World")){
+            AddWindow("Hello World", std::make_shared<HummingBirdKasper::HelloLibrary>());
+        }
+        ImGui::EndMenu();
+      }
+#endif
       // You can add more menus here...
       ImGui::EndMenuBar();
     }
   }
 
   void Application::RenderUI() {
-    // start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(s_window);
     ImGui::NewFrame();
 
-    //Render file dialog
     {
       HummingBirdCore::GeneralTools::FileDialog::Render();
     }
 
-    // Setup the fullscreen window
     {
       ImGuiWindowFlags window_flags =
               ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
@@ -284,7 +285,6 @@ namespace HummingBirdCore {
 
     SetupDockspace();
 
-    //Render all windows
     {
       if (Security::LoginManager::IsLoggedIn()) {
 
@@ -295,13 +295,13 @@ namespace HummingBirdCore {
             ImGui::End();
           }
         }
-      } else {//IF NOT LOGGED IN
+      } else {
         m_loginWindow.Render();
       }
     }
 
 
-    //End the fullscreen window
+
     ImGui::End();
 
     ImGui::Render();
