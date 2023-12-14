@@ -13,7 +13,6 @@ void HummingBirdCore::System::EditHostsWindow::Render() {
     for (int row = 0; row < m_hostsFileLines.size(); row++) {
       if (m_hostsFileLines[row].isCommnent())
       {
-//        finalString += m_hostsFileLines[row].getHostname() + "\n";
         continue;
       }
       if(!m_hostsFileLines[row].enabled)
@@ -24,16 +23,36 @@ void HummingBirdCore::System::EditHostsWindow::Render() {
       finalString += m_hostsFileLines[row].getIP() + " " + m_hostsFileLines[row].getHostname() + "\n";
     }
 
-    CORE_TRACE("Created final string for host file: {0}", finalString);
+//    CORE_TRACE("Created final string for host file: {0}", finalString);
+    const std::string tempFilePath = "/tmp/hosts_temp";
+    const std::string hostsFilePath = "/etc/hosts";
+    const std::string askPassPath = "Assets/scripts/askpass.sh"; // Update with your script's path
 
-    if(FileUtils::writeToFileWithAuthorization("/etc/hosts", finalString)){
-      CORE_INFO("Successfully wrote to file {} with authorization", "/etc/hosts");
-    }else
-    {
-      CORE_ERROR("Failed to write to file {} with authorization", "/etc/hosts");
+    // Set the SUDO_ASKPASS environment variable
+    setenv("SUDO_ASKPASS", askPassPath.c_str(), 1);
+
+    //che
+    // Write the host entries to a temporary file
+    std::ofstream tempFile(tempFilePath);
+    if (!tempFile.is_open()) {
+      std::cerr << "Failed to open temporary file for writing." << std::endl;
+      return;
     }
 
+    tempFile << finalString;
 
+    tempFile.close();
+
+    // Use sudo with the -A option to trigger askpass
+    std::string command = "sudo -A mv " + tempFilePath + " " + hostsFilePath;
+    int result = system(command.c_str());
+//    int result = system(command.c_str());
+
+    if (result != 0) {
+      std::cerr << "Failed to write to " << hostsFilePath << ". Ensure you have sudo privileges." << std::endl;
+    } else {
+      std::cout << "Successfully wrote to " << hostsFilePath << "." << std::endl;
+    }
   }
   if (ImGui::BeginTable("Hosts", 6, ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable)) {
     ImGui::TableSetupColumn("Enabled");
