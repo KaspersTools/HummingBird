@@ -28,8 +28,9 @@ namespace HummingBirdCore {
      * Opening any other file will show error, return false and won't close the dialog.
      */
       if (file_dialog.showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310))) {
-        std::string fileContent = FileUtils::readFromFile(file_dialog.selected_path, false);
-                m_textEditor.SetText(fileContent);
+        //TODO: recreate this functionality
+//        std::string fileContent = FileUtils::readFromFile(file_dialog.selected_path, false);
+//                m_textEditor.SetText(fileContent);
       }
 
 
