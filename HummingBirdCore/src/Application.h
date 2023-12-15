@@ -105,6 +105,20 @@ private:
 
     // Sql Manager
     const HummingBirdCore::Sql::SqlManager m_sqlManager;
+
+
+    //imgui third party windows
+    bool m_showDemoWindow = false;
+    bool m_showMetricsWindow = false;
+    bool m_showStyleEditor = false;
+    bool m_showAboutWindow = false;
+    bool m_ShowExampleAppDocuments = false;
+    bool m_ShowExampleAppConsole = false;
+    bool m_ShowExampleAppLog = false;
+    bool m_ShowExampleAppLayout = false;
+//    bool m_ShowExampleAppLongText = false;
+//    bool m_ShowExampleAppAutoResize = false;
+//
   };
 
 }// namespace KBTools

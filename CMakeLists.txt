@@ -127,6 +127,8 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
     set(HUMMINGBIRDKASPERSPECIFICFILES
         ../HummingBirdKasperSpecific/src/HelloLibrary.cpp
         ../HummingBirdKasperSpecific/src/HelloLibrary.h
+        ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.cpp
+        ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.h
     )
 
     add_library(
