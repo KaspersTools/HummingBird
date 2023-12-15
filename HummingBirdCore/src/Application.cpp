@@ -7,11 +7,6 @@
 #include "Application.h"
 #include "Log.h"
 
-#ifdef WITHHUMMINGBIRDKASPERSPECIFIC
-#include <HelloLibrary.h>
-#include <Hellebrekers/VisualLinkLauncher.h>
-#endif
-
 namespace HummingBirdCore {
 
   Application::Application() {
@@ -173,7 +168,7 @@ namespace HummingBirdCore {
         }
 
         if (ImGui::MenuItem("Terminal")) {
-          //          AddWindow(Terminal::TerminalWindow::getT(), std::make_shared<Terminal::TerminalWindow>());
+            AddWindow("Terminal", std::make_shared<HummingBirdCore::Terminal::TerminalWindow>());
         }
 
         if (ImGui::BeginMenu("Networking")) {
@@ -189,7 +184,6 @@ namespace HummingBirdCore {
       if (ImGui::BeginMenu("View")) {
         if (ImGui::BeginMenu("Styles")) {
           if (ImGui::MenuItem("ThemeManager")) {
-//            AddWindow("Theme Manager", std::make_shared<Themes::ThemeManager>());
           }
           if (ImGui::BeginMenu("Themes")) {
             if (ImGui::MenuItem("Maya")) {
@@ -234,7 +228,6 @@ namespace HummingBirdCore {
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
       if (ImGui::BeginMenu("Kasper Tools")) {
         if (ImGui::MenuItem("Hello World")) {
-//          AddWindow("Hello World", std::make_shared<HummingBirdKasper::HelloLibrary>());
         }
         if(ImGui::BeginMenu("Visual Link")){
             if(ImGui::MenuItem("Visual Link Launcher")){
@@ -255,31 +248,6 @@ namespace HummingBirdCore {
                 if(ImGui::MenuItem("Metrics Window")){
                     m_showMetricsWindow = true;
                 }
-                if(ImGui::MenuItem("Style Editor")){
-                    m_showStyleEditor = true;
-                }
-                if(ImGui::MenuItem("About Window")){
-                    m_showAboutWindow = true;
-                }
-                if(ImGui::MenuItem("Example App Documents")){
-                    m_ShowExampleAppDocuments = true;
-                }
-                if(ImGui::MenuItem("Example App Console")){
-                    m_ShowExampleAppConsole = true;
-                }
-                if(ImGui::MenuItem("Example App Log")){
-                    m_ShowExampleAppLog = true;
-                }
-                if(ImGui::MenuItem("Example App Layout")){
-                    m_ShowExampleAppLayout = true;
-                }
-//                if(ImGui::MenuItem("Example App Long Text")){
-//                    m_ShowExampleAppLongText = true;
-//                }
-//                if(ImGui::MenuItem("Example App Auto Resize")){
-//                    m_ShowExampleAppAutoResize = true;
-//                }
-
               ImGui::EndMenu();
           }
           ImGui::EndMenu();
@@ -350,34 +318,11 @@ namespace HummingBirdCore {
             ImGui::ShowMetricsWindow(&m_showMetricsWindow);
         }
 
-//        if(m_showStyleEditor){
-//            ImGui::ShowStyleEditor(&m_showStyleEditor);
-//        }
-//
-        if(m_showAboutWindow){
-            ImGui::ShowAboutWindow(&m_showAboutWindow);
-        }
-
-        if(m_ShowExampleAppDocuments){
-            ImGui::ShowDemoWindow(&m_ShowExampleAppDocuments);
-        }
-
-        if(m_ShowExampleAppConsole){
-            ImGui::ShowDemoWindow(&m_ShowExampleAppConsole);
-        }
-
-        if(m_ShowExampleAppLog){
-            ImGui::ShowDemoWindow(&m_ShowExampleAppLog);
-        }
-
-        if(m_ShowExampleAppLayout){
-            ImGui::ShowDemoWindow(&m_ShowExampleAppLayout);
-        }
-
-        for (auto &[name, window]: m_uiWindows) {
-          if (window->isOpen()) {
-            ImGui::Begin(name.c_str(), &window->m_isOpen, window->getFlags());
-            window->render();
+        //foreach window
+        for (auto window: m_uiWindows) {
+          if (window.second->isOpen()) {
+            ImGui::Begin(window.first.c_str(), &window.second->m_isOpen, window.second->getFlags());
+            window.second->render();
             ImGui::End();
           }
         }

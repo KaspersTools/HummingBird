@@ -13,7 +13,7 @@
 namespace HummingBirdCore::GeneralTools {
   class TextEditorWindow : public HummingBirdCore::UIWindow {
 public:
-    TextEditorWindow() : UIWindow(ImGuiWindowFlags_MenuBar) {}
+    TextEditorWindow() : UIWindow(ImGuiWindowFlags_MenuBar, "Text Editor") {}
 
     [[nodiscard]] TextEditor getTextEditor() const { return m_textEditor; }
 

@@ -10,7 +10,13 @@ namespace HummingBirdCore::Security {
 
   class LogInWindow : public UIWindow {
 public:
-    LogInWindow();
+    LogInWindow() : LogInWindow(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings |
+                                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
+                                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse) {}
+
+    LogInWindow(const ImGuiWindowFlags flags) : UIWindow(flags, "Log In") {
+    }
+
 
     ~LogInWindow();
 

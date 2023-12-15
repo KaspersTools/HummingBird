@@ -7,6 +7,9 @@
 
 namespace HummingBirdCore::Security {
 
+  LogInWindow::~LogInWindow() {
+  }
+
   void HummingBirdCore::Security::LogInWindow::render() {
     //Center the window
     Application *app = HummingBirdCore::Application::GetApplication();
@@ -43,11 +46,4 @@ namespace HummingBirdCore::Security {
     ImGui::End();
   }
 
-  LogInWindow::LogInWindow() : UIWindow(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings |
-                                        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
-                                        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse) {
-  }
-
-  LogInWindow::~LogInWindow() {
-  }
 }// namespace HummingBirdCore::Security
