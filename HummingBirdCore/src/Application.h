@@ -48,9 +48,14 @@
 // Sql
 #include "Sql/SqlManager.h"
 
+// Kasper specific
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
-#include <HelloLibrary.h>
-#include <Hellebrekers/VisualLinkLauncher.h>
+  #include <HelloLibrary.h>
+  #include <Hellebrekers/VisualLinkLauncher.h>
+
+  namespace HummingBirdKasper::VisualLink {
+    class VisualLinkLauncher;
+  }
 #endif
 
 namespace HummingBirdCore {
@@ -82,11 +87,12 @@ public:
       } else if (std::dynamic_pointer_cast<Security::LogInWindow>(uiWindow)) {
         finalName = name;
       }
+      //Kasper specific
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
-//      else if (std::dynamic_pointer_cast<HummingBirdKasper::VisualLink::VisualLinkLauncher>(uiWindow)) {
-//        m_visualLinkLauncherCount++;
-//        finalName = name + std::to_string(m_visualLinkLauncherCount);
-//      }
+      else if (std::dynamic_pointer_cast<HummingBirdKasper::VisualLink::VisualLinkLauncher>(uiWindow)) {
+        m_visualLinkLauncherCount++;
+        finalName = name + std::to_string(m_visualLinkLauncherCount);
+      }
 #endif
       else {
         CORE_WARN("UIWindow {0} is not a valid type", name);
