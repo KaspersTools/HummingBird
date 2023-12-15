@@ -55,8 +55,9 @@ public:
 
     ~Application();
 
-    void AddWindow(const std::string &name, std::shared_ptr<UIWindow> uiWindow) {
+    UIWindow& AddWindow(const std::string &name, std::shared_ptr<UIWindow> uiWindow) {
       m_uiWindows[name] = uiWindow;
+      return *uiWindow;
     }
 
     void RemoveWindow(const std::string &name) {

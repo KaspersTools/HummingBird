@@ -25,6 +25,22 @@ public:
 
     void render() override;
 
+    void executeCommand(const std::string &command ){
+      //copy the command to a new string
+      std::string commandCopy = command;
+      executeCommand(commandCopy);
+    }
+
+private:
+    inline static uint       s_terminalCount = 0;
+    std::string              currentDir = "~";
+    char                     m_inputBuf[256] = {0};
+    std::vector<std::string> m_logs;
+    bool                     m_scrollToBottom = true;
+
+    std::mutex         m_logMutex;
+    std::atomic<pid_t> m_currentPid = -1;// using atomic for thread-safety
+
     void executeCommand(std::string &command) {
       addLog(this->currentDir + "> " + command);
       // Trim whitespace from both ends of the command
@@ -74,17 +90,6 @@ public:
       std::thread(&TerminalWindow::executeCommandThreaded, this, std::string(command)).detach();
     }
 
-private:
-    inline static uint       s_terminalCount = 0;
-    std::string              currentDir = "~";
-    char                     m_inputBuf[256] = {0};
-    std::vector<std::string> m_logs;
-    bool                     m_scrollToBottom = true;
-
-    std::mutex         m_logMutex;
-    std::atomic<pid_t> m_currentPid = -1;// using atomic for thread-safety
-
-
     void executeCommandThreaded(const std::string &command) {
       FILE *fp = popen(command.c_str(), "r");
       int pipeFd;
@@ -117,7 +122,6 @@ private:
       m_logs.emplace_back(log);
     }
 
-    // New function to stop the currently running command
     void stopCurrentCommand() {
       pid_t pid = m_currentPid.load();
       if (pid != -1) {
