@@ -15,7 +15,7 @@ namespace HummingBirdCore {
       return;
     }
 
-    Log::Init();
+    CORE_INFO("Starting HummingBirdCore Application");
 
     s_application = this;
     InitSDL();
@@ -73,6 +73,7 @@ namespace HummingBirdCore {
             m_windowWidth,
             m_windowHeight,
             mainWindowFlags);
+
     // limit to which minimum size user can resize the window
     SDL_SetWindowMinimumSize(s_window, 800, 600);
 
@@ -159,7 +160,7 @@ namespace HummingBirdCore {
         ImGui::EndMenu();
       }
       //Tools menu
-      if (ImGui::BeginMenu("Tools")) {
+      if (ImGui::BeginMenu("Windows")) {
         if (ImGui::BeginMenu("General Tools")) {
           if (ImGui::MenuItem("Text Editor")) {
             AddWindow("Text Editor", std::make_shared<HummingBirdCore::GeneralTools::TextEditorWindow>());
@@ -168,7 +169,7 @@ namespace HummingBirdCore {
         }
 
         if (ImGui::MenuItem("Terminal")) {
-            AddWindow("Terminal", std::make_shared<HummingBirdCore::Terminal::TerminalWindow>());
+          AddWindow("Terminal", std::make_shared<HummingBirdCore::Terminal::TerminalWindow>());
         }
 
         if (ImGui::BeginMenu("Networking")) {
@@ -178,6 +179,12 @@ namespace HummingBirdCore {
           }
           ImGui::EndMenu();
         }
+
+        if (ImGui::MenuItem("Content Explorer")) {
+          AddWindow("Content Explorer", std::make_shared<HummingBirdCore::UIWindows::ContentExplorer>());
+        }
+
+
         ImGui::EndMenu();
       }
       //View menu
@@ -229,28 +236,28 @@ namespace HummingBirdCore {
       if (ImGui::BeginMenu("Kasper Tools")) {
         if (ImGui::MenuItem("Hello World")) {
         }
-        if(ImGui::BeginMenu("Visual Link")){
-            if(ImGui::MenuItem("Visual Link Launcher")){
-                AddWindow("Visual Link",  std::make_shared<HummingBirdKasper::VisualLink::VisualLinkLauncher>());
-            }
+        if (ImGui::BeginMenu("Visual Link")) {
+          if (ImGui::MenuItem("Visual Link Launcher")) {
+            AddWindow("Visual Link", std::make_shared<HummingBirdKasper::VisualLink::VisualLinkLauncher>());
+          }
 
-            ImGui::EndMenu();
+          ImGui::EndMenu();
         }
 
         ImGui::EndMenu();
       }
 #endif
-      if(ImGui::BeginMenu("Third Party")){
-          if(ImGui::BeginMenu("ImGui")){
-                if(ImGui::MenuItem("Demo Window")){
-                    m_showDemoWindow = true;
-                }
-                if(ImGui::MenuItem("Metrics Window")){
-                    m_showMetricsWindow = true;
-                }
-              ImGui::EndMenu();
+      if (ImGui::BeginMenu("Third Party")) {
+        if (ImGui::BeginMenu("ImGui")) {
+          if (ImGui::MenuItem("Demo Window")) {
+            m_showDemoWindow = true;
+          }
+          if (ImGui::MenuItem("Metrics Window")) {
+            m_showMetricsWindow = true;
           }
           ImGui::EndMenu();
+        }
+        ImGui::EndMenu();
       }
       // You can add more menus here...
       ImGui::EndMenuBar();
@@ -302,20 +309,20 @@ namespace HummingBirdCore {
     {
       if (Security::LoginManager::isLoggedIn()) {
 
-//        bool m_showDemoWindow = false;
-//        bool m_showMetricsWindow = false;
-//        bool m_showStyleEditor = false;
-//        bool m_showAboutWindow = false;
-//        bool m_ShowExampleAppDocuments = false;
-//        bool m_ShowExampleAppConsole = false;
-//        bool m_ShowExampleAppLog = false;
-//        bool m_ShowExampleAppLayout = false;
-        if(m_showDemoWindow){
-            ImGui::ShowDemoWindow(&m_showDemoWindow);
+        //        bool m_showDemoWindow = false;
+        //        bool m_showMetricsWindow = false;
+        //        bool m_showStyleEditor = false;
+        //        bool m_showAboutWindow = false;
+        //        bool m_ShowExampleAppDocuments = false;
+        //        bool m_ShowExampleAppConsole = false;
+        //        bool m_ShowExampleAppLog = false;
+        //        bool m_ShowExampleAppLayout = false;
+        if (m_showDemoWindow) {
+          ImGui::ShowDemoWindow(&m_showDemoWindow);
         }
 
-        if(m_showMetricsWindow){
-            ImGui::ShowMetricsWindow(&m_showMetricsWindow);
+        if (m_showMetricsWindow) {
+          ImGui::ShowMetricsWindow(&m_showMetricsWindow);
         }
 
         //foreach window

@@ -6,6 +6,9 @@ project(HUMMINGBIRD)
 
 set(CMAKE_CXX_STANDARD 23)
 
+#set cmake build to debug
+set(CMAKE_BUILD_TYPE Debug)
+
 #DISPLAY ALL INFO HERE ABOUT THE BUILD
 message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
@@ -28,11 +31,11 @@ add_subdirectory(${HUMMINGBIRD_DIR}/vendor/spdlog)
 # fmt
 add_subdirectory(${HUMMINGBIRD_DIR}/vendor/fmt)
 #glad
-add_library(glad
+add_library(glad STATIC
         ${HUMMINGBIRD_DIR}/vendor/glad/src/glad.c
 )
 #imgui
-add_library(imgui
+add_library(imgui STATIC
         ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.cpp
         ${HUMMINGBIRD_DIR}/vendor/imgui/imconfig.h
         ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.cpp
@@ -58,35 +61,37 @@ add_library(imgui
 ########################################################################
 # Creating the executable and libraries
 # HummingbirdCore
-add_library(HummingbirdCore
-        ${HUMMINGBIRDCORE_DIR}/src/Application.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/Application.h
-        ${HUMMINGBIRDCORE_DIR}/src/Log.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/Log.h
-        ${HUMMINGBIRDCORE_DIR}/src/Terminal/TerminalWindow.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/Terminal/TerminalWindow.h
-        ${HUMMINGBIRDCORE_DIR}/src/UIWindows/Themes/Themes.h
-        ${HUMMINGBIRDCORE_DIR}/src/UIWindows/Themes/ThemeManager.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/UIWindows/Themes/ThemeManager.h
-        ${HUMMINGBIRDCORE_DIR}/src/stb_image.h
-        ${HUMMINGBIRDCORE_DIR}/src/Rendering/Texture.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/Rendering/Texture.h
-        ${HUMMINGBIRDCORE_DIR}/src/Security/LogInWindow.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/Security/LogInWindow.h
-        ${HUMMINGBIRDCORE_DIR}/src/Security/LoginManager.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/Security/LoginManager.h
-        ${HUMMINGBIRDCORE_DIR}/src/Sql/SqlConnection.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/Sql/SqlConnection.h
-        ${HUMMINGBIRDCORE_DIR}/src/Sql/SqlExample.h
-        ${HUMMINGBIRDCORE_DIR}/src/Sql/SqlManager.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/Sql/SqlManager.h
-        ${HUMMINGBIRDCORE_DIR}/src/GeneralTools/FileDialog.h
-        ${HUMMINGBIRDCORE_DIR}/src/GeneralTools/TextEditting/TextEditorWindow.h
-        ${HUMMINGBIRDCORE_DIR}/src/GeneralTools/TextEditting/TextEditorWindow.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/System/Hosts/EditHostsWindow.h
-        ${HUMMINGBIRDCORE_DIR}/src/System/Hosts/EditHostsWindow.cpp
-        ${HUMMINGBIRDCORE_DIR}/src/Utils/UUID.h
+add_library(HummingbirdCore STATIC
+        HummingBirdCore/src/Application.cpp
+        HummingBirdCore/src/Application.h
+        HummingBirdCore/src/Log.cpp
+        HummingBirdCore/src/Log.h
+        HummingBirdCore/src/Terminal/TerminalWindow.cpp
+        HummingBirdCore/src/Terminal/TerminalWindow.h
+        HummingBirdCore/src/UIWindows/Themes/Themes.h
+        HummingBirdCore/src/UIWindows/Themes/ThemeManager.cpp
+        HummingBirdCore/src/UIWindows/Themes/ThemeManager.h
+        HummingBirdCore/src/stb_image.h
+        HummingBirdCore/src/Rendering/Texture.cpp
+        HummingBirdCore/src/Rendering/Texture.h
+        HummingBirdCore/src/Security/LogInWindow.cpp
+        HummingBirdCore/src/Security/LogInWindow.h
+        HummingBirdCore/src/Security/LoginManager.cpp
+        HummingBirdCore/src/Security/LoginManager.h
+        HummingBirdCore/src/Sql/SqlConnection.cpp
+        HummingBirdCore/src/Sql/SqlConnection.h
+        HummingBirdCore/src/Sql/SqlExample.h
+        HummingBirdCore/src/Sql/SqlManager.cpp
+        HummingBirdCore/src/Sql/SqlManager.h
+        HummingBirdCore/src/GeneralTools/FileDialog.h
+        HummingBirdCore/src/GeneralTools/TextEditting/TextEditorWindow.h
+        HummingBirdCore/src/GeneralTools/TextEditting/TextEditorWindow.cpp
+        HummingBirdCore/src/System/Hosts/EditHostsWindow.h
+        HummingBirdCore/src/System/Hosts/EditHostsWindow.cpp
+        HummingBirdCore/src/Utils/UUID.h
         HummingBirdCore/src/ApplicationObject.h
+        HummingBirdCore/src/UIWindows/ContentExplorer.cpp
+        HummingBirdCore/src/UIWindows/ContentExplorer.h
 )
 
 # HummingbirdApp
@@ -108,7 +113,7 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
     )
 
     add_library(
-        KasperSpecificTools
+        KasperSpecificTools STATIC
         ${HUMMINGBIRDKASPERSPECIFICFILES}
     )
 
@@ -121,7 +126,7 @@ endif()
 ########################################################################
 # Include directories
 include_directories(
-        ${HUMMINGBIRDCORE_DIR}/src
+        HummingBirdCore/src
         ${HUMMINGBIRD_DIR}/vendor
         ${HUMMINGBIRD_DIR}/vendor/fmt/include
         ${HUMMINGBIRD_DIR}/vendor/spdlog/include

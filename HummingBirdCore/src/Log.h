@@ -39,6 +39,7 @@ namespace HummingBirdCore {
           return s_CoreLogger; }
     private:
         static Ref<spdlog::logger> s_CoreLogger;
+        static bool m_isInitialized;
     };
 }
 // Core log macros

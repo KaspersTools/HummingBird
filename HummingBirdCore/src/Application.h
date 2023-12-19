@@ -23,12 +23,12 @@
 #include <SDL.H>
 #include <glad/glad.h>
 
-
 // spdlog
 #include <spdlog/spdlog.h>
 
 // UIWindows
 #include "UIWindows/UIWindow.h"
+#include "UIWindows/ContentExplorer.h"
 
 #include "Terminal/TerminalWindow.h"
 
