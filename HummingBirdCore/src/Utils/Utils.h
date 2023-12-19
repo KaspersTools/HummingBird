@@ -13,85 +13,53 @@
 
 #include "../Log.h"
 
+namespace fs = std::filesystem;
+
 namespace HummingBirdCore {
-  struct Folder {
+  class FolderUtils {
 public:
-    Folder(std::filesystem::path name, std::filesystem::path location) : name(name), location(location) {
-      childFolders = std::vector<std::string>();
-      //get all child folders
-      for (auto &p: std::filesystem::directory_iterator(location))
-        if (p.is_directory()) {
-          CORE_TRACE("Found folder: {0}", p.path().string());
-          childFolders.emplace_back(p.path().filename().string());
-        }
-    }
-
-    Folder(std::filesystem::path name, std::filesystem::path location, std::vector<std::string> childFolders) : name(name), location(location), childFolders(childFolders) {}
-
-    ~Folder() = default;
-
-    void changeToChildFolder(int i) {
-      changeFolder(childFolders[i]);
-    }
-
-    void backFolder() {
-      if (m_backwardFolderLocation != "") {
-        std::string s = location;
-        changeFolder(m_backwardFolderLocation);
-        m_forwardFolderlocation = s;
+    inline static bool doesFolderExist(const std::string &fullFolderName) {
+      //edge cases
+      if (fullFolderName == "~") {
+        //get current users home directory
+        std::string homeDir = getenv("HOME");
+        return std::filesystem::exists(homeDir);
       }
+      return std::filesystem::exists(fullFolderName);
     }
 
-    void forwardFolder() {
-      if (m_forwardFolderlocation != "") {
-        m_backwardFolderLocation = location;
-        changeFolder(m_forwardFolderlocation);
-      }
-    }
-
-    void changeFolder(std::string folderName) {
-
-      m_backwardFolderLocation = location;
-      m_forwardFolderlocation = "";
-
-      location = location / folderName;
-      name = folderName;
-      childFolders = std::vector<std::string>();
-
-      //get all child folders
-      for (auto &p: std::filesystem::directory_iterator(location))
-        if (p.is_directory()) {
-          CORE_TRACE("Found folder: {0}", p.path().string());
-          childFolders.emplace_back(p.path().filename().string());
-        }
-    }
-
-
-    std::string getName() const { return name.string(); }
-    std::string getLocation() const { return location.string(); }
-
-    std::vector<std::string> getChildFolders() const { return childFolders; }
-
-private:
-    std::filesystem::path name;
-    std::filesystem::path location;
-
-    std::vector<std::string> childFolders;
-
-    std::string m_forwardFolderlocation = "";
-    std::string m_backwardFolderLocation = "";
+//    inline static std::vector<Folder> getFoldersInLocation(const std::string &location) {
+//      CORE_TRACE("Getting folders in location: {0}", location);
+//
+//      std::vector<Folder> r;
+//      for (auto &p: std::filesystem::directory_iterator(location))
+//        if (p.is_directory()) {
+//          CORE_TRACE("Found folder: {0} as an child dir of: {1}", p.path().string(), location);
+//          r.emplace_back(p.path().string());
+//        }
+//      return r;
+//    }
   };
 
-  class
-          FileUtils {
+  class FileUtils {
 public:
-    /// <summary>
-    /// Check if a file exists
-    /// </summary>
-    /// <param name="name">The name of the file</param>
-    /// <returns>True if the file exists</returns>
-    inline static bool fileExists(const std::string &name) {
-      std::ifstream f(name.c_str());
+    inline static bool fileExists(const std::string &fullname) {
+      //TODO:HANDLE EDGE CASES FOR EXAMPLE ~/testfile.txt
+
+      std::fstream f(fullname);
+      if (f.good()) {
+        CORE_TRACE("File {0} exists", fullname);
+        return true;
+      }
+
+      if (fullname.find("~") != std::string::npos) {
+        std::string homedir = getenv("HOME");
+        f = std::fstream(homedir + fullname.substr(1));
+      }
+
+      if (!f.good()) {
+        CORE_WARN("File {0} does not exist", fullname);
+      }
       return f.good();
     }
 
@@ -114,20 +82,5 @@ public:
 
       return fileContent;
     }
-
-    inline static std::vector<Folder> getFoldersInLocation(const std::string &location) {
-
-      CORE_TRACE("Getting folders in location: {0}", location);
-
-      std::vector<Folder> r;
-      for (auto &p: std::filesystem::directory_iterator(location))
-        if (p.is_directory()) {
-          CORE_TRACE("Found folder: {0}", p.path().string());
-          r.emplace_back(p.path().filename().string(), p.path().string());
-        }
-
-
-      return r;
-    }
-  };// namespace HummingBirdCore
+  };
 }// namespace HummingBirdCore

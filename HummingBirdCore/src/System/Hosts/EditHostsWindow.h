@@ -99,7 +99,7 @@ private:
 
 public:
     EditHostsWindow() : EditHostsWindow(ImGuiWindowFlags_None) {}
-    explicit EditHostsWindow(const ImGuiWindowFlags flags) : UIWindow(flags) {
+    explicit EditHostsWindow(const ImGuiWindowFlags flags) : UIWindow(flags, "Edit Hosts") {
       parseHostsFile();
     }
 
@@ -129,28 +129,6 @@ private:
     [[nodiscard]] const bool isNewline(const std::string &str) const {
       return std::regex_match(str, c_hostname_regex);
     }
-
-private:
-    const std::string c_askPassPath = "Assets/scripts/askpass.sh";
-#ifdef __linux__
-    const std::string c_hostsPath = "/etc/hosts";
-    const std::string c_tempFilePath = "/tmp/hosts_temp";
-#elif __APPLE__// macOS specific code
-    const std::string c_tempFilePath = "/tmp/hosts_temp";
-    const std::string c_hostsPath = "/etc/hosts";
-#elif _WIN64   // Windows specific code
-    const std::string c_hostsPath = "C:\\Windows\\System32\\drivers\\etc\\hosts";
-    const std::string c_tempFilePath = "C:\\AppData\\Local\\Temp\\hosts_temp";
-#endif
-
-
-    std::vector<HostsFileLine> m_hostsFileLines;
-
-    const std::regex c_ipv4_regex = std::regex(R"((\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})");
-    const std::regex c_ipv6_regex = std::regex(R"((([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))");
-    const std::regex c_hostname_regex = std::regex(R"(([A-Za-z0-9]+[^#\n: \t]*))");
-    const std::regex c_comment_regex = std::regex(R"((#[^\n]*))");
-
 
     void parseHostsFile() {
       //open /etc/hosts
@@ -237,5 +215,28 @@ private:
         return UNKNOWN;
       }
     }
+
+private:
+    const std::string c_askPassPath = "Assets/scripts/askpass.sh";
+#ifdef __linux__
+    const std::string c_hostsPath = "/etc/hosts";
+    const std::string c_tempFilePath = "/tmp/hosts_temp";
+#elif __APPLE__// macOS specific code
+    const std::string c_tempFilePath = "/tmp/hosts_temp";
+    const std::string c_hostsPath = "/etc/hosts";
+#elif _WIN64   // Windows specific code
+    const std::string c_hostsPath = "C:\\Windows\\System32\\drivers\\etc\\hosts";
+    const std::string c_tempFilePath = "C:\\AppData\\Local\\Temp\\hosts_temp";
+#endif
+
+    //TODO: make this static so its the same for all instances
+    std::vector<HostsFileLine> m_hostsFileLines;
+
+    const std::regex c_ipv4_regex = std::regex(R"((\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})");
+    const std::regex c_ipv6_regex = std::regex(R"((([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))");
+    const std::regex c_hostname_regex = std::regex(R"(([A-Za-z0-9]+[^#\n: \t]*))");
+    const std::regex c_comment_regex = std::regex(R"((#[^\n]*))");
+
+
   };
 }// namespace HummingBirdCore::System

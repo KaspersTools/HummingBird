@@ -1,8 +1,10 @@
-#include <iostream>
 #include <Application.h>
+#include <Log.h>
+#include <iostream>
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    HummingBirdCore::Application app;
-    return 0;
+  HummingBirdCore::Log::Init();
+
+  HummingBirdCore::Application app;
+  return 0;
 }
