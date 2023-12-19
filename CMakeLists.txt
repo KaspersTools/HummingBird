@@ -92,6 +92,7 @@ add_library(HummingbirdCore STATIC
         HummingBirdCore/src/ApplicationObject.h
         HummingBirdCore/src/UIWindows/ContentExplorer.cpp
         HummingBirdCore/src/UIWindows/ContentExplorer.h
+        HummingBirdCore/src/Folder.h
 )
 
 # HummingbirdApp

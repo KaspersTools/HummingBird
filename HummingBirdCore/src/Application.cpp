@@ -330,7 +330,9 @@ namespace HummingBirdCore {
           if (window.second->isOpen()) {
             ImGui::Begin(window.first.c_str(), &window.second->m_isOpen, window.second->getFlags());
             window.second->render();
-            ImGui::End();
+            if(window.second->getAutoEndFrame()){
+              ImGui::End();
+            }
           }
         }
       } else {
