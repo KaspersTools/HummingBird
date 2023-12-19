@@ -6,22 +6,12 @@
 
 #include "../Rendering/Texture.h"
 #include "../Utils/Utils.h"
+#include "../Folder.h"
 #include "Rendering/Texture.h"
 #include "UIWindow.h"
 
 
 namespace HummingBirdCore {
-
-  class Folder {
-public:
-    Folder() = default;
-    Folder(const std::filesystem::path &path, const std::string &name) : Path(path), Name(name) {}
-    ~Folder() = default;
-
-    std::filesystem::path Path;
-    std::string Name;
-    std::vector<Folder> SubDirectories = {};
-  };
 
   class ContentBrowserItem {
 public:
@@ -47,7 +37,7 @@ private:
 public:
     ContentFolderItem(const std::filesystem::path &path, const std::string &name) : ContentBrowserItem(path, name, nullptr),
                                                                                     m_folder(path, name) {
-      setChildDirectories();
+      m_folder.setChildDirectories();
     }
 
     ~ContentFolderItem(){};
@@ -55,11 +45,7 @@ public:
     const Folder &getFolder() const { return m_folder; }
 
     void setChildDirectories() {
-      m_folder.SubDirectories.clear();
-      for (auto &p: std::filesystem::directory_iterator(m_folder.Path))
-        if (p.is_directory()) {
-          m_folder.SubDirectories.emplace_back(p.path(), p.path().filename().string());
-        }
+      m_folder.setChildDirectories();
     }
 
     std::vector<ContentFolderItem> getSubDirectories() const {
