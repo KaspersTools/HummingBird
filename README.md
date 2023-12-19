@@ -90,7 +90,7 @@ git --version
 
 1. Clone the HummingBird repository:
    ```sh
-   git clone https://github.com/KaspersCult/HummingBird.git —recursive
+   git clone https://github.com/KaspersCult/HummingBird.git —-recursive
    ```
 2. Open the folder with clion.
 3. Select the cmake list as the project list
