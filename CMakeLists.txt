@@ -111,6 +111,7 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
         ../HummingBirdKasperSpecific/src/HelloLibrary.h
         ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.cpp
         ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.h
+            HummingBirdCore/src/Utils/Input.h
     )
 
     add_library(
