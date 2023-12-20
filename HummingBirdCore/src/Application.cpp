@@ -308,15 +308,6 @@ namespace HummingBirdCore {
 
     {
       if (Security::LoginManager::isLoggedIn()) {
-
-        //        bool m_showDemoWindow = false;
-        //        bool m_showMetricsWindow = false;
-        //        bool m_showStyleEditor = false;
-        //        bool m_showAboutWindow = false;
-        //        bool m_ShowExampleAppDocuments = false;
-        //        bool m_ShowExampleAppConsole = false;
-        //        bool m_ShowExampleAppLog = false;
-        //        bool m_ShowExampleAppLayout = false;
         if (m_showDemoWindow) {
           ImGui::ShowDemoWindow(&m_showDemoWindow);
         }
@@ -353,10 +344,9 @@ namespace HummingBirdCore {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
-      // without it you won't have keyboard input and other things
       ImGui_ImplSDL2_ProcessEvent(&event);
-      // you might also want to check io.WantCaptureMouse and io.WantCaptureKeyboard
-      // before processing events
+
+      Input::update(event);
 
       switch (event.type) {
         case SDL_QUIT:

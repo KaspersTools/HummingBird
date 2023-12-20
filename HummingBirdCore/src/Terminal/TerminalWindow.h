@@ -15,7 +15,7 @@
 #include <thread>
 #include <zconf.h>
 
-
+//TODO: Move to imgui repo in future
 namespace HummingBirdCore::Terminal {
   struct Command {
 public:
@@ -99,7 +99,7 @@ private:
       }
     }
 
-    //TODO: Move to imgui repo in fut.
+    //TODO: USE INPUT CLASS
     void handleInput() {
       if (ImGui::IsItemFocused() || ImGui::IsWindowFocused()) {
         //record kb input and add to input string

@@ -48,6 +48,9 @@
 // Sql
 #include "Sql/SqlManager.h"
 
+// Utils
+#include "Utils/Input.h"
+
 // Kasper specific
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
   #include <HelloLibrary.h>

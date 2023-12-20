@@ -3,6 +3,7 @@
 //
 
 #include "TerminalWindow.h"
+#include "../Utils/Input.h"
 
 
 namespace HummingBirdCore::Terminal {
@@ -61,6 +62,12 @@ namespace HummingBirdCore::Terminal {
     ImGui::EndChild();
 
     ImGui::End();
+
+    if(Input::isLeftCtrlPressed() && Input::isKeyPressed(SDLK_c)){
+      CORE_TRACE("Killing current command");
+      killCurrentCommand();
+    }
+
     //    for (int i = 0; i < m_logs.size(); i++) {
     //      ImGui::TextColored(ImVec4(0.5f, 1.0f, 0.5f, 1.0f), "%s", m_logs[i].time.c_str());
     //      ImGui::SameLine();
