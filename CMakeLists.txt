@@ -102,7 +102,7 @@ add_executable(HummingbirdApp
 
 ########################################################################
 # Optional libraries
-option(WITHHUMMINGBIRDKASPERSPECIFIC "WITH HummingBirdKasperSpecific" ON)
+option(WITHHUMMINGBIRDKASPERSPECIFIC "WITH HummingBirdKasperSpecific" OFF)
 if (WITHHUMMINGBIRDKASPERSPECIFIC)
     message("Building with Kasperspecific")
     set(HUMMINGBIRDKASPERSPECIFIC_DIR ${HUMMINGBIRD_DIR}/HummingBirdKasperSpecific)
@@ -114,7 +114,7 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
             HummingBirdCore/src/Utils/Input.h
     )
 
-    add_library(
+        add_library(
         KasperSpecificTools STATIC
         ${HUMMINGBIRDKASPERSPECIFICFILES}
     )
