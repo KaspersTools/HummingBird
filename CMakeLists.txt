@@ -93,6 +93,7 @@ add_library(HummingbirdCore STATIC
         HummingBirdCore/src/UIWindows/ContentExplorer.cpp
         HummingBirdCore/src/UIWindows/ContentExplorer.h
         HummingBirdCore/src/Folder.h
+        HummingBirdCore/src/UIWindows/DebugWindow.h
 )
 
 # HummingbirdApp

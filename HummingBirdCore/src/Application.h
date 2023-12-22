@@ -29,6 +29,7 @@
 // UIWindows
 #include "UIWindows/UIWindow.h"
 #include "UIWindows/ContentExplorer.h"
+#include "UIWindows/DebugWindow.h"
 
 #include "Terminal/TerminalWindow.h"
 
@@ -88,6 +89,8 @@ public:
         m_themeManagerCount++;
         finalName = name + std::to_string(m_themeManagerCount);
       } else if (std::dynamic_pointer_cast<Security::LogInWindow>(uiWindow)) {
+        finalName = name;
+      }else if (std::dynamic_pointer_cast<UIWindows::DebugWindow>(uiWindow)) {
         finalName = name;
       }
       //Kasper specific

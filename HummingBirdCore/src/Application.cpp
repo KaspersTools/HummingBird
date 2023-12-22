@@ -184,7 +184,9 @@ namespace HummingBirdCore {
           AddWindow("Content Explorer", std::make_shared<HummingBirdCore::UIWindows::ContentExplorer>());
         }
 
-
+        if(ImGui::MenuItem("Debug Window")) {
+          AddWindow("Debug Window", std::make_shared<HummingBirdCore::UIWindows::DebugWindow>());
+        }
         ImGui::EndMenu();
       }
       //View menu
