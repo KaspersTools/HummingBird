@@ -11,7 +11,10 @@
 
 #include <iostream>
 #include <mutex>
+#ifdef __APPLE__
 #include <pwd.h>
+#endif
+
 #include <thread>
 #include <zconf.h>
 
@@ -19,8 +22,13 @@
 namespace HummingBirdCore::Terminal {
   struct Command {
 public:
+#ifdef __APPLE__
     Command(const std::string &command, const std::string &location, passwd *pws = nullptr)
         : command(command), location(location), pws(pws) {}
+#else
+    Command(const std::string &command, const std::string &location)
+        : command(command), location(location){}
+#endif
 
     ~Command() {
     }
@@ -29,18 +37,21 @@ public:
     std::string getLocation() const { return location; }
 
     std::string getRanBy() const {
+#ifdef __APPLE__
       if (pws != nullptr) {
         return pws->pw_name;
       }
+#endif
       return "Ran by not found";
     }
 
 private:
     const std::string location;
     const std::string command;
-
+#ifdef __APPLE__
     //ran by
     const passwd *pws = nullptr;
+#endif
   };
 
   struct TerminalLog {
@@ -64,7 +75,9 @@ public:
     TerminalWindow() : TerminalWindow(ImGuiWindowFlags_None) {}
     TerminalWindow(ImGuiWindowFlags flags) : UIWindow(ImGuiWindowFlags_None, "Terminal", false) {
       m_currentFolder->setChildDirectories();
+#ifdef __APPLE__
       pws = getpwuid(geteuid());
+#endif
     }
 
     ~TerminalWindow();
@@ -91,11 +104,18 @@ private:
       m_logs.emplace_back(TerminalLog(getTimestamp(), log, command));
     }
 
+    void errorLog(std::string log) {
+      std::lock_guard<std::mutex> lock(m_logMutex);
+      m_logs.emplace_back(TerminalLog(getTimestamp(), log, Command("", "")));
+    }
+
     void killCurrentCommand(){
       pid_t pid = m_currentPid.load();
       if (pid != -1) {
+#ifdef __APPLE__
         kill(pid, SIGTERM);// sends a termination signal
         m_currentPid = -1; // reset the current PID
+#endif
       }
     }
 
@@ -152,6 +172,9 @@ private:
 
     //User data
     //get the user name
+#ifdef __APPLE__
     struct passwd *pws = nullptr;
+#endif
+
   };
 }// namespace HummingBirdCore::Terminal

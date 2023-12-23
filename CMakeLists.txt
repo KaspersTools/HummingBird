@@ -19,21 +19,21 @@ set(HUMMINGBIRDCORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HummingbirdCore)
 set(HUMMINGBIRDFRONT_DIR ${HUMMINGBIRD_DIR}/HummingbirdFront)
 
 ########################################################################
-# Third party libraries
-# SDL2
-add_subdirectory(${HUMMINGBIRD_DIR}/vendor/sdl)
-set ( SDL2_LIBRARY SDL2 )
-# SDL2_image
-find_package(SDL2_image REQUIRED)
-include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
-# spdlog
-add_subdirectory(${HUMMINGBIRD_DIR}/vendor/spdlog)
+set( SDL_STATIC ON CACHE BOOL "" FORCE )
+set( SDL_SHARED OFF CACHE BOOL "" FORCE )
+add_subdirectory( vendor/sdl sdl)
+
 # fmt
 add_subdirectory(${HUMMINGBIRD_DIR}/vendor/fmt)
+
 #glad
 add_library(glad STATIC
         ${HUMMINGBIRD_DIR}/vendor/glad/src/glad.c
 )
+
+#spdlog
+add_subdirectory(${HUMMINGBIRD_DIR}/vendor/spdlog)
+
 #imgui
 add_library(imgui STATIC
         ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.cpp
@@ -56,6 +56,13 @@ add_library(imgui STATIC
         ${HUMMINGBIRD_DIR}/vendor/imgui/vendor/filedialog/FileBrowser/ImGuiFileBrowser.cpp
         ${HUMMINGBIRD_DIR}/vendor/imgui/vendor/ImGuiColorTextEdit/TextEditor.h
         ${HUMMINGBIRD_DIR}/vendor/imgui/vendor/ImGuiColorTextEdit/TextEditor.cpp
+)
+
+
+
+#link sdl to imgui
+target_link_libraries(imgui
+ SDL2-static
 )
 
 ########################################################################
@@ -145,10 +152,11 @@ if(${WITHHUMMINGBIRDKASPERSPECIFIC})
     )
 endif ()
 
+
 ########################################################################
 # Base Link libraries
 target_link_libraries(HummingbirdCore
-        ${SDL2_LIBRARY}
+        SDL2-static
         ${SECURITY_FRAMEWORK}
         fmt::fmt
         spdlog::spdlog
@@ -158,7 +166,7 @@ target_link_libraries(HummingbirdCore
 
 target_link_libraries(HummingbirdApp
         HummingbirdCore
-        ${SDL2_LIBRARY}
+        SDL2-static
         ${SECURITY_FRAMEWORK}
         fmt::fmt
         spdlog::spdlog

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <filesystem>
 
 #ifdef __APPLE__
 #include <Security/Security.h>

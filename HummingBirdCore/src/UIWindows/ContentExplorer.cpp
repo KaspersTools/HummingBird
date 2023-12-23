@@ -29,7 +29,8 @@ namespace HummingBirdCore {
       }
       ImGui::SameLine();
       ImGui::SameLine();
-      ImGui::Text(m_currentDirectory->getPath().c_str());
+      const char* fmt = "Path: %s" ;
+      ImGui::Text(fmt, m_currentDirectory->getPath().c_str());
       ImGui::Separator();
 
       ImGui::BeginChild("###ContentExplorerChild", ImVec2(0, 0), true);

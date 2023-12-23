@@ -2,12 +2,18 @@
 // Created by Kasper de Bruin on 01/11/2023.
 //
 
+
 #include "EditHostsWindow.h"
+#ifdef __APPLE__
 #include <Security/Security.h>
+#endif
 
 void HummingBirdCore::System::EditHostsWindow::render() {
   //Make imgui table
+
+#ifdef __APPLE__
   if(ImGui::Button("Save")){
+
     std::string finalString;
 
     for (int row = 0; row < m_hostsFileLines.size(); row++) {
@@ -49,6 +55,10 @@ void HummingBirdCore::System::EditHostsWindow::render() {
       std::cout << "Successfully wrote to " << c_hostsPath << "." << std::endl;
     }
   }
+#else
+  ImGui::ColorButton("Saving not supported on other platforms then mac os", ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+#endif
+
   if (ImGui::BeginTable("Hosts", 6, ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable)) {
     ImGui::TableSetupColumn("Enabled");
     ImGui::TableSetupColumn("IP");

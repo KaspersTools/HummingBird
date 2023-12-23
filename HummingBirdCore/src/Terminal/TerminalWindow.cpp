@@ -30,8 +30,13 @@ namespace HummingBirdCore::Terminal {
     ImGui::PopStyleVar();
     ImGui::Separator();
 
+#ifdef __APPLE__
     // Command input
     ImGui::TextColored(ImVec4(0.5f, 1.0f, 0.5f, 1.0f), "%s", std::string(getTimestamp() + " " + pws->pw_name).c_str());
+#else
+    ImGui::TextColored(ImVec4(0.5f, 1.0f, 0.5f, 1.0f), "%s", std::string(getTimestamp() + " " + "Ran by not found").c_str());
+#endif
+
     ImGui::SameLine();
     ImGui::TextWrapped("%s", m_input.c_str());
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 1));
@@ -109,6 +114,7 @@ namespace HummingBirdCore::Terminal {
     const std::vector<std::string> commandsToRun = splitCommand(command);
     for (const std::string &command: commandsToRun) {
       //create a command
+#ifdef __APPLE__
       const Command& cmd{command, m_currentFolder->Path, pws};
       addLog(command,cmd);
 
@@ -118,7 +124,9 @@ namespace HummingBirdCore::Terminal {
       commandThread = std::thread(&TerminalWindow::executeCommandThreaded, this, cmd);
       commandThread.detach();
       //wait till the command is done
-
+#else
+      errorLog("Command not supported on this platform");
+#endif
     }
   }
 
@@ -169,6 +177,7 @@ namespace HummingBirdCore::Terminal {
   }
 
   int TerminalWindow::popenHumming(const char *command, FILE **fp){
+#ifdef __APPLE__
     int pipeFd[2];
     pid_t pid;
 
@@ -203,6 +212,8 @@ namespace HummingBirdCore::Terminal {
     }
 
     return pid;
+#endif
+    return -1;
   }
 
 }// namespace HummingBirdCore::Terminal

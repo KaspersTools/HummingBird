@@ -109,14 +109,6 @@ public:
       return *uiWindow;
     }
 
-    void RemoveWindow(const std::string &name) {
-      m_uiWindows.erase(name);
-    }
-
-
-    const HummingBirdCore::Sql::SqlManager &GetSqlManager() const {
-      return m_sqlManager;
-    }
 
 private:
     void InitSDL();
@@ -152,9 +144,9 @@ private:
     // UIWindows
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
     Security::LogInWindow m_loginWindow;
-
-    // Sql Manager
-    const HummingBirdCore::Sql::SqlManager m_sqlManager;
+//
+//    // Sql Manager
+//    const HummingBirdCore::Sql::SqlManager m_sqlManager;
 
 
     //imgui third party windows
