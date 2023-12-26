@@ -1,10 +1,6 @@
 [submodule "vendor/fmt"]
 	path = vendor/fmt
 	url = https://github.com/kasperhbo/fmt.git
-[submodule "vendor/imgui"]
-	path = vendor/imgui
-	url = git@github.com:kasperhbo/imgui.git
-	branch = docking
 [submodule "vendor/sdl"]
 	path = vendor/sdl
 	url = https://github.com/kasperhbo/SDL.git
@@ -16,3 +12,8 @@
 [submodule "vendor/glad"]
 	path = vendor/glad
 	url = https://github.com/kasperhbo/Glad.git
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = git@github.com:kasperhbo/imgui.git
+	branch = docking
+
