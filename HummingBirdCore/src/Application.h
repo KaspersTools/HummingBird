@@ -36,9 +36,6 @@
 #include "Security/LogInWindow.h"
 #include "Security/LoginManager.h"
 
-#include "GeneralTools/FileDialog.h"
-#include "GeneralTools/TextEditting/TextEditorWindow.h"
-
 #include "System/Hosts/EditHostsWindow.h"
 
 #include "UIWindows/Themes/ThemeManager.h"
@@ -76,12 +73,6 @@ public:
       if (std::dynamic_pointer_cast<Terminal::TerminalWindow>(uiWindow)) {
         m_terminalCount++;
         finalName = name + std::to_string(m_terminalCount);
-      } else if (std::dynamic_pointer_cast<GeneralTools::TextEditorWindow>(uiWindow)) {
-        m_textEditorCount++;
-        finalName = name + std::to_string(m_textEditorCount);
-      } else if (std::dynamic_pointer_cast<GeneralTools::FileDialog>(uiWindow)) {
-        m_fileDialogCount++;
-        finalName = name + std::to_string(m_fileDialogCount);
       } else if (std::dynamic_pointer_cast<System::EditHostsWindow>(uiWindow)) {
         m_editHostsCount++;
         finalName = name + std::to_string(m_editHostsCount);

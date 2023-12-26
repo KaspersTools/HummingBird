@@ -162,9 +162,9 @@ namespace HummingBirdCore {
       //Tools menu
       if (ImGui::BeginMenu("Windows")) {
         if (ImGui::BeginMenu("General Tools")) {
-          if (ImGui::MenuItem("Text Editor")) {
-            AddWindow("Text Editor", std::make_shared<HummingBirdCore::GeneralTools::TextEditorWindow>());
-          }
+//          if (ImGui::MenuItem("Text Editor")) {
+//            AddWindow("Text Editor", std::make_shared<HummingBirdCore::GeneralTools::TextEditorWindow>());
+//          }
           ImGui::EndMenu();
         }
 
@@ -271,9 +271,9 @@ namespace HummingBirdCore {
     ImGui_ImplSDL2_NewFrame(s_window);
     ImGui::NewFrame();
 
-    {
-      HummingBirdCore::GeneralTools::FileDialog::Render();
-    }
+//    {
+//      HummingBirdCore::GeneralTools::FileDialog::Render();
+//    }
 
     {
       ImGuiWindowFlags mainWindowFlags =
