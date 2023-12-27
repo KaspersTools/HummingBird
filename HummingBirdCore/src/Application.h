@@ -20,16 +20,16 @@
 #include <imgui.h>
 
 // SDL
-#include <SDL.H>
+#include <SDL.h>
 #include <glad/glad.h>
 
 // spdlog
 #include <spdlog/spdlog.h>
 
 // UIWindows
-#include "UIWindows/UIWindow.h"
 #include "UIWindows/ContentExplorer.h"
-#include "UIWindows/DebugWindow.h"
+#include "UIWindows/LogWindow.h"
+#include "UIWindows/UIWindow.h"
 
 #include "Terminal/TerminalWindow.h"
 
@@ -38,6 +38,7 @@
 
 #include "System/Hosts/EditHostsWindow.h"
 
+#include "UIWindows/LogWindow.h"
 #include "UIWindows/Themes/ThemeManager.h"
 
 // Rendering
@@ -81,8 +82,9 @@ public:
         finalName = name + std::to_string(m_themeManagerCount);
       } else if (std::dynamic_pointer_cast<Security::LogInWindow>(uiWindow)) {
         finalName = name;
-      }else if (std::dynamic_pointer_cast<UIWindows::DebugWindow>(uiWindow)) {
-        finalName = name;
+      } else if(std::dynamic_pointer_cast<UIWindows::LogWindow>(uiWindow)) {
+        m_logWindowCount++;
+        finalName = name + std::to_string(m_logWindowCount);
       }
       //Kasper specific
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
@@ -132,23 +134,19 @@ private:
     GLsizei m_windowWidth = 1920;
     GLsizei m_windowHeight = 1080;
     Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
+
     // UIWindows
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
     Security::LogInWindow m_loginWindow;
-//
-//    // Sql Manager
-//    const HummingBirdCore::Sql::SqlManager m_sqlManager;
-
 
     //imgui third party windows
     bool m_showDemoWindow = false;
     bool m_showMetricsWindow = false;
 
     int m_terminalCount = 0;
-    int m_textEditorCount = 0;
-    int m_fileDialogCount = 0;
     int m_editHostsCount = 0;
     int m_themeManagerCount = 0;
+    int m_logWindowCount = 0;
 
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
     int m_visualLinkLauncherCount = 0;

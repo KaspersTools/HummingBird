@@ -6,7 +6,7 @@
 
 #include "ApplicationObject.h"
 
-#include <ImGui.h>
+#include <imgui.h>
 
 // Define a UI window structure
 namespace HummingBirdCore {

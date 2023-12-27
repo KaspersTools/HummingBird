@@ -21,12 +21,6 @@ set(HUMMINGBIRDFRONT_DIR ${HUMMINGBIRD_DIR}/HummingbirdFront)
 ####MAIN PROJECT####
 # Creating the executable and libraries
 
-#include_directories(
-#        ${HUMMINGBIRD_DIR}/vendor/spdlog/include
-#        ${HUMMINGBIRD_DIR}/vendor/glad/include
-#)
-
-
 # HummingbirdCore
 add_library(HummingbirdCore STATIC
     HummingBirdCore/src/Application.cpp
@@ -57,7 +51,9 @@ add_library(HummingbirdCore STATIC
     HummingBirdCore/src/UIWindows/ContentExplorer.cpp
     HummingBirdCore/src/UIWindows/ContentExplorer.h
     HummingBirdCore/src/Folder.h
-    HummingBirdCore/src/UIWindows/DebugWindow.h
+    HummingBirdCore/src/UIWindows/LogWindow.h
+    HummingBirdCore/src/Logging/ImGuiLogSink.h
+    HummingBirdCore/src/Utils/Input.h
 )
 
 # HummingbirdApp
@@ -226,7 +222,6 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
         ../HummingBirdKasperSpecific/src/HelloLibrary.h
         ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.cpp
         ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.h
-            HummingBirdCore/src/Utils/Input.h
     )
 
     add_library(

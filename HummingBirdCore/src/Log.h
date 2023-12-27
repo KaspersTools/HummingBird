@@ -5,6 +5,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 // This ignores all warnings raised inside External headers
 #pragma warning(push, 0)
@@ -36,10 +37,13 @@ namespace HummingBirdCore {
         static void Init();
 
         static Ref<spdlog::logger>& GetCoreLogger() {
-          return s_CoreLogger; }
+          return s_CoreLogger;
+        }
+
     private:
         static Ref<spdlog::logger> s_CoreLogger;
         static bool m_isInitialized;
+        static std::vector<spdlog::sink_ptr> s_logSinks;
     };
 }
 // Core log macros
@@ -48,4 +52,4 @@ namespace HummingBirdCore {
 #define CORE_WARN(...)     ::HummingBirdCore::Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define CORE_TRACE(...)    ::HummingBirdCore::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define CORE_ERROR(...)    ::HummingBirdCore::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define CORE_CRITICAL(...) ::KBTools::Log::GetCoreLogger()->critical(__VA_ARGS__)
+#define CORE_CRITICAL(...) ::HummingBirdCore::Log::GetCoreLogger()->critical(__VA_ARGS__)
