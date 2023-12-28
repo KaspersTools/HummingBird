@@ -23,60 +23,65 @@ set(HUMMINGBIRDFRONT_DIR ${HUMMINGBIRD_DIR}/HummingbirdFront)
 
 # HummingbirdCore
 add_library(HummingbirdCore STATIC
-    HummingBirdCore/src/Application.cpp
-    HummingBirdCore/src/Application.h
-    HummingBirdCore/src/Log.cpp
-    HummingBirdCore/src/Log.h
-    HummingBirdCore/src/Terminal/TerminalWindow.cpp
-    HummingBirdCore/src/Terminal/TerminalWindow.h
-    HummingBirdCore/src/UIWindows/Themes/Themes.h
-    HummingBirdCore/src/UIWindows/Themes/ThemeManager.cpp
-    HummingBirdCore/src/UIWindows/Themes/ThemeManager.h
-    HummingBirdCore/src/stb_image.h
-    HummingBirdCore/src/Rendering/Texture.cpp
-    HummingBirdCore/src/Rendering/Texture.h
-    HummingBirdCore/src/Security/LogInWindow.cpp
-    HummingBirdCore/src/Security/LogInWindow.h
-    HummingBirdCore/src/Security/LoginManager.cpp
-    HummingBirdCore/src/Security/LoginManager.h
-    HummingBirdCore/src/Sql/SqlConnection.cpp
-    HummingBirdCore/src/Sql/SqlConnection.h
-    HummingBirdCore/src/Sql/SqlExample.h
-    HummingBirdCore/src/Sql/SqlManager.cpp
-    HummingBirdCore/src/Sql/SqlManager.h
-    HummingBirdCore/src/System/Hosts/EditHostsWindow.h
-    HummingBirdCore/src/System/Hosts/EditHostsWindow.cpp
-    HummingBirdCore/src/Utils/UUID.h
-    HummingBirdCore/src/ApplicationObject.h
-    HummingBirdCore/src/UIWindows/ContentExplorer.cpp
-    HummingBirdCore/src/UIWindows/ContentExplorer.h
-    HummingBirdCore/src/Folder.h
-    HummingBirdCore/src/UIWindows/LogWindow.h
-    HummingBirdCore/src/Logging/ImGuiLogSink.h
-    HummingBirdCore/src/Utils/Input.h
+        HummingBirdCore/src/Application.cpp
+        HummingBirdCore/src/Application.h
+        HummingBirdCore/src/Log.cpp
+        HummingBirdCore/src/Log.h
+        HummingBirdCore/src/Terminal/TerminalWindow.cpp
+        HummingBirdCore/src/Terminal/TerminalWindow.h
+        HummingBirdCore/src/UIWindows/Themes/Themes.h
+        HummingBirdCore/src/UIWindows/Themes/ThemeManager.cpp
+        HummingBirdCore/src/UIWindows/Themes/ThemeManager.h
+        HummingBirdCore/src/stb_image.h
+        HummingBirdCore/src/Rendering/Texture.cpp
+        HummingBirdCore/src/Rendering/Texture.h
+        HummingBirdCore/src/Security/LogInWindow.cpp
+        HummingBirdCore/src/Security/LogInWindow.h
+        HummingBirdCore/src/Security/LoginManager.cpp
+        HummingBirdCore/src/Security/LoginManager.h
+        HummingBirdCore/src/Sql/SqlConnection.cpp
+        HummingBirdCore/src/Sql/SqlConnection.h
+        HummingBirdCore/src/Sql/SqlExample.h
+        HummingBirdCore/src/Sql/SqlManager.cpp
+        HummingBirdCore/src/Sql/SqlManager.h
+        HummingBirdCore/src/System/Hosts/EditHostsWindow.h
+        HummingBirdCore/src/System/Hosts/EditHostsWindow.cpp
+        HummingBirdCore/src/Utils/UUID.h
+        HummingBirdCore/src/ApplicationObject.h
+        HummingBirdCore/src/UIWindows/ContentExplorer.cpp
+        HummingBirdCore/src/UIWindows/ContentExplorer.h
+        HummingBirdCore/src/Folder.h
+        HummingBirdCore/src/UIWindows/LogWindow.h
+        HummingBirdCore/src/Logging/ImGuiLogSink.h
+        HummingBirdCore/src/Utils/Input.h
+        HummingBirdCore/src/Updatable.h
+        HummingBirdCore/src/System/SysInfo.cpp
+        HummingBirdCore/src/System/SysInfo.h
+        HummingBirdCore/src/System/SysInfoWindow.cpp
+        HummingBirdCore/src/System/SysInfoWindow.h
 )
 
 # HummingbirdApp
 add_executable(HummingbirdApp
-    ${HUMMINGBIRDFRONT_DIR}/main.cpp
+        ${HUMMINGBIRDFRONT_DIR}/main.cpp
 )
 
 # Link HummingbirdCore to HummingbirdApp
 target_link_libraries(HummingbirdApp
-    HummingbirdCore
+        HummingbirdCore
 )
 
 # Core include directories
 include_directories(
-    HummingBirdCore/src
+        HummingBirdCore/src
 )
 
 
 ########################################################################
 # fmt
-if(NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/fmt)
+if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/fmt)
     message("fmt folder not found")
-else()
+else ()
     message("fmt folder found")
     add_subdirectory(${HUMMINGBIRD_DIR}/vendor/fmt)
     #link
@@ -90,18 +95,18 @@ else()
 
     #include
     include_directories(
-        ${HUMMINGBIRD_DIR}/vendor/fmt/include
+            ${HUMMINGBIRD_DIR}/vendor/fmt/include
     )
-endif()
+endif ()
 
 #sdl
-if(NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/sdl)
+if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/sdl)
     message("SDL folder not found")
-else()
+else ()
     message("SDL folder found needed by imgui")
-    set( SDL_STATIC ON CACHE BOOL "" FORCE )
-    set( SDL_SHARED OFF CACHE BOOL "" FORCE )
-    add_subdirectory( vendor/sdl sdl)
+    set(SDL_STATIC ON CACHE BOOL "" FORCE)
+    set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+    add_subdirectory(vendor/sdl sdl)
 
     target_link_libraries(HummingbirdCore
             SDL2-static
@@ -113,14 +118,14 @@ else()
 
     #include
     include_directories(
-        ${HUMMINGBIRD_DIR}/vendor/sdl/include
+            ${HUMMINGBIRD_DIR}/vendor/sdl/include
     )
 endif ()
 
 #glad
-if(NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glad)
+if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glad)
     message("Glad folder not found")
-else()
+else ()
     message("Glad folder found")
     add_library(glad STATIC
             ${HUMMINGBIRD_DIR}/vendor/glad/src/glad.c
@@ -133,18 +138,18 @@ else()
 
     # Link glad
     target_link_libraries(HummingbirdCore
-        glad
+            glad
     )
 
     target_link_libraries(HummingbirdApp
-        glad
+            glad
     )
-endif()
+endif ()
 
 #spdlog
-if(NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/spdlog)
+if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/spdlog)
     message("spdlog folder not found")
-else()
+else ()
     message("spdlog folder found")
     add_subdirectory(${HUMMINGBIRD_DIR}/vendor/spdlog)
 
@@ -155,19 +160,19 @@ else()
 
     # Link spdlog
     target_link_libraries(HummingbirdCore
-        spdlog::spdlog
+            spdlog::spdlog
     )
 
     target_link_libraries(HummingbirdApp
-        spdlog::spdlog
+            spdlog::spdlog
     )
-endif()
+endif ()
 
 
 #imgui
-if(NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/imgui)
+if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/imgui)
     message("Imgui folder not found")
-else()
+else ()
     add_library(imgui STATIC
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/imconfig.h
@@ -194,23 +199,23 @@ else()
 
     # Link imgui
     target_link_libraries(HummingbirdCore
-        imgui
+            imgui
     )
 
     target_link_libraries(HummingbirdApp
-        imgui
+            imgui
     )
 
     #link sdl to imgui if sdl is valid
-    if(NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/sdl)
+    if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/sdl)
         message("SDL folder not found AND its needed by imgui")
     else ()
         message("SDL folder found")
         target_link_libraries(imgui
                 SDL2-static
         )
-    endif()
-endif()
+    endif ()
+endif ()
 
 ####kasper specific####
 option(WITHHUMMINGBIRDKASPERSPECIFIC "WITH HummingBirdKasperSpecific" OFF)
@@ -218,15 +223,15 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
     message("Building with Kasperspecific")
     set(HUMMINGBIRDKASPERSPECIFIC_DIR ${HUMMINGBIRD_DIR}/HummingBirdKasperSpecific)
     set(HUMMINGBIRDKASPERSPECIFICFILES
-        ../HummingBirdKasperSpecific/src/HelloLibrary.cpp
-        ../HummingBirdKasperSpecific/src/HelloLibrary.h
-        ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.cpp
-        ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.h
+            ../HummingBirdKasperSpecific/src/HelloLibrary.cpp
+            ../HummingBirdKasperSpecific/src/HelloLibrary.h
+            ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.cpp
+            ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.h
     )
 
     add_library(
-        KasperSpecificTools STATIC
-        ${HUMMINGBIRDKASPERSPECIFICFILES}
+            KasperSpecificTools STATIC
+            ${HUMMINGBIRDKASPERSPECIFICFILES}
     )
 
     #set cpp def
@@ -244,18 +249,61 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
     include_directories(
             ../HummingBirdKasperSpecific/src
     )
-endif()
+endif ()
 
 ########################################################################
 # Base Link libraries
 #TODO: MAKE THIS MAC SPECIFIC
 target_link_libraries(HummingbirdCore
-    ${SECURITY_FRAMEWORK}
+        ${SECURITY_FRAMEWORK}
 )
 
 target_link_libraries(HummingbirdApp
-    ${SECURITY_FRAMEWORK}
+        ${SECURITY_FRAMEWORK}
 )
+
+# get IOKit
+find_library(IOKit IOKit)
+if(NOT IOKit)
+    message(FATAL_ERROR "IOKit not found")
+else()
+    message("IOKit found")
+    target_link_libraries(HummingbirdCore
+            ${IOKit}
+    )
+    target_link_libraries(HummingbirdApp
+            ${IOKit}
+    )
+endif()
+
+find_library(CoreFoundation CoreFoundation)
+if(NOT CoreFoundation)
+    message(FATAL_ERROR "CoreFoundation not found")
+else()
+    message("CoreFoundation found")
+    target_link_libraries(HummingbirdCore
+            ${CoreFoundation}
+    )
+    target_link_libraries(HummingbirdApp
+            ${CoreFoundation}
+    )
+endif()
+
+
+# Find the System Configuration framework
+find_library(SYSTEM_CONFIGURATION_FRAMEWORK SystemConfiguration)
+if(NOT SYSTEM_CONFIGURATION_FRAMEWORK)
+    message(FATAL_ERROR "SystemConfiguration not found")
+else()
+    message("SystemConfiguration found")
+    target_link_libraries(HummingbirdCore
+            ${SYSTEM_CONFIGURATION_FRAMEWORK}
+    )
+    target_link_libraries(HummingbirdApp
+            ${SYSTEM_CONFIGURATION_FRAMEWORK}
+    )
+endif()
+
 
 ########################################################################
 # Copying resources from source to build

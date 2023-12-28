@@ -18,6 +18,7 @@ namespace HummingBirdCore {
     CORE_INFO("Starting HummingBirdCore Application");
 
     s_application = this;
+
     InitSDL();
     InitImGui();
 
@@ -28,8 +29,7 @@ namespace HummingBirdCore {
   }
 
   Application::~Application() {
-
-    HummingBirdCore::Sql::SqlManager::Shutdown();
+    CORE_INFO("Closing HummingBirdCore Application");
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
@@ -162,9 +162,13 @@ namespace HummingBirdCore {
       //Tools menu
       if (ImGui::BeginMenu("Windows")) {
         if (ImGui::BeginMenu("General Tools")) {
-//          if (ImGui::MenuItem("Text Editor")) {
-//            AddWindow("Text Editor", std::make_shared<HummingBirdCore::GeneralTools::TextEditorWindow>());
-//          }
+          ImGui::EndMenu();
+        }
+
+        if(ImGui::BeginMenu("System")){
+          if(ImGui::MenuItem("System Info")){
+              AddWindow("System Info", std::make_shared<HummingBirdCore::System::SysInfoWindow>());
+          }
           ImGui::EndMenu();
         }
 

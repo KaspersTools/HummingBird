@@ -37,6 +37,7 @@
 #include "Security/LoginManager.h"
 
 #include "System/Hosts/EditHostsWindow.h"
+#include "System/SysInfoWindow.h"
 
 #include "UIWindows/LogWindow.h"
 #include "UIWindows/Themes/ThemeManager.h"
@@ -49,6 +50,10 @@
 
 // Utils
 #include "Utils/Input.h"
+
+// System
+#include "System/SysInfo.h"
+
 
 // Kasper specific
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
@@ -93,6 +98,7 @@ public:
         finalName = name + std::to_string(m_visualLinkLauncherCount);
       }
 #endif
+      //fallback
       else {
         CORE_WARN("UIWindow {0} is not a valid type", name);
         finalName = name;
@@ -102,6 +108,19 @@ public:
       return *uiWindow;
     }
 
+    void AddUpdatable(std::shared_ptr<Updatable> updatable) {
+      m_updatables.emplace_back(updatable);
+    }
+
+
+    //Getters
+    const int GetWindowWidth() const { return m_windowWidth; }
+    const int GetWindowHeight() const { return m_windowHeight; }
+
+    static SDL_Window *GetWindow() { return s_window; }
+    static Application *GetApplication() {
+      return s_application;
+    }
 
 private:
     void InitSDL();
@@ -116,14 +135,6 @@ private:
 
     void Render();
 
-public:
-    const int GetWindowWidth() const { return m_windowWidth; }
-    const int GetWindowHeight() const { return m_windowHeight; }
-
-    static SDL_Window *GetWindow() { return s_window; }
-    static Application *GetApplication() {
-      return s_application;
-    }
 
 private:
     inline static SDL_Window *s_window;
@@ -148,13 +159,11 @@ private:
     int m_themeManagerCount = 0;
     int m_logWindowCount = 0;
 
+    //Updatables
+    std::vector<std::shared_ptr<Updatable>> m_updatables = {};
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
     int m_visualLinkLauncherCount = 0;
 #endif
-
-    //    bool m_ShowExampleAppLongText = false;
-    //    bool m_ShowExampleAppAutoResize = false;
-    //
   };
 
 }// namespace HummingBirdCore
