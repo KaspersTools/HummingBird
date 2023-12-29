@@ -4,6 +4,9 @@
 
 //
 #include <CoreFoundation/CoreFoundation.h>
+#include <SystemConfiguration/SystemConfiguration.h>
+
+//IOKit
 #include <IOKit/IOKitLib.h>
 #include <IOKit/ps/IOPSKeys.h>
 #include <IOKit/ps/IOPowerSources.h>
@@ -386,6 +389,16 @@ namespace HummingbirdCore {
       return frees;
     }
 
+    //    void printInterfaceInfo(SCNetworkInterfaceRef interface) {
+    //
+    //        std::cout << "Interface Type: " <<
+    //                  << ", Name: " << CFStringGetCStringPtr(interfaceName, kCFStringEncodingUTF8) << std::endl;
+    //      } else {
+    //        std::cout << "Could not determine interface details." << std::endl;
+    //      }
+    //    }
+
+
     //Network
     std::vector<network_data_t> SysInfo::getNetworkInterfaces() {
       std::vector<network_data_t> networkDataList;
@@ -460,8 +473,55 @@ namespace HummingbirdCore {
           data.mtu = -1;
           //interfaceindex
           data.interfaceIndex = if_nametoindex(interface->ifa_name);
-          //speed
+          //get link speed in mbps by using iokit
           data.speed = -1;
+
+          SCPreferencesRef prefs = SCPreferencesCreate(NULL, CFSTR("NetworkInterfaces"), NULL);
+          bool succes = true;
+          if (!prefs) {
+            std::cerr << "Failed to create SCPreferencesRef" << std::endl;
+            succes = false;
+          }
+
+          /* TODO:Get the network services using ScNetwork services and iokit.
+          if (succes) {
+            CFArrayRef networkServices = SCNetworkServiceCopyAll(prefs);
+            if (!networkServices) {
+              std::cerr << "Failed to copy network services" << std::endl;
+              CFRelease(prefs);
+              succes = false;
+            }
+
+            if (succes) {
+              CORE_ERROR("COUNT IS: {0}", CFArrayGetCount(networkServices));
+              for (CFIndex i = 0; i < CFArrayGetCount(networkServices); ++i) {
+                SCNetworkServiceRef service = (SCNetworkServiceRef) CFArrayGetValueAtIndex(networkServices, i);
+                SCNetworkInterfaceRef interface = SCNetworkServiceGetInterface(service);
+                if (interface) {
+                  CFStringRef interfaceName = SCNetworkInterfaceGetBSDName(interface);
+                  if (interfaceName) {
+                    if (CFStringCompare(interfaceName, CFSTR("en0"), 0) == kCFCompareEqualTo) {
+                      CFStringRef interfaceType = SCNetworkInterfaceGetInterfaceType(interface);
+                      CFStringRef interfaceName = SCNetworkInterfaceGetLocalizedDisplayName(interface);
+                      auto interfaceHardwareAddress = SCNetworkInterfaceGetHardwareAddressString(interface);
+                      auto linkMax = SCNetworkInterfaceGetLinkSpeed(interface);
+
+                      if (interfaceType && interfaceName) {
+                        std::cout << "Interface Type: " << CFStringGetCStringPtr(interfaceType, kCFStringEncodingUTF8)
+                                  << ", Name: " << CFStringGetCStringPtr(interfaceName, kCFStringEncodingUTF8) << std::endl;
+                      } else {
+                        std::cout << "Could not determine interface details." << std::endl;
+                      }
+                    }
+                  }
+                }
+              }
+              CFRelease(networkServices);
+              CFRelease(prefs);
+            }
+          }
+          */
+
           //dns servers
           std::ifstream resolvConf("/etc/resolv.conf");
           if (!resolvConf.is_open()) {
@@ -474,10 +534,6 @@ namespace HummingbirdCore {
               std::string token;
               iss >> token;
               if (token == "nameserver") {
-
-//                std::string ns;
-//                iss >> ns;
-//                data.dnsServers.push_back(ns);
               }
             }
           }
@@ -494,193 +550,6 @@ namespace HummingbirdCore {
 
       freeifaddrs(interfaces);
       return networkDataList;
-      //      std::vector<network_data_t> networkDataList{};
-      //
-      //      // Get list of network interfaces from SystemConfiguration
-      //      CFArrayRef scInterfaces = SCNetworkInterfaceCopyAll();
-      //      std::map<std::string, std::string> scInterfaceTypes;
-      //
-      //      for (CFIndex i = 0; i < CFArrayGetCount(scInterfaces); i++) {
-      //        SCNetworkInterfaceRef scInterface = (SCNetworkInterfaceRef) CFArrayGetValueAtIndex(scInterfaces, i);
-      //        CFStringRef scInterfaceType = SCNetworkInterfaceGetInterfaceType(scInterface);
-      //        CFStringRef bsdName = SCNetworkInterfaceGetBSDName(scInterface);
-      //
-      //        if (bsdName != NULL) {
-      //          char bsdNameBuffer[256];
-      //          char scInterfaceTypeBuffer[256];
-      //
-      //          if (CFStringGetCString(bsdName, bsdNameBuffer, sizeof(bsdNameBuffer), kCFStringEncodingUTF8) &&
-      //              CFStringGetCString(scInterfaceType, scInterfaceTypeBuffer, sizeof(scInterfaceTypeBuffer), kCFStringEncodingUTF8)) {
-      //            scInterfaceTypes[std::string(bsdNameBuffer)] = std::string(scInterfaceTypeBuffer);
-      //          }
-      //        }
-      //      }
-      //
-      //      // Get list of network interfaces
-      //      struct ifaddrs *interfaces = nullptr;
-      //      if (getifaddrs(&interfaces) == -1) {
-      //        std::cerr << "Failed to get network interfaces" << std::endl;
-      //        return {};
-      //      }
-      //      for (struct ifaddrs *interface = interfaces; interface != NULL; interface = interface->ifa_next) {
-      //        network_data_t data;
-      //        //name
-      //        data.name = interface->ifa_name;
-      //
-      //        //ip
-      //        if (interface->ifa_addr != NULL && interface->ifa_addr->sa_family == AF_INET) { // IPv4
-      //          data.ip = inet_ntoa(((struct sockaddr_in *)interface->ifa_addr)->sin_addr);
-      //        }else{
-      //          data.ip = "not ipv4. ipv6 not implemented";
-      //        }
-      //        //mac
-      //        if (interface->ifa_addr != NULL && interface->ifa_addr->sa_family == AF_LINK) { // MAC
-      //          struct sockaddr_dl* sdl = (struct sockaddr_dl *)interface->ifa_addr;
-      //          unsigned char* mac = (unsigned char*) LLADDR(sdl);
-      //          char buf[18];
-      //          snprintf(buf, sizeof(buf), "%02x:%02x:%02x:%02x:%02x:%02x",
-      //                   mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-      //          data.mac = buf;
-      //        }else{
-      //          data.mac = "not a mac address";
-      //        }
-      //        //netmask
-      //        if (interface->ifa_netmask != NULL && interface->ifa_addr->sa_family == AF_INET) { // IPv4
-      //          data.netmask = inet_ntoa(((struct sockaddr_in *)interface->ifa_netmask)->sin_addr);
-      //        }else{
-      //          data.netmask = "not ipv4 for netmask. ipv6 not implemented";
-      //        }
-      //        //broadcast
-      //        if (interface->ifa_dstaddr != NULL && interface->ifa_addr->sa_family == AF_INET) { // IPv4
-      //          data.broadcast = inet_ntoa(((struct sockaddr_in *)interface->ifa_dstaddr)->sin_addr);
-      //        }else{
-      //          data.broadcast = "not ipv4 for broadcast. ipv6 not implemented";
-      //        }
-      //        //gateway
-      //        data.gateway = "not implemented";
-      //        //mtu
-      //        data.mtu = -1;
-      //        //type
-      //        auto it = scInterfaceTypes.find(data.name);
-      //        if (it != scInterfaceTypes.end()) {
-      //          data.interfaceType = it->second;
-      //        }else{
-      //          data.interfaceType = "unkown";
-      //          CORE_WARN("Error getting interface type for interface: {}", data.name);
-      //        }
-      //        //status
-      //        data.status = (interface->ifa_flags & IFF_UP) ? "up" : "down";
-      //        //speed
-      //        data.speed = -1;
-      //        //dns servers
-      //        std::ifstream resolvConf("/etc/resolv.conf");
-      //        if (!resolvConf.is_open()) {
-      //          data.dnsServers = {};
-      //          CORE_ERROR("Error opening /etc/resolv.conf for reading dns servers. This file is autogenerated by mac so if its not available there is something wrong");
-      //        } else {
-      //          std::string dnsServerLine;
-      //          while (getline(resolvConf, dnsServerLine)) {
-      //            std::istringstream iss(dnsServerLine);
-      //            std::string token;
-      //            iss >> token;
-      //            if (token == "nameserver") {
-      //              std::string ns;
-      //              iss >> ns;
-      //              data.dnsServers.push_back(ns);
-      //            }
-      //          }
-      //        }
-      //        resolvConf.close();
-      //        //interface index
-      //        data.interfaceIndex = if_nametoindex(interface->ifa_name);
-      //        networkDataList.push_back(data);
-      //      }
-      //
-      //      CFRelease(scInterfaces);
-      //      freeifaddrs(interfaces);
-      //      return networkDataList;
-      //CHECK IG
-      //
-      //        //Name
-      //        network_data_t data;
-      //        data.name = ifa->ifa_name;
-      //
-      //        // IPV4 Address
-      //        if (ifa->ifa_addr->sa_family == AF_INET) {
-      //          // IP Address
-      //          char ip[INET_ADDRSTRLEN];
-      //          inet_ntop(AF_INET, &((struct sockaddr_in *) ifa->ifa_addr)->sin_addr, ip, INET_ADDRSTRLEN);
-      //          data.ip = ip;
-      //
-      //          // Netmask
-      //          char netmask[INET_ADDRSTRLEN];
-      //          inet_ntop(AF_INET, &((struct sockaddr_in *) ifa->ifa_netmask)->sin_addr, netmask, INET_ADDRSTRLEN);
-      //          data.netmask = netmask;
-      //
-      //          // Broadcast Address
-      //          if (ifa->ifa_flags & IFF_BROADCAST) {
-      //            char broadcast[INET_ADDRSTRLEN];
-      //            inet_ntop(AF_INET, &((struct sockaddr_in *) ifa->ifa_dstaddr)->sin_addr, broadcast, INET_ADDRSTRLEN);
-      //            data.broadcast = broadcast;
-      //          }
-      //        }
-      //        // MAC Address
-      //        else if (ifa->ifa_addr->sa_family == AF_LINK) {
-      //          struct sockaddr_dl *sdl = (struct sockaddr_dl *) ifa->ifa_addr;
-      //          if (sdl->sdl_type == IFT_ETHER) {
-      //            unsigned char *mac = (unsigned char *) LLADDR(sdl);
-      //            char buf[18];
-      //            snprintf(buf, sizeof(buf), "%02x:%02x:%02x:%02x:%02x:%02x",
-      //                     mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-      //            data.mac = buf;
-      //          }
-      //        }
-      //        data.gateway = "";
-      //
-      //        data.mtu = 0;
-      //
-      //        data.status = (ifa->ifa_flags & IFF_UP) ? "up" : "down";
-      //        auto it = scInterfaceTypes.find(data.name);
-      //        if (it != scInterfaceTypes.end()) {
-      //          data.interfaceType = it->second;
-      //        } else {
-      //          data.interfaceType = "unkown";
-      //          CORE_ERROR("Error getting interface type for interface: {}", data.name);
-      //        }
-      //
-      //        data.speed = 0;
-      //
-      //        std::ifstream resolvConf("/etc/resolv.conf");
-      //        if (!resolvConf.is_open()) {
-      //          data.dnsServers = {};
-      //          CORE_ERROR("Error opening /etc/resolv.conf");
-      //        } else {
-      //          std::string dnsServerLine;
-      //          while (getline(resolvConf, dnsServerLine)) {
-      //            std::istringstream iss(dnsServerLine);
-      //            std::string token;
-      //            iss >> token;
-      //            if (token == "nameserver") {
-      //              std::string ns;
-      //              iss >> ns;
-      //              data.dnsServers.push_back(ns);
-      //            }
-      //          }
-      //        }
-      //
-      //        //interface index
-      //        data.interfaceIndex = if_nametoindex(ifa->ifa_name);
-      //
-      //
-      //        std::ifstream dhclientLeaseFile("/var/lib/dhcp/dhclient.leases");
-      //        data.usingDhcp = dhclientLeaseFile.good() && (dhclientLeaseFile.peek() != std::ifstream::traits_type::eof());
-      //        dhclientLeaseFile.close();
-      //
-      //        networkDataList.push_back(data);
-      //      }
-      //
-      //      freeifaddrs(ifaddr);
-      //      return networkDataList;
     }
 
     //Logs

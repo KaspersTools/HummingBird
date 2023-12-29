@@ -125,25 +125,22 @@ namespace HummingbirdCore {
     //Own structs
     //Network
     typedef struct NetworkData {
-      std::string              name          = "UNKOWN";
-
-      std::string              ipv4          = "UNKOWN";
-      std::string              netmaskipv4   = "UNKOWN";
-      std::string              broadcastipv4 = "UNKOWN";
-
-      std::string              ipv6          = "UNKOWN";
-      std::string              netmaskipv6   = "UNKOWN";
-      std::string              broadcastipv6 = "UNKOWN";
-
-      std::string              mac           = "UNKOWN";
-      std::string              gateway       = "UNKOWN";
-      std::string              status        = "UNKOWN";
-      std::string              interfaceType = "UNKOWN";
-      int                      mtu           = -1;
-      int                      interfaceIndex= -1;
-      unsigned long            speed         = -1;
-      std::vector<std::string> dnsServers    = {};
-      bool                     usingDhcp     = false;
+      std::string              name          = "UNKOWN";//1
+      std::string              ipv4          = "UNKOWN";//2
+      std::string              netmaskipv4   = "UNKOWN";//3
+      std::string              broadcastipv4 = "UNKOWN";//4
+      std::string              ipv6          = "UNKOWN";//5
+      std::string              netmaskipv6   = "UNKOWN";//6
+      std::string              broadcastipv6 = "UNKOWN";//7
+      std::string              mac           = "UNKOWN";//8
+      std::string              gateway       = "UNKOWN";//9
+      std::string              status        = "UNKOWN";//10
+      std::string              interfaceType = "UNKOWN";//11
+      int                      mtu           = -1;      //12
+      int                      interfaceIndex= -1;      //13
+      unsigned long            speed         = -1;      //speed in Mbit/s 14
+      std::vector<std::string> dnsServers    = {};      //15
+      bool                     usingDhcp     = false;   //16
     } network_data_t;
 
     class SysInfo {

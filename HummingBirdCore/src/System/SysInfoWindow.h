@@ -55,6 +55,8 @@ private:
     }
 
 private:
+    bool m_tableView = false;
+
     HummingbirdCore::System::SysInfo m_system = HummingbirdCore::System::SysInfo();
 
     float m_lastFetchTime = 0.0f;

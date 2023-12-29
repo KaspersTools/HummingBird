@@ -43,6 +43,7 @@ namespace HummingBirdCore {
     private:
         static Ref<spdlog::logger> s_CoreLogger;
         static bool m_isInitialized;
+        static bool m_syncToFile;
         static std::vector<spdlog::sink_ptr> s_logSinks;
     };
 }
