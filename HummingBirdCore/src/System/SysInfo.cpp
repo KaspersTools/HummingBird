@@ -476,14 +476,15 @@ namespace HummingbirdCore {
           //get link speed in mbps by using iokit
           data.speed = -1;
 
+          //DISABLED FOR NOW
+          /* TODO:Get the network services using ScNetwork services and iokit.
+
           SCPreferencesRef prefs = SCPreferencesCreate(NULL, CFSTR("NetworkInterfaces"), NULL);
           bool succes = true;
           if (!prefs) {
-            std::cerr << "Failed to create SCPreferencesRef" << std::endl;
-            succes = false;
+          std::cerr << "Failed to create SCPreferencesRef" << std::endl;
+          succes = false;
           }
-
-          /* TODO:Get the network services using ScNetwork services and iokit.
           if (succes) {
             CFArrayRef networkServices = SCNetworkServiceCopyAll(prefs);
             if (!networkServices) {
