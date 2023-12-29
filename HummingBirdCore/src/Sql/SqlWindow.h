@@ -64,6 +64,10 @@ namespace HummingBirdCore {
         }
       }
 
+//      void renderConnectionSettingsTab();
+//      void renderConnectionStatusTab();
+      void renderQueryTab();
+
   private:
       HummingBirdCore::Sql::SqlConnection m_connection;
       std::string m_host;
@@ -71,6 +75,10 @@ namespace HummingBirdCore {
       std::string m_password;
       std::string m_database;
       unsigned int m_port;
+
+      std::string m_queryInput = "";
+
+      QueryResult m_queryResult = QueryResult();
 
       Ref<spdlog::logger> m_logger = nullptr;
       std::shared_ptr <HummingBirdCore::Logging::ImGuiLogSink_mt> m_logSink = nullptr;

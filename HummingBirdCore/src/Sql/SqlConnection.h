@@ -6,6 +6,9 @@
 #include <iostream>
 #include <mysql.h>
 
+#include <chrono>
+#include <functional>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -18,6 +21,36 @@
 #include "Log.h"
 
 namespace HummingBirdCore::Sql {
+  struct QueryResult {
+    bool success;
+    std::string error;
+    std::vector<std::vector<std::string>> data;
+    std::string source;
+    std::size_t rowCount;
+    std::vector<std::string> columnNames;
+    std::size_t fieldCount;
+    std::vector<unsigned int> fieldTypes;
+    std::map<std::string, std::size_t> fieldIndexMap;
+
+    QueryResult() : success(false), error(""), data({}), source(""), rowCount(0), columnNames({}), fieldCount(0), fieldTypes({}), fieldIndexMap({}) {
+    }
+
+    QueryResult(bool success, std::string error, std::vector<std::vector<std::string>> data,
+                std::string source, std::size_t rowCount, std::vector<std::string> columnNames,
+                std::size_t fieldCount, std::vector<unsigned int> fieldTypes,
+                std::map<std::string, std::size_t> fieldIndexMap)
+        : success(success), error(error), data(data), source(source), rowCount(rowCount),
+          columnNames(columnNames), fieldCount(fieldCount), fieldTypes(fieldTypes), fieldIndexMap(fieldIndexMap) {
+    }
+  };
+
+  enum class QueryType {
+    INSERT,
+    SELECT,
+    UPDATE,
+    DELETE
+  };
+
 
   class SqlConnection {
 public:
@@ -39,6 +72,13 @@ public:
     void disconnect();
     bool isConnected();
 
+    const QueryResult query(const std::string &query);
+//    const QueryResult query(const std::string &query, const std::string &table);
+
+//
+//    std::vector<std::string> getTableSchema(const std::string &table);
+
+
     void setLogger(Ref<spdlog::logger> logger) {
       m_logger = logger;
     }
@@ -50,9 +90,15 @@ private:
         CORE_ERROR("Logger is null set the logger before using the log function");
         CORE_WARN("Message: {0}, we will now just log to the core logger", message);
       } else {
+        //        CORE_LOG(message, level);
         m_logger->log(level, message);
+        HummingBirdCore::Log::GetCoreLogger()->log(level, message);
       }
     }
+//
+//    void processQueryResults(MYSQL_RES *result, std::function<void(MYSQL_RES *)> resultProcessor);
+//    std::string constructQuery(const std::string &table, const std::map<std::string, std::string> &data, const std::string &type);
+
 
 private:
     std::string m_host;

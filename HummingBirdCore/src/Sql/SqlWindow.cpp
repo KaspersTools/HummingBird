@@ -3,6 +3,8 @@
 //
 
 #include "SqlWindow.h"
+#include <imgui.h>
+#include <imgui_stdlib.h>
 
 namespace HummingBirdCore {
   namespace Sql {
@@ -29,28 +31,23 @@ namespace HummingBirdCore {
       }
 
       if (ImGui::BeginTabBar("Tabs")) {
-        if(ImGui::BeginTabItem("Query"))
-        {
+        if (ImGui::BeginTabItem("Query")) {
+          renderQueryTab();
           ImGui::EndTabItem();
         }
-        if(ImGui::BeginTabItem("Tables"))
-        {
+        if (ImGui::BeginTabItem("Tables")) {
           ImGui::EndTabItem();
         }
-        if(ImGui::BeginTabItem("Columns"))
-        {
+        if (ImGui::BeginTabItem("Columns")) {
           ImGui::EndTabItem();
         }
-        if(ImGui::BeginTabItem("Data"))
-        {
+        if (ImGui::BeginTabItem("Data")) {
           ImGui::EndTabItem();
         }
-        if(ImGui::BeginTabItem("Errors"))
-        {
+        if (ImGui::BeginTabItem("Errors")) {
           ImGui::EndTabItem();
         }
-        if(ImGui::BeginTabItem("Warnings"))
-        {
+        if (ImGui::BeginTabItem("Warnings")) {
 
           ImGui::EndTabItem();
         }
@@ -58,12 +55,10 @@ namespace HummingBirdCore {
 
           ImGui::EndTabItem();
         }
-        if(ImGui::BeginTabItem("Debug"))
-        {
+        if (ImGui::BeginTabItem("Debug")) {
           ImGui::EndTabItem();
         }
-        if(ImGui::BeginTabItem("Logging"))
-        {
+        if (ImGui::BeginTabItem("Logging")) {
           ImGui::BeginChild("Logs", ImVec2(0, 0), true);
           for (auto &log: m_logSink->getLogMessages()) {
             switch (log.level) {
@@ -97,5 +92,71 @@ namespace HummingBirdCore {
         ImGui::EndTabBar();
       }
     }
+
+    void SqlWindow::renderQueryTab() {
+      ImGui::BeginChild("Query", ImVec2(0, 0), true);
+      ImGui::InputTextMultiline("##Query", &m_queryInput);
+      ImGui::SameLine();
+      //result if its a success or not
+      if (m_queryResult.success) {
+          ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
+          ImGui::SameLine();
+          ImGui::Text(m_queryResult.source.c_str());
+          ImGui::SameLine();
+          std::string rows = "rows: " + std::to_string(m_queryResult.rowCount);
+          ImGui::Text(rows.c_str());
+          ImGui::SameLine();
+          std::string fields = "fields: " + std::to_string(m_queryResult.fieldCount);
+          ImGui::Text(fields.c_str());
+      } else {
+          ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Failed");
+          ImGui::SameLine();
+          ImGui::Text(m_queryResult.source.c_str());
+          ImGui::SameLine();
+          ImGui::Text(m_queryResult.error.c_str());
+      }
+      if (ImGui::Button("Execute")) {
+        m_queryResult = m_connection.query(m_queryInput);
+      }
+
+      //Table with the query result
+      if (m_queryResult.success) {
+        ImGui::BeginChild("QueryResult", ImVec2(0, 0), true);
+        const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
+
+        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+        static int freeze_cols = 1;
+        static int freeze_rows = 1;
+        ImGuiStyle &style = ImGui::GetStyle();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float) (int) (style.FramePadding.y * 0.60f)));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x, (float) (int) (style.ItemSpacing.y * 0.60f)));
+        ImGui::CheckboxFlags("ImGuiTableFlags_ScrollX", &flags, ImGuiTableFlags_ScrollX);
+        ImGui::SetNextItemWidth(ImGui::GetFrameHeight());
+        ImGui::DragInt("freeze_cols", &freeze_cols, 0.2f, 0, 9, NULL, ImGuiSliderFlags_NoInput);
+        ImGui::SetNextItemWidth(ImGui::GetFrameHeight());
+        ImGui::DragInt("freeze_rows", &freeze_rows, 0.2f, 0, 9, NULL, ImGuiSliderFlags_NoInput);
+        ImGui::PopStyleVar(2);
+
+        ImVec2 outer_size = ImVec2(0.0f, TEXT_BASE_HEIGHT * 19);
+        if (ImGui::BeginTable("query_table", m_queryResult.columnNames.size(), flags, outer_size)) {
+          ImGui::TableSetupScrollFreeze(freeze_cols, freeze_rows);
+          for (auto &column: m_queryResult.columnNames) {
+            ImGui::TableSetupColumn(column.c_str());
+          }
+          ImGui::TableHeadersRow();
+
+          for (auto &row: m_queryResult.data) {
+            for (auto &column: row) {
+              ImGui::TableNextColumn();
+              ImGui::Text(column.c_str());
+            }
+          }
+          ImGui::EndTable();
+        }
+        ImGui::EndChild();
+      }
+      ImGui::EndChild();
+    }
   }// namespace Sql
-}// namespace HummingBirdcore
+}// namespace HummingBirdCore
