@@ -42,11 +42,10 @@
 #include "UIWindows/LogWindow.h"
 #include "UIWindows/Themes/ThemeManager.h"
 
+#include "Sql/SqlWindow.h"
+
 // Rendering
 #include "Rendering/Texture.h"
-
-// Sql
-#include "Sql/SqlManager.h"
 
 // Utils
 #include "Utils/Input.h"
@@ -90,6 +89,9 @@ public:
       } else if(std::dynamic_pointer_cast<UIWindows::LogWindow>(uiWindow)) {
         m_logWindowCount++;
         finalName = name + std::to_string(m_logWindowCount);
+      } else if(std::dynamic_pointer_cast<HummingBirdCore::Sql::SqlWindow>(uiWindow)) {
+        m_sqlWindowCount++;
+        finalName = name + std::to_string(m_sqlWindowCount);
       }
       //Kasper specific
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
@@ -158,6 +160,7 @@ private:
     int m_editHostsCount = 0;
     int m_themeManagerCount = 0;
     int m_logWindowCount = 0;
+    int m_sqlWindowCount = 0;
 
     //Updatables
     std::vector<std::shared_ptr<Updatable>> m_updatables = {};

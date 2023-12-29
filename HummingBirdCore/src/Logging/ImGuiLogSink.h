@@ -34,22 +34,6 @@ protected:
     }
 
 public:
-    explicit ImGuiLogSink() {
-      if(s_Instance != nullptr){
-        CORE_ERROR("ImGuiLogSink already initialized, not initializing again. Make sure to only initialize ImGuiLogSink once.!!");
-        return;
-      }
-
-      s_Instance = this;
-    }
-
-    static ImGuiLogSink* getInstance(){
-      if(s_Instance == nullptr){
-        CORE_ERROR("ImGuiLogSink not initialized, initializing now. Make sure to initialize ImGuiLogSink before using it.!!");
-        s_Instance = new ImGuiLogSink();
-      }
-      return s_Instance;
-    }
 
     std::vector<ImGuiLogSinkItem> getLogMessages() const {
       return m_logMessages;
@@ -62,11 +46,7 @@ private:
       m_logMessages.push_back(item);
     }
 
-    static ImGuiLogSink* s_Instance;
   };
-
-  template<typename Mutex>
-  ImGuiLogSink<Mutex>* ImGuiLogSink<Mutex>::s_Instance = nullptr;
 
   using ImGuiLogSink_mt = ImGuiLogSink<std::mutex>;// Thread-safe version
 }// namespace HummingBirdCore::Logging

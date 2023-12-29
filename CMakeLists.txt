@@ -18,13 +18,16 @@ set(HUMMINGBIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HUMMINGBIRDCORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HummingbirdCore)
 set(HUMMINGBIRDFRONT_DIR ${HUMMINGBIRD_DIR}/HummingbirdFront)
 
-####MAIN PROJECT####
-# Creating the executable and libraries
+# Add cmake modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
+####MAIN PROJECT####
 # HummingbirdCore
 add_library(HummingbirdCore STATIC
+        HummingBirdCore/src/CoreRef.h
         HummingBirdCore/src/Application.cpp
         HummingBirdCore/src/Application.h
+        HummingBirdCore/src/Logging/MainLogSink.h
         HummingBirdCore/src/Log.cpp
         HummingBirdCore/src/Log.h
         HummingBirdCore/src/Terminal/TerminalWindow.cpp
@@ -39,11 +42,6 @@ add_library(HummingbirdCore STATIC
         HummingBirdCore/src/Security/LogInWindow.h
         HummingBirdCore/src/Security/LoginManager.cpp
         HummingBirdCore/src/Security/LoginManager.h
-        HummingBirdCore/src/Sql/SqlConnection.cpp
-        HummingBirdCore/src/Sql/SqlConnection.h
-        HummingBirdCore/src/Sql/SqlExample.h
-        HummingBirdCore/src/Sql/SqlManager.cpp
-        HummingBirdCore/src/Sql/SqlManager.h
         HummingBirdCore/src/System/Hosts/EditHostsWindow.h
         HummingBirdCore/src/System/Hosts/EditHostsWindow.cpp
         HummingBirdCore/src/Utils/UUID.h
@@ -59,6 +57,10 @@ add_library(HummingbirdCore STATIC
         HummingBirdCore/src/System/SysInfo.h
         HummingBirdCore/src/System/SysInfoWindow.cpp
         HummingBirdCore/src/System/SysInfoWindow.h
+        HummingBirdCore/src/Sql/SqlWindow.cpp
+        HummingBirdCore/src/Sql/SqlWindow.h
+        HummingBirdCore/src/Sql/SqlConnection.cpp
+        HummingBirdCore/src/Sql/SqlConnection.h
 )
 
 # HummingbirdApp
@@ -99,6 +101,7 @@ else ()
     )
 endif ()
 
+
 #sdl
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/sdl)
     message("SDL folder not found")
@@ -121,6 +124,7 @@ else ()
             ${HUMMINGBIRD_DIR}/vendor/sdl/include
     )
 endif ()
+
 
 #glad
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glad)
@@ -145,6 +149,7 @@ else ()
             glad
     )
 endif ()
+
 
 #spdlog
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/spdlog)
@@ -174,27 +179,36 @@ if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/imgui)
     message("Imgui folder not found")
 else ()
     add_library(imgui STATIC
-            ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.cpp
-            ${HUMMINGBIRD_DIR}/vendor/imgui/imconfig.h
+            #imgui
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.h
-            ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_demo.cpp
+            ${HUMMINGBIRD_DIR}/vendor/imgui/imconfig.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_draw.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_internal.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_tables.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_widgets.cpp
-            ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_rectpack.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_textedit.h
+            ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_rectpack.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_truetype.h
+
+            #imgui demos
+            ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_demo.cpp
+
+            #backends
             ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_opengl3.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_opengl3.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_sdl2.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_sdl2.h
+
+            #misc
+            ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp/imgui_stdlib.cpp
     )
 
     #include imgui
     include_directories(
             ${HUMMINGBIRD_DIR}/vendor/imgui
+            ${HUMMINGBIRD_DIR}/vendor/imgui/backends
+            ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
     )
 
     # Link imgui
@@ -217,7 +231,25 @@ else ()
     endif ()
 endif ()
 
-####kasper specific####
+
+#mysql
+find_package(MySQL)
+if(NOT MYSQL_FOUND)
+    message(WARNING "MySQL not found")
+else()
+    message("MySQL found")
+    target_link_libraries(HummingbirdCore
+            ${MYSQL_LIBRARIES}
+    )
+    target_link_libraries(HummingbirdApp
+            ${MYSQL_LIBRARIES}
+    )
+    include_directories(
+            ${MYSQL_INCLUDE_DIR}
+    )
+endif()
+
+####kasper specific#####################################################
 option(WITHHUMMINGBIRDKASPERSPECIFIC "WITH HummingBirdKasperSpecific" OFF)
 if (WITHHUMMINGBIRDKASPERSPECIFIC)
     message("Building with Kasperspecific")
@@ -276,6 +308,7 @@ else()
     )
 endif()
 
+# get CoreFoundation
 find_library(CoreFoundation CoreFoundation)
 if(NOT CoreFoundation)
     message(FATAL_ERROR "CoreFoundation not found")
