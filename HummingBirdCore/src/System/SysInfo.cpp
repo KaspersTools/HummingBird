@@ -389,15 +389,6 @@ namespace HummingbirdCore {
       return frees;
     }
 
-    //    void printInterfaceInfo(SCNetworkInterfaceRef interface) {
-    //
-    //        std::cout << "Interface Type: " <<
-    //                  << ", Name: " << CFStringGetCStringPtr(interfaceName, kCFStringEncodingUTF8) << std::endl;
-    //      } else {
-    //        std::cout << "Could not determine interface details." << std::endl;
-    //      }
-    //    }
-
 
     //Network
     std::vector<network_data_t> SysInfo::getNetworkInterfaces() {
@@ -537,6 +528,8 @@ namespace HummingbirdCore {
               if (token == "nameserver") {
               }
             }
+
+            resolvConf.close();
           }
           //using dhcp
           data.usingDhcp = false;

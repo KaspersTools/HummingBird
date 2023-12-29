@@ -6,6 +6,7 @@
 
 #include "Application.h"
 #include "Log.h"
+#include "Sql/SqlConnection.h"
 
 namespace HummingBirdCore {
 
@@ -25,6 +26,25 @@ namespace HummingBirdCore {
     Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
 
     m_backgroundTexture.load();
+
+    //Test mysql connection
+    std::string host = "127.0.0.1";
+    std::string username = "root";
+    std::string passw = "Vuur01-";
+    std::string database = "dsu_core";
+    unsigned int port = 3306;
+
+    Sql::SqlConnection sqlConnection(host, username, passw, database, port);
+
+    if(sqlConnection.isConnected())
+    {
+      CORE_TRACE("Connected to database");
+    }else{
+      CORE_ERROR("Failed to connect to database");
+    }
+
+
+
     Run();
   }
 
@@ -238,6 +258,15 @@ namespace HummingBirdCore {
         }
         ImGui::EndMenu();
       }
+
+      //Tools menu
+      if(ImGui::BeginMenu("Tools")){
+        if(ImGui::MenuItem("Sql")){
+          AddWindow("Sql", std::make_shared<HummingBirdCore::Sql::SqlWindow>(ImGuiWindowFlags_MenuBar, "Sql"));
+        }
+        ImGui::EndMenu();
+      }
+
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
       if (ImGui::BeginMenu("Kasper Tools")) {
         if (ImGui::MenuItem("Hello World")) {

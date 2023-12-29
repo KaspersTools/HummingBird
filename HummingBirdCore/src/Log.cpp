@@ -8,6 +8,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include "Logging/ImGuiLogSink.h"
+#include "Logging/MainLogSink.h"
 
 namespace HummingBirdCore {
   Ref<spdlog::logger> Log::s_CoreLogger;
@@ -33,16 +34,14 @@ namespace HummingBirdCore {
       s_logSinks.emplace_back(fileSink);
     }
 
-    auto imguiSink = std::make_shared<HummingBirdCore::Logging::ImGuiLogSink_mt>();
-    imguiSink->set_pattern("[%T] [%l] %n: %v");
-    s_logSinks.emplace_back(imguiSink);
-
-
+    std::shared_ptr <HummingBirdCore::Logging::MainLogSink_mt> mainlogSink = std::make_shared<HummingBirdCore::Logging::MainLogSink_mt >();
+    mainlogSink->set_pattern("[%T] [%l] %n: %v");
+    s_logSinks.emplace_back(mainlogSink);
 
     s_CoreLogger = std::make_shared<spdlog::logger>("HummingBirdCore", begin(s_logSinks), end(s_logSinks));
-    spdlog::register_logger(s_CoreLogger);
     s_CoreLogger->set_level(spdlog::level::trace);
-    s_CoreLogger->flush_on(spdlog::level::trace);
+    spdlog::register_logger(s_CoreLogger);
+
     CORE_TRACE("Log initialized");
   }
 

@@ -1,4 +1,4 @@
-#cmake_minimum_required(VERSION 3.12)
+w#cmake_minimum_required(VERSION 3.12)
 #project(HUMMINGBIRD_CORE)
 #
 #set(CMAKE_CXX_STANDARD 23)
