@@ -65,8 +65,8 @@ private:
     class ContentExplorer : public HummingBirdCore::UIWindow {
 
   public:
-      ContentExplorer() : ContentExplorer(ImGuiWindowFlags_None) {}
-      ContentExplorer(ImGuiWindowFlags flags) : UIWindow(ImGuiWindowFlags_None, "Content Explorer") {
+      ContentExplorer(const std::string& name) : ContentExplorer(ImGuiWindowFlags_None, name) {}
+      ContentExplorer(ImGuiWindowFlags flags, const std::string& name) : UIWindow(ImGuiWindowFlags_None, name) {
         changeDirectory(*m_currentDirectory);
       }
 

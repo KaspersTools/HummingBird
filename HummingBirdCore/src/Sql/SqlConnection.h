@@ -55,7 +55,6 @@ namespace HummingBirdCore::Sql {
   class SqlConnection {
 public:
     SqlConnection() : SqlConnection("", "", "", "", 3306, false) {
-      CORE_TRACE("Default constructor called");
     }
 
     SqlConnection(const std::string &host, const std::string &user,
@@ -73,11 +72,17 @@ public:
     bool isConnected();
 
     const QueryResult query(const std::string &query);
-//    const QueryResult query(const std::string &query, const std::string &table);
+    QueryResult getAllTables();
 
-//
-//    std::vector<std::string> getTableSchema(const std::string &table);
+    QueryResult getLastTableQuery() const {
+      return m_allTables;
+    }
 
+    QueryResult getAllDatabaseNames();
+
+    QueryResult getLastDatabaseNames() const {
+      return m_allDatabaseNames;
+    }
 
     void setLogger(Ref<spdlog::logger> logger) {
       m_logger = logger;
@@ -111,5 +116,9 @@ private:
     MYSQL *m_connection;
 
     Ref<spdlog::logger> m_logger = nullptr;
+
+    QueryResult m_allTables = QueryResult();
+
+    QueryResult m_allDatabaseNames = {};
   };
 }// namespace HummingBirdCore::Sql

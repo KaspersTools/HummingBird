@@ -44,6 +44,9 @@ namespace HummingBirdCore::Sql {
 
     m_isConnected = true;
     log("Connected to database", spdlog::level::info);
+
+    m_allTables = getAllTables();
+    m_allDatabaseNames = getAllDatabaseNames();
     return true;
   }
 
@@ -102,14 +105,14 @@ namespace HummingBirdCore::Sql {
       // Fetch rows
       while ((row = mysql_fetch_row(res)) != NULL) {
         std::vector<std::string> rowData;
-        unsigned long* lengths = mysql_fetch_lengths(res);
+        unsigned long *lengths = mysql_fetch_lengths(res);
         for (unsigned int i = 0; i < result.fieldCount; ++i) {
           rowData.push_back(row[i] ? std::string(row[i], lengths[i]) : "NULL");
         }
         result.data.push_back(rowData);
       }
 
-      mysql_free_result(res); // Free the result set
+      mysql_free_result(res);// Free the result set
     } else {
       if (mysql_field_count(m_connection) == 0) {
         result.rowCount = mysql_affected_rows(m_connection);
@@ -124,12 +127,140 @@ namespace HummingBirdCore::Sql {
 
     std::string success = std::string("Executed query: ") + query + " successfully in " +
                           std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(
-                                                 std::chrono::high_resolution_clock::now() - start).count()) + "ms";
+                                                 std::chrono::high_resolution_clock::now() - start)
+                                                 .count()) +
+                          "ms";
     log(success, spdlog::level::info);
 
     result.success = true;
     result.error = "";
     result.source = query;
+    return result;
+  }
+
+  QueryResult SqlConnection::getAllTables() {
+    QueryResult result;
+    auto start = std::chrono::high_resolution_clock::now();
+    int q = mysql_query(m_connection, "SHOW TABLES");
+
+    if (q) {
+      result.success = false;
+      result.error = mysql_error(m_connection);
+      std::string error = "Error executing query: " + result.error;
+      log(error, spdlog::level::err);
+      return result;
+    }
+
+    MYSQL_RES *res = mysql_store_result(m_connection);
+    MYSQL_FIELD *field;
+    MYSQL_ROW row;
+
+    if (res) {
+      result.fieldCount = mysql_num_fields(res);
+
+      // Fetch field types and names
+      while ((field = mysql_fetch_field(res)) != NULL) {
+        result.fieldTypes.push_back(field->type);
+        result.fieldIndexMap[field->name] = mysql_field_tell(res);
+        result.columnNames.push_back(field->name);
+      }
+
+      // Fetch rows
+      while ((row = mysql_fetch_row(res)) != NULL) {
+        std::vector<std::string> rowData;
+        unsigned long *lengths = mysql_fetch_lengths(res);
+        for (unsigned int i = 0; i < result.fieldCount; ++i) {
+          rowData.push_back(row[i] ? std::string(row[i], lengths[i]) : "NULL");
+        }
+        result.data.push_back(rowData);
+      }
+
+      mysql_free_result(res);// Free the result set
+    } else {
+      if (mysql_field_count(m_connection) == 0) {
+        result.rowCount = mysql_affected_rows(m_connection);
+      } else {
+        result.success = false;
+        result.error = mysql_error(m_connection);
+        std::string error = "Error fetching result set: " + result.error;
+        log(error, spdlog::level::err);
+        return result;
+      }
+    }
+
+    std::string success = std::string("Executed query: ") + "SHOW TABLES" + " successfully in " +
+                          std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(
+                                                 std::chrono::high_resolution_clock::now() - start)
+                                                 .count()) +
+                          "ms";
+    log(success, spdlog::level::info);
+
+    result.success = true;
+    result.error = "";
+    result.source = "SHOW TABLES";
+    return result;
+  }
+
+  QueryResult SqlConnection::getAllDatabaseNames() {
+    QueryResult result;
+    auto start = std::chrono::high_resolution_clock::now();
+    int q = mysql_query(m_connection, "SHOW DATABASES");
+
+    if (q) {
+      result.success = false;
+      result.error = mysql_error(m_connection);
+      std::string error = "Error executing query: " + result.error;
+      log(error, spdlog::level::err);
+      return result;
+    }
+
+    MYSQL_RES *res = mysql_store_result(m_connection);
+    MYSQL_FIELD *field;
+    MYSQL_ROW row;
+
+    if (res) {
+      result.fieldCount = mysql_num_fields(res);
+
+      // Fetch field types and names
+      while ((field = mysql_fetch_field(res)) != NULL) {
+        result.fieldTypes.push_back(field->type);
+        result.fieldIndexMap[field->name] = mysql_field_tell(res);
+        result.columnNames.push_back(field->name);
+      }
+
+      // Fetch rows
+      while ((row = mysql_fetch_row(res)) != NULL) {
+        std::vector<std::string> rowData;
+        unsigned long *lengths = mysql_fetch_lengths(res);
+        for (unsigned int i = 0; i < result.fieldCount; ++i) {
+          rowData.push_back(row[i] ? std::string(row[i], lengths[i]) : "NULL");
+        }
+        result.data.push_back(rowData);
+      }
+
+      mysql_free_result(res);// Free the result set
+    } else {
+      if (mysql_field_count(m_connection) == 0) {
+        result.rowCount = mysql_affected_rows(m_connection);
+      } else {
+        result.success = false;
+        result.error = mysql_error(m_connection);
+        std::string error = "Error fetching result set: " + result.error;
+        log(error, spdlog::level::err);
+        return result;
+      }
+    }
+
+    std::string success = std::string("Executed query: ") + "SHOW TABLES" + " successfully in " +
+                          std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(
+                                                 std::chrono::high_resolution_clock::now() - start)
+                                                 .count()) +
+                          "ms";
+    log(success, spdlog::level::info);
+
+    result.success = true;
+    result.error = "";
+    result.source = "SHOW DATABASES";
     return result;
   }
 

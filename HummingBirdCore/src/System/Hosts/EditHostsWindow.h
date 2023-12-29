@@ -98,8 +98,8 @@ private:
     };
 
 public:
-    EditHostsWindow() : EditHostsWindow(ImGuiWindowFlags_None) {}
-    explicit EditHostsWindow(const ImGuiWindowFlags flags) : UIWindow(flags, "Edit Hosts") {
+    EditHostsWindow(const std::string &name) : EditHostsWindow(ImGuiWindowFlags_None, name) {}
+    EditHostsWindow(const ImGuiWindowFlags flags, const std::string &name) : UIWindow(flags, name) {
       parseHostsFile();
     }
 
@@ -236,7 +236,5 @@ private:
     const std::regex c_ipv6_regex = std::regex(R"((([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))");
     const std::regex c_hostname_regex = std::regex(R"(([A-Za-z0-9]+[^#\n: \t]*))");
     const std::regex c_comment_regex = std::regex(R"((#[^\n]*))");
-
-
   };
 }// namespace HummingBirdCore::System
