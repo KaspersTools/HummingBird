@@ -12,7 +12,7 @@
 namespace HummingBirdCore::System {
   class SysInfoWindow : public UIWindow {
 public:
-    SysInfoWindow() : UIWindow(ImGuiWindowFlags_None, "Sys Info") {
+    SysInfoWindow(const std::string& name) : UIWindow(ImGuiWindowFlags_None, name) {
       m_system.open();
       fetchData();
     }

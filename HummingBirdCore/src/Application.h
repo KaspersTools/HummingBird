@@ -56,12 +56,12 @@
 
 // Kasper specific
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
-  #include <HelloLibrary.h>
-  #include <Hellebrekers/VisualLinkLauncher.h>
+#include <Hellebrekers/VisualLinkLauncher.h>
+#include <HelloLibrary.h>
 
-  namespace HummingBirdKasper::VisualLink {
-    class VisualLinkLauncher;
-  }
+namespace HummingBirdKasper::VisualLink {
+  class VisualLinkLauncher;
+}
 #endif
 
 namespace HummingBirdCore {
@@ -73,40 +73,7 @@ public:
 
     //TODO: find more intuitive way to add windows
     UIWindow &AddWindow(const std::string &name, std::shared_ptr<UIWindow> uiWindow) {
-      //check if is instance of UIWindow
-      std::string finalName = "";
-      if (std::dynamic_pointer_cast<Terminal::TerminalWindow>(uiWindow)) {
-        m_terminalCount++;
-        finalName = name + std::to_string(m_terminalCount);
-      } else if (std::dynamic_pointer_cast<System::EditHostsWindow>(uiWindow)) {
-        m_editHostsCount++;
-        finalName = name + std::to_string(m_editHostsCount);
-      } else if (std::dynamic_pointer_cast<Themes::ThemeManager>(uiWindow)) {
-        m_themeManagerCount++;
-        finalName = name + std::to_string(m_themeManagerCount);
-      } else if (std::dynamic_pointer_cast<Security::LogInWindow>(uiWindow)) {
-        finalName = name;
-      } else if(std::dynamic_pointer_cast<UIWindows::LogWindow>(uiWindow)) {
-        m_logWindowCount++;
-        finalName = name + std::to_string(m_logWindowCount);
-      } else if(std::dynamic_pointer_cast<HummingBirdCore::Sql::SqlWindow>(uiWindow)) {
-        m_sqlWindowCount++;
-        finalName = name + std::to_string(m_sqlWindowCount);
-      }
-      //Kasper specific
-#ifdef WITHHUMMINGBIRDKASPERSPECIFIC
-      else if (std::dynamic_pointer_cast<HummingBirdKasper::VisualLink::VisualLinkLauncher>(uiWindow)) {
-        m_visualLinkLauncherCount++;
-        finalName = name + std::to_string(m_visualLinkLauncherCount);
-      }
-#endif
-      //fallback
-      else {
-        CORE_WARN("UIWindow {0} is not a valid type", name);
-        finalName = name;
-      }
-
-      m_uiWindows[finalName] = uiWindow;
+      m_uiWindows[name] = uiWindow;
       return *uiWindow;
     }
 
@@ -156,11 +123,12 @@ private:
     bool m_showDemoWindow = false;
     bool m_showMetricsWindow = false;
 
+    int m_systemInfoCount = 0;
     int m_terminalCount = 0;
     int m_editHostsCount = 0;
-    int m_themeManagerCount = 0;
-    int m_logWindowCount = 0;
-    int m_sqlWindowCount = 0;
+    int m_contentExplorerCount = 0;
+    int m_debugWindowCount = 0;
+    int m_sqlWindowCount =0;
 
     //Updatables
     std::vector<std::shared_ptr<Updatable>> m_updatables = {};

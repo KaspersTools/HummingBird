@@ -64,9 +64,9 @@ namespace HummingBirdCore {
         }
       }
 
-//      void renderConnectionSettingsTab();
-//      void renderConnectionStatusTab();
       void renderQueryTab();
+      void renderTablesTab();
+      void renderDatabasesTab();
 
   private:
       HummingBirdCore::Sql::SqlConnection m_connection;

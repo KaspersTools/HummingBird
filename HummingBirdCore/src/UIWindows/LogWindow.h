@@ -12,7 +12,7 @@ namespace HummingBirdCore::UIWindows {
 
   class LogWindow : public UIWindow {
 public:
-    LogWindow() : UIWindow(ImGuiWindowFlags_None, "Debug Window") {
+    LogWindow(const std::string& name) : UIWindow(ImGuiWindowFlags_None, name) {
     }
 
     ~LogWindow() = default;

@@ -72,8 +72,8 @@ private:
 
   class TerminalWindow : public UIWindow {
 public:
-    TerminalWindow() : TerminalWindow(ImGuiWindowFlags_None) {}
-    TerminalWindow(ImGuiWindowFlags flags) : UIWindow(ImGuiWindowFlags_None, "Terminal", false) {
+    TerminalWindow(const std::string& name) : TerminalWindow(ImGuiWindowFlags_None, name) {}
+    TerminalWindow(ImGuiWindowFlags flags, const std::string& name) : UIWindow(ImGuiWindowFlags_None, name, false) {
       m_currentFolder->setChildDirectories();
 #ifdef __APPLE__
       pws = getpwuid(geteuid());

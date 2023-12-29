@@ -17,7 +17,7 @@ namespace HummingBirdCore {
       ImGui::InputInt("Port", (int *) &m_port);
 
       if (m_connection.isConnected()) {
-        ImGui::Text("Connected to database");
+        ImGui::Text("Connected to database %s", m_database.c_str());
         ImGui::SameLine();
         if (ImGui::Button("Disconnect")) {
           m_connection.disconnect();
@@ -35,7 +35,12 @@ namespace HummingBirdCore {
           renderQueryTab();
           ImGui::EndTabItem();
         }
+        if (ImGui::BeginTabItem("Databases")) {
+          renderDatabasesTab();
+          ImGui::EndTabItem();
+        }
         if (ImGui::BeginTabItem("Tables")) {
+          renderTablesTab();
           ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Columns")) {
@@ -99,27 +104,28 @@ namespace HummingBirdCore {
       ImGui::SameLine();
       //result if its a success or not
       if (m_queryResult.success) {
-          ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
-          ImGui::SameLine();
-          ImGui::Text(m_queryResult.source.c_str());
-          ImGui::SameLine();
-          std::string rows = "rows: " + std::to_string(m_queryResult.rowCount);
-          ImGui::Text(rows.c_str());
-          ImGui::SameLine();
-          std::string fields = "fields: " + std::to_string(m_queryResult.fieldCount);
-          ImGui::Text(fields.c_str());
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
+        ImGui::SameLine();
+        ImGui::Text(m_queryResult.source.c_str());
+        ImGui::SameLine();
+        std::string rows = "rows: " + std::to_string(m_queryResult.rowCount);
+        ImGui::Text(rows.c_str());
+        ImGui::SameLine();
+        std::string fields = "fields: " + std::to_string(m_queryResult.fieldCount);
+        ImGui::Text(fields.c_str());
       } else {
-          ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Failed");
-          ImGui::SameLine();
-          ImGui::Text(m_queryResult.source.c_str());
-          ImGui::SameLine();
-          ImGui::Text(m_queryResult.error.c_str());
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Failed");
+        ImGui::SameLine();
+        ImGui::Text(m_queryResult.source.c_str());
+        ImGui::SameLine();
+        ImGui::Text(m_queryResult.error.c_str());
       }
       if (ImGui::Button("Execute")) {
         m_queryResult = m_connection.query(m_queryInput);
       }
 
       //Table with the query result
+      //TODO: MAKE OWN IMGUI WIDGET SO WE CAN REUSE THIS
       if (m_queryResult.success) {
         ImGui::BeginChild("QueryResult", ImVec2(0, 0), true);
         const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
@@ -157,6 +163,59 @@ namespace HummingBirdCore {
         ImGui::EndChild();
       }
       ImGui::EndChild();
+    }
+
+    void SqlWindow::renderTablesTab() {
+      const QueryResult tables = m_connection.getLastTableQuery();
+      ImGui::BeginChild("Tables", ImVec2(0, 0), true);
+
+      const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
+      ImGuiTableFlags flags = ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+      ImVec2 outer_size = ImVec2(0.0f, TEXT_BASE_HEIGHT * 19);
+
+      if (ImGui::BeginTable("query_table", tables.columnNames.size(), flags, outer_size)) {
+        ImGui::TableSetupScrollFreeze(true, true);
+        for (auto &column: tables.columnNames) {
+          ImGui::TableSetupColumn(column.c_str());
+        }
+        ImGui::TableHeadersRow();
+
+        for (auto &row: tables.data) {
+          for (auto &column: row) {
+            ImGui::TableNextColumn();
+            ImGui::Text(column.c_str());
+          }
+        }
+        ImGui::EndTable();
+      }
+      ImGui::EndChild();
+    }
+
+    //TODO: ADD BUTTONS TO SWITCH TO ETC.ETC.
+    void SqlWindow::renderDatabasesTab(){
+        const QueryResult databases = m_connection.getLastDatabaseNames();
+        ImGui::BeginChild("Databases", ImVec2(0, 0), true);
+
+        const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
+        ImGuiTableFlags flags = ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+        ImVec2 outer_size = ImVec2(0.0f, TEXT_BASE_HEIGHT * 19);
+
+        if (ImGui::BeginTable("databasestable", databases.columnNames.size(), flags, outer_size)) {
+            ImGui::TableSetupScrollFreeze(true, true);
+            for (auto &column: databases.columnNames) {
+            ImGui::TableSetupColumn(column.c_str());
+            }
+            ImGui::TableHeadersRow();
+
+            for (auto &row: databases.data) {
+            for (auto &column: row) {
+                ImGui::TableNextColumn();
+                ImGui::Text(column.c_str());
+            }
+            }
+            ImGui::EndTable();
+        }
+        ImGui::EndChild();
     }
   }// namespace Sql
 }// namespace HummingBirdCore
