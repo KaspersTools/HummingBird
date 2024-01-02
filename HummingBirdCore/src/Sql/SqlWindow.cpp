@@ -11,7 +11,7 @@ namespace HummingBirdCore {
       ImGui::InputText("Host", &m_inputhost);
       ImGui::InputText("User", &m_inputuser);
       ImGui::InputText("Password", &m_inputpassword);
-      ImGui::InputInt("Port", (int *) &m_port);
+      ImGui::InputInt("Port", &m_port);
 
       if (m_connection.getIsConnected()) {
         ImGui::Text("Connected to database");
