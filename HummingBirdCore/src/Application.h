@@ -104,6 +104,17 @@ private:
 
     void Render();
 
+    bool openClosedWindow(const std::string &baseName) {
+      for (auto &window : m_uiWindows) {
+        if (window.first.find(baseName) == 0) {
+          if(!window.second->isOpen()) {
+            window.second->m_isOpen = true;
+            return true;
+          }
+        }
+      }
+      return false;
+    }
 
 private:
     inline static SDL_Window *s_window;
@@ -128,7 +139,8 @@ private:
     int m_editHostsCount = 0;
     int m_contentExplorerCount = 0;
     int m_debugWindowCount = 0;
-    int m_sqlWindowCount =0;
+    int m_sqlWindowCount = 0;
+    int m_themeManagerCount=0;
 
     //Updatables
     std::vector<std::shared_ptr<Updatable>> m_updatables = {};

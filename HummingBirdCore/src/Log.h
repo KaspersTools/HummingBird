@@ -46,6 +46,5 @@ namespace HummingBirdCore {
 #define CORE_TRACE(...)    ::HummingBirdCore::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define CORE_INFO(...)     ::HummingBirdCore::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define CORE_WARN(...)     ::HummingBirdCore::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define CORE_TRACE(...)    ::HummingBirdCore::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define CORE_ERROR(...)    ::HummingBirdCore::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define CORE_CRITICAL(...) ::HummingBirdCore::Log::GetCoreLogger()->critical(__VA_ARGS__)

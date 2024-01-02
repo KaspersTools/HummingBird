@@ -21,27 +21,96 @@
 #include "Log.h"
 
 namespace HummingBirdCore::Sql {
-  struct QueryResult {
-    bool success;
-    std::string error;
-    std::vector<std::vector<std::string>> data;
-    std::string source;
-    std::size_t rowCount;
-    std::vector<std::string> columnNames;
-    std::size_t fieldCount;
-    std::vector<unsigned int> fieldTypes;
-    std::map<std::string, std::size_t> fieldIndexMap;
+  struct Header {
+    std::string name;
+    enum_field_types type;
+  };
 
-    QueryResult() : success(false), error(""), data({}), source(""), rowCount(0), columnNames({}), fieldCount(0), fieldTypes({}), fieldIndexMap({}) {
+  struct Row {
+    int id;
+    std::vector<std::string> data;
+  };
+
+  struct Table {
+    std::string name;
+    std::string databaseName;
+    bool isInitialized = false;
+
+    std::vector<Header> headers;
+    std::vector<Row> rows;
+
+    uint currentColumnIndex = 0;
+    std::string currentColumnName = "";
+
+    uint currentRowIndex = 0;
+    std::string currentRowName = "";
+
+    int numOfRows() const {
+      return rows.size();
     }
 
-    QueryResult(bool success, std::string error, std::vector<std::vector<std::string>> data,
-                std::string source, std::size_t rowCount, std::vector<std::string> columnNames,
-                std::size_t fieldCount, std::vector<unsigned int> fieldTypes,
-                std::map<std::string, std::size_t> fieldIndexMap)
-        : success(success), error(error), data(data), source(source), rowCount(rowCount),
-          columnNames(columnNames), fieldCount(fieldCount), fieldTypes(fieldTypes), fieldIndexMap(fieldIndexMap) {
+    int numOfHeaders() const {
+      return headers.size();
     }
+
+    void setHeadersAndRows(const std::vector<Header> &headers, const std::vector<Row> &rows) {
+      this->headers = headers;
+      this->rows = rows;
+      isInitialized = true;
+    }
+  };
+
+  struct Database {
+public:
+    Database(const std::string &name, const std::vector<Table> &tables, spdlog::logger *logger = nullptr) : name(name), tables(tables){
+    }
+
+public:
+    std::string getName() const {
+      return name;
+    }
+
+    //TABLE FUNCTIONS
+    void setTables(const std::vector<Table> &tablevec) {
+      this->tables = {};
+      this->tables = tablevec;
+    }
+    void setTableData(const int tableIndex, const std::vector<Header> &headers, const std::vector<Row> &rows) {
+      if (tableIndex < 0 || tableIndex >= tables.size()) {
+        log("Table index out of range", spdlog::level::err);
+        return;
+      }
+      tables[tableIndex].setHeadersAndRows(headers, rows);
+    }
+
+    //GETTERS
+    std::vector<Table> getTables() const {
+      return tables;
+    }
+
+    int getCurrentTableIndex() const {
+      return currentTableIndex;
+    }
+
+    //SETTERS
+    void setCurrentTableIndex(const int index) {
+      if (index < 0 || index >= tables.size()) {
+        log("Table index out of range", spdlog::level::err);
+        return;
+      }
+      log("Setting current table index to: " + std::to_string(index), spdlog::level::info);
+      currentTableIndex = index;
+    }
+
+private:
+    void log(const std::string &message, spdlog::level::level_enum level = spdlog::level::trace) {
+      HummingBirdCore::Log::log(level, message);
+    }
+
+private:
+    std::string name;
+    std::vector<HummingBirdCore::Sql::Table> tables;
+    uint currentTableIndex = 0;
   };
 
   enum class QueryType {
@@ -51,14 +120,13 @@ namespace HummingBirdCore::Sql {
     DELETE
   };
 
-
   class SqlConnection {
 public:
-    SqlConnection() : SqlConnection("", "", "", "", 3306, false) {
+    SqlConnection() : SqlConnection("", "", "", 3306, false) {
     }
 
     SqlConnection(const std::string &host, const std::string &user,
-                  const std::string &password, const std::string &database,
+                  const std::string &password,
                   const unsigned int port = 3306,
                   const bool autoConnect = true);
 
@@ -69,24 +137,189 @@ public:
                  const std::string &password, const std::string &database,
                  const unsigned int port = 3306);
     void disconnect();
-    bool isConnected();
 
-    const QueryResult query(const std::string &query);
-    QueryResult getAllTables();
+    bool useDatabase(const int databaseIndex, int tableIndex);
+    bool useDatabase(const std::string &database, int tableIndex);
 
-    QueryResult getLastTableQuery() const {
-      return m_allTables;
-    }
-
-    QueryResult getAllDatabaseNames();
-
-    QueryResult getLastDatabaseNames() const {
-      return m_allDatabaseNames;
-    }
+    bool useTable(const int tableIndex);
+    bool useTable(const std::string &table);
 
     void setLogger(Ref<spdlog::logger> logger) {
       m_logger = logger;
     }
+
+    std::vector<Database> SVR_getDatabases() {
+      if (!checkConnection()) {
+        return {};
+      }
+
+      MYSQL_RES *res = mysql_list_dbs(m_connection, NULL);
+      if (res == NULL) {
+        log(mysql_error(m_connection), spdlog::level::err);
+        return {};
+      }
+
+      std::vector<Database> result = {};
+      MYSQL_ROW row;
+
+      while ((row = mysql_fetch_row(res)) != NULL) {
+        std::string name = row[0];
+        std::vector<Table> tables = {};
+        Database db(name, tables);
+        result.push_back(db);
+      }
+
+      //free the result
+      mysql_free_result(res);
+
+      //load the tables
+      for (Database &db: result) {
+        db.setTables(SVR_getTables(db.getName()));
+      }
+
+      std::string logMsg = "Loaded " + std::to_string(result.size()) + " databases";
+      log(logMsg, spdlog::level::info);
+
+      return result;
+    }
+
+    std::vector<Table> SVR_getTables(const std::string &database) {
+      if (!checkConnection() || !checkDatabaseInput(database)) {
+        return {};
+      }
+
+      uint currentDbIndex = m_currentDatabaseIndex;
+
+      int switched = mysql_select_db(m_connection, database.c_str());
+      if (switched != 0) {
+        log("Could not switch to database on the svr get tables: " + database, spdlog::level::err);
+        return {};
+      }
+
+      MYSQL_RES *res = mysql_list_tables(m_connection, NULL);
+      if (res == NULL) {
+        log(mysql_error(m_connection), spdlog::level::err);
+        return {};
+      }
+
+      std::vector<Table> result = {};
+
+      MYSQL_ROW row;
+
+      while ((row = mysql_fetch_row(res)) != NULL) {
+        std::string name = row[0];
+        std::vector<Header> headers = {};// SVR_getHeaders(database, name);
+        std::vector<Row> rows = {};      // SVR_getAllRows(database, name);
+        Table table{name, database, false, headers, rows};
+        result.push_back(table);
+      }
+
+      mysql_free_result(res);
+
+      std::string logMsg = "Loaded " + std::to_string(result.size()) + " tables from database: " + database;
+      log(logMsg, spdlog::level::info);
+
+      return result;
+    }
+
+    std::vector<Header> SVR_getHeaders(const std::string &database, const std::string &table) {
+      if (!checkConnection() || !checkDatabaseInput(database) || !checkTableInput(table)) {
+        return {};
+      }
+
+      int switched = mysql_select_db(m_connection, database.c_str());
+      if (switched != 0) {
+        log("Could not switch to database svr get header: " + database, spdlog::level::err);
+        return {};
+      }
+
+      int succes = mysql_query(m_connection, ("SELECT * FROM " + table + " LIMIT 1").c_str());
+      if (succes != 0) {
+        log(mysql_error(m_connection), spdlog::level::err);
+        return {};
+      }
+
+      MYSQL_RES *mysqlres = mysql_store_result(m_connection);
+      if (mysqlres == NULL) {
+        log(mysql_error(m_connection), spdlog::level::err);
+        return {};
+      }
+
+      std::vector<Header> result = {};
+      MYSQL_FIELD *field;
+
+      while ((field = mysql_fetch_field(mysqlres)) != NULL) {
+        Header header{field->name, field->type};
+        result.push_back(header);
+      }
+
+
+      mysql_free_result(mysqlres);
+
+      std::string logMsg = "Loaded " + std::to_string(result.size()) + " headers from table: " + table + " in database: " + database;
+      log(logMsg, spdlog::level::info);
+
+      return result;
+    }
+
+    std::vector<Row> SVR_getAllRows(const std::string &database, const std::string &table) {
+      if (!checkConnection() || !checkDatabaseInput(database) || !checkTableInput(table)) {
+        return {};
+      }
+
+      int switched = mysql_select_db(m_connection, database.c_str());
+
+      if (switched != 0) {
+        log("Could not switch to database on svr: " + database, spdlog::level::err);
+        return {};
+      }
+
+      if (mysql_query(m_connection, ("SELECT * FROM " + table).c_str()) != 0) {
+        log(mysql_error(m_connection), spdlog::level::err);
+        return {};
+      }
+
+      MYSQL_RES *result = mysql_store_result(m_connection);
+      if (result == NULL) {
+        log(mysql_error(m_connection), spdlog::level::err);
+        return {};
+      }
+
+      std::vector<Row> rows;
+      MYSQL_ROW mysql_row;
+      unsigned int num_fields = mysql_num_fields(result);
+
+      while ((mysql_row = mysql_fetch_row(result)) != NULL) {
+        Row row;
+        if (mysql_row[0] != NULL) {
+          row.id = atoi(mysql_row[0]);
+        } else {
+          row.id = -1;// or some other default value indicating an invalid ID
+        }
+
+        for (unsigned int i = 0; i < num_fields; i++) {
+          row.data.push_back(mysql_row[i] ? mysql_row[i] : "NULL");
+        }
+        rows.push_back(row);
+      }
+
+
+      mysql_free_result(result);
+
+      std::string logMsg = "Loaded " + std::to_string(rows.size()) + " rows from table: " + table + " in database: " + database;
+      log(logMsg, spdlog::level::info);
+
+      return rows;
+    }
+
+public:
+    //Databases
+    std::vector<Database> getDatabases() { return m_databases; }
+    int getCurrentDatabaseIndex() const { return m_currentDatabaseIndex; }
+    std::string getCurrentDatabaseName() const { return m_databases[getCurrentDatabaseIndex()].getName(); }
+    bool getIsConnected() const { return m_isConnected; }
+
+    Database getCurrentDatabase() { return m_databases[getCurrentDatabaseIndex()]; }
 
 private:
     //Custom logger so we can log to the ImGuiLogSink
@@ -100,25 +333,44 @@ private:
         HummingBirdCore::Log::GetCoreLogger()->log(level, message);
       }
     }
-//
-//    void processQueryResults(MYSQL_RES *result, std::function<void(MYSQL_RES *)> resultProcessor);
-//    std::string constructQuery(const std::string &table, const std::map<std::string, std::string> &data, const std::string &type);
 
+    bool checkConnection() {
+      if (!m_isConnected) {
+        log("Not connected to a database", spdlog::level::warn);
+      }
+
+      return getIsConnected();
+    }
+
+    bool checkDatabaseInput(const std::string &dbName) {
+      if (dbName.empty()) {
+        log("Database name is empty", spdlog::level::warn);
+        return false;
+      }
+      return true;
+    }
+
+    bool checkTableInput(const std::string &tableName) {
+      if (tableName.empty()) {
+        log("Table name is empty", spdlog::level::warn);
+        return false;
+      }
+      return true;
+    }
 
 private:
     std::string m_host;
     std::string m_user;
     std::string m_password;
-    std::string m_database;
+
+    std::vector<Database> m_databases;
+    int m_currentDatabaseIndex = 0;
+
     unsigned int m_port;
 
     bool m_isConnected = false;
     MYSQL *m_connection;
 
     Ref<spdlog::logger> m_logger = nullptr;
-
-    QueryResult m_allTables = QueryResult();
-
-    QueryResult m_allDatabaseNames = {};
   };
 }// namespace HummingBirdCore::Sql

@@ -6,7 +6,6 @@
 
 #include "Application.h"
 #include "Log.h"
-#include "Sql/SqlConnection.h"
 
 namespace HummingBirdCore {
 
@@ -28,19 +27,19 @@ namespace HummingBirdCore {
     m_backgroundTexture.load();
 
     //Test mysql connection
-    std::string host = "127.0.0.1";
-    std::string username = "root";
-    std::string passw = "Vuur01-";
-    std::string database = "dsu_core";
-    unsigned int port = 3306;
-
-    Sql::SqlConnection sqlConnection(host, username, passw, database, port);
-
-    if (sqlConnection.isConnected()) {
-      CORE_TRACE("Connected to database");
-    } else {
-      CORE_ERROR("Failed to connect to database");
-    }
+    //    std::string host = "127.0.0.1";
+    //    std::string username = "root";
+    //    std::string passw = "Vuur01-";
+    //    std::string database = "dsu_core";
+    //    unsigned int port = 3306;
+    //
+    //    Sql::SqlConnection sqlConnection(host, username, passw, port);
+    //
+    //    if (sqlConnection.isConnected()) {
+    //      CORE_TRACE("Connected to database");
+    //    } else {
+    //      CORE_ERROR("Failed to connect to database");
+    //    }
 
 
     Run();
@@ -159,71 +158,107 @@ namespace HummingBirdCore {
 
     //File menu
     if (ImGui::BeginMenuBar()) {
+      // File menu
       if (ImGui::BeginMenu("File")) {
+        // Project management
         if (ImGui::MenuItem("New Project")) {
+          CORE_WARN("NEW PROJECT NOT IMPLEMENTED");
         }
         if (ImGui::MenuItem("Open Project")) {
+          CORE_WARN("OPEN PROJECT NOT IMPLEMENTED");
         }
         if (ImGui::MenuItem("Save Project")) {
+          CORE_WARN("SAVE PROJECT NOT IMPLEMENTED");
         }
 
         ImGui::Separator();
-        if (ImGui::MenuItem("Log Out")) {
-          Security::LoginManager::logout();
-        }
-        if (ImGui::MenuItem("Exit")) {
-          m_exit = true;
-        }
+
+        // Session management
+        if (ImGui::MenuItem("Log Out")) { Security::LoginManager::logout(); }
+        if (ImGui::MenuItem("Exit")) { m_exit = true; }
         ImGui::EndMenu();
       }
-      //Tools menu
-      if (ImGui::BeginMenu("Windows")) {
-        if (ImGui::BeginMenu("General Tools")) {
-          ImGui::EndMenu();
-        }
 
-        if (ImGui::BeginMenu("System")) {
+      // Tools menu
+      if (ImGui::BeginMenu("Tools")) {
+        // System Tools
+        if (ImGui::BeginMenu("System Tools")) {
           if (ImGui::MenuItem("System Info")) {
-            const std::string name = "System Info" + std::to_string(m_systemInfoCount++);
-            AddWindow(name, std::make_shared<HummingBirdCore::System::SysInfoWindow>(
-                                    name));
-            m_systemInfoCount++;
+            const std::string baseName = "System Info ";
+            if (!openClosedWindow(baseName)) {
+              const std::string name = baseName + std::to_string(m_systemInfoCount);
+
+              AddWindow(name, std::make_shared<HummingBirdCore::System::SysInfoWindow>(name));
+              m_systemInfoCount++;
+            }
           }
-          ImGui::EndMenu();
-        }
-
-        if (ImGui::MenuItem("Terminal")) {
-          const std::string name = "Terminal" + std::to_string(m_terminalCount);
-          AddWindow(name, std::make_shared<HummingBirdCore::Terminal::TerminalWindow>(name));
-          m_terminalCount++;
-        }
-
-        if (ImGui::BeginMenu("Networking")) {
           if (ImGui::MenuItem("Edit Hosts")) {
-            const std::string name = "Edit Hosts" + std::to_string(m_editHostsCount);
-            AddWindow(name, std::make_shared<HummingBirdCore::System::EditHostsWindow>(name));
-            m_editHostsCount++;
+            const std::string baseName = "Edit Hosts ";
+            if (!openClosedWindow(baseName)) {
+              const std::string name = baseName + std::to_string(m_editHostsCount);
+              AddWindow(name, std::make_shared<HummingBirdCore::System::EditHostsWindow>(name));
+              m_editHostsCount++;
+            }
           }
           ImGui::EndMenu();
         }
 
-        if (ImGui::MenuItem("Content Explorer")) {
-          const std::string name = "Content Explorer" + std::to_string(m_contentExplorerCount);
-          AddWindow(name, std::make_shared<HummingBirdCore::UIWindows::ContentExplorer>(name));
-          m_contentExplorerCount++;
+        // Developer Tools
+        if (ImGui::BeginMenu("Developer Tools")) {
+          if (ImGui::MenuItem("Terminal")) {
+            const std::string baseName = "Terminal ";
+            if (!openClosedWindow(baseName)) {
+              const std::string name = baseName + std::to_string(m_terminalCount);
+              AddWindow(name, std::make_shared<HummingBirdCore::Terminal::TerminalWindow>(name));
+              m_terminalCount++;
+            }
+          }
+          if (ImGui::MenuItem("Sql")) {
+            const std::string baseName = "Sql ";
+            if (!openClosedWindow(baseName)) {
+              const std::string name = baseName + std::to_string(m_sqlWindowCount);
+              AddWindow(name, std::make_shared<HummingBirdCore::Sql::SqlWindow>(name));
+              m_sqlWindowCount++;
+            }
+          }
+          if (ImGui::MenuItem("Debug Window")) {
+            const std::string baseName = "Debug Window ";
+            if (!openClosedWindow(baseName)) {
+              const std::string name = baseName + std::to_string(m_debugWindowCount);
+              AddWindow(name, std::make_shared<HummingBirdCore::UIWindows::LogWindow>(name));
+              m_debugWindowCount++;
+            }
+          }
+          ImGui::EndMenu();
         }
 
-        if (ImGui::MenuItem("Debug Window")) {
-          const std::string name = "Debug Window" + std::to_string(m_debugWindowCount);
-          AddWindow(name, std::make_shared<HummingBirdCore::UIWindows::LogWindow>(name));
-          m_debugWindowCount++;
+        // Networking
+        if (ImGui::MenuItem("Networking")) {
+          CORE_WARN("NETWORKING NOT IMPLEMENTED");
+        }
+
+        // Additional Tools
+        if (ImGui::MenuItem("Content Explorer")) {
+          const std::string baseName = "Content Explorer ";
+          if (!openClosedWindow(baseName)) {
+            const std::string name = baseName + std::to_string(m_contentExplorerCount);
+            AddWindow(name, std::make_shared<HummingBirdCore::UIWindows::ContentExplorer>(name));
+            m_contentExplorerCount++;
+          }
         }
         ImGui::EndMenu();
       }
+
       //View menu
       if (ImGui::BeginMenu("View")) {
         if (ImGui::BeginMenu("Styles")) {
           if (ImGui::MenuItem("ThemeManager")) {
+            const std::string baseName = "ThemeManager ";
+            if (!openClosedWindow(baseName)) {
+              const std::string name = baseName + std::to_string(m_themeManagerCount);
+              AddWindow(name, std::make_shared<Themes::ThemeManager>(name));
+              m_themeManagerCount++;
+            }
           }
           if (ImGui::BeginMenu("Themes")) {
             if (ImGui::MenuItem("Maya")) {
@@ -266,16 +301,6 @@ namespace HummingBirdCore {
         ImGui::EndMenu();
       }
 
-      //Tools menu
-      if (ImGui::BeginMenu("Tools")) {
-        if (ImGui::MenuItem("Sql")) {
-          const std::string name = "Sql" + std::to_string(m_sqlWindowCount);
-          AddWindow(name, std::make_shared<HummingBirdCore::Sql::SqlWindow>(ImGuiWindowFlags_MenuBar, name));
-          m_sqlWindowCount++;
-        }
-        ImGui::EndMenu();
-      }
-
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
       if (ImGui::BeginMenu("Kasper Tools")) {
         if (ImGui::MenuItem("Hello World")) {
@@ -296,14 +321,11 @@ namespace HummingBirdCore {
           if (ImGui::MenuItem("Demo Window")) {
             m_showDemoWindow = true;
           }
-          if (ImGui::MenuItem("Metrics Window")) {
-            m_showMetricsWindow = true;
-          }
           ImGui::EndMenu();
         }
         ImGui::EndMenu();
       }
-      // You can add more menus here...
+
       ImGui::EndMenuBar();
     }
   }
@@ -312,10 +334,6 @@ namespace HummingBirdCore {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(s_window);
     ImGui::NewFrame();
-
-    //    {
-    //      HummingBirdCore::GeneralTools::FileDialog::Render();
-    //    }
 
     {
       ImGuiWindowFlags mainWindowFlags =
@@ -351,30 +369,17 @@ namespace HummingBirdCore {
     SetupDockspace();
 
     {
-      if (Security::LoginManager::isLoggedIn()) {
-        if (m_showDemoWindow) {
-          ImGui::ShowDemoWindow(&m_showDemoWindow);
-        }
-
-        if (m_showMetricsWindow) {
-          ImGui::ShowMetricsWindow(&m_showMetricsWindow);
-        }
-
-        //foreach window
-        for (auto window: m_uiWindows) {
-          if (window.second->isOpen()) {
-            ImGui::Begin(window.first.c_str(), &window.second->m_isOpen, window.second->getFlags());
-            window.second->render();
-            if (window.second->getAutoEndFrame()) {
-              ImGui::End();
-            }
-          }
-        }
-      } else {
+      if (!Security::LoginManager::isLoggedIn()) {
         m_loginWindow.render();
+      } else {
+        if (m_showDemoWindow)
+          ImGui::ShowDemoWindow(&m_showDemoWindow);
+
+        for (auto window: m_uiWindows) {
+          window.second->beginFrame();
+        }
       }
     }
-
 
     ImGui::End();
 

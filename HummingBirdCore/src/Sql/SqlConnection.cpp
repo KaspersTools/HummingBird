@@ -10,9 +10,9 @@
 namespace HummingBirdCore::Sql {
   //TODO: Implement this class
   SqlConnection::SqlConnection(const std::string &host, const std::string &user,
-                               const std::string &password, const std::string &database,
+                               const std::string &password,
                                const unsigned int port,
-                               const bool autoConnect) : m_host(host), m_user(user), m_password(password), m_database(database), m_port(port) {
+                               const bool autoConnect) : m_host(host), m_user(user), m_password(password), m_port(port) {
     m_connection = mysql_init(NULL);
     if (!m_connection) {
       log("Error initializing mysql", spdlog::level::err);
@@ -35,7 +35,7 @@ namespace HummingBirdCore::Sql {
       disconnect();
 
     if (!mysql_real_connect(m_connection, m_host.c_str(), m_user.c_str(), m_password.c_str(),
-                            m_database.c_str(), m_port, NULL, 0)) {
+                            "", m_port, NULL, 0)) {
       log("Error connecting to database", spdlog::level::err);
       log(mysql_error(m_connection), spdlog::level::err);
       CORE_ERROR("Error connecting to database {0}", mysql_error(m_connection));
@@ -43,10 +43,15 @@ namespace HummingBirdCore::Sql {
     }
 
     m_isConnected = true;
+    m_databases = SVR_getDatabases();
+
     log("Connected to database", spdlog::level::info);
 
-    m_allTables = getAllTables();
-    m_allDatabaseNames = getAllDatabaseNames();
+    //Switch to first database
+    if (m_databases.size() > 0) {
+      useDatabase(0, 0);
+    }
+
     return true;
   }
 
@@ -56,7 +61,7 @@ namespace HummingBirdCore::Sql {
     m_host = host;
     m_user = user;
     m_password = password;
-    m_database = database;
+
     m_port = port;
 
     return connect();
@@ -68,200 +73,99 @@ namespace HummingBirdCore::Sql {
 
     mysql_close(m_connection);
     m_isConnected = false;
+    log("Disconnected from database", spdlog::level::info);
   }
 
+  bool SqlConnection::useDatabase(const int databaseIndex, int tableIndex) {
+    if (!m_isConnected)
+      return false;
 
-  bool SqlConnection::isConnected() {
-    return m_isConnected;
+    if (databaseIndex < 0 || databaseIndex >= m_databases.size()) {
+      log("Database index out of range", spdlog::level::err);
+      return false;
+    }
+
+    if(databaseIndex == m_currentDatabaseIndex){
+      log("Database already selected only switching table", spdlog::level::warn);
+      return useTable(tableIndex);
+    }
+
+    return useDatabase(m_databases[databaseIndex].getName(), tableIndex);
   }
 
-  const QueryResult SqlConnection::query(const std::string &query) {
-    QueryResult result;
-    auto start = std::chrono::high_resolution_clock::now();
-    int q = mysql_query(m_connection, query.c_str());
+  bool SqlConnection::useDatabase(const std::string &database, int tableIndex) {
+    if (!m_isConnected)
+      return false;
 
-    if (q) {
-      result.success = false;
-      result.error = mysql_error(m_connection);
-      std::string error = "Error executing query: " + result.error;
-      log(error, spdlog::level::err);
-      return result;
-    }
-
-    MYSQL_RES *res = mysql_store_result(m_connection);
-    MYSQL_FIELD *field;
-    MYSQL_ROW row;
-
-    if (res) {
-      result.fieldCount = mysql_num_fields(res);
-
-      // Fetch field types and names
-      while ((field = mysql_fetch_field(res)) != NULL) {
-        result.fieldTypes.push_back(field->type);
-        result.fieldIndexMap[field->name] = mysql_field_tell(res);
-        result.columnNames.push_back(field->name);
-      }
-
-      // Fetch rows
-      while ((row = mysql_fetch_row(res)) != NULL) {
-        std::vector<std::string> rowData;
-        unsigned long *lengths = mysql_fetch_lengths(res);
-        for (unsigned int i = 0; i < result.fieldCount; ++i) {
-          rowData.push_back(row[i] ? std::string(row[i], lengths[i]) : "NULL");
-        }
-        result.data.push_back(rowData);
-      }
-
-      mysql_free_result(res);// Free the result set
-    } else {
-      if (mysql_field_count(m_connection) == 0) {
-        result.rowCount = mysql_affected_rows(m_connection);
-      } else {
-        result.success = false;
-        result.error = mysql_error(m_connection);
-        std::string error = "Error fetching result set: " + result.error;
-        log(error, spdlog::level::err);
-        return result;
+    int foundIndex = -1;
+    for (std::size_t i = 0; i < m_databases.size(); ++i) {
+      if (m_databases[i].getName() == database) {
+        foundIndex = i;
+        log("Found database: " + database, spdlog::level::info);
+        break;
       }
     }
-
-    std::string success = std::string("Executed query: ") + query + " successfully in " +
-                          std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(
-                                                 std::chrono::high_resolution_clock::now() - start)
-                                                 .count()) +
-                          "ms";
-    log(success, spdlog::level::info);
-
-    result.success = true;
-    result.error = "";
-    result.source = query;
-    return result;
+    if (foundIndex == -1) {
+      log("Database: " + database + " not found", spdlog::level::err);
+      return false;
+    }
+    const int savedDBIndex = m_currentDatabaseIndex;
+    m_currentDatabaseIndex = foundIndex;
+    if (!useTable(tableIndex)) {
+      log("Failed to use table when switching database", spdlog::level::err);
+      m_currentDatabaseIndex = savedDBIndex;
+      return false;
+    }
+    log("Switched to database: " + database + " succesfully", spdlog::level::info);
+    return true;
   }
 
-  QueryResult SqlConnection::getAllTables() {
-    QueryResult result;
-    auto start = std::chrono::high_resolution_clock::now();
-    int q = mysql_query(m_connection, "SHOW TABLES");
+  bool SqlConnection::useTable(const int tableIndex) {
+    log("Trying to use table: " + std::to_string(tableIndex), spdlog::level::info);
 
-    if (q) {
-      result.success = false;
-      result.error = mysql_error(m_connection);
-      std::string error = "Error executing query: " + result.error;
-      log(error, spdlog::level::err);
-      return result;
+    if (!m_isConnected)
+      return false;
+
+    if (tableIndex < 0 || tableIndex >= getCurrentDatabase().getTables().size()) {
+      log("Table index out of range", spdlog::level::err);
+      return false;
     }
 
-    MYSQL_RES *res = mysql_store_result(m_connection);
-    MYSQL_FIELD *field;
-    MYSQL_ROW row;
+    m_databases[m_currentDatabaseIndex].setCurrentTableIndex(tableIndex);
+    int currentTableIndex = m_databases[m_currentDatabaseIndex].getCurrentTableIndex();
+    std::string tableName = m_databases[m_currentDatabaseIndex].getTables()[currentTableIndex].name;
+    bool isInitialized = m_databases[m_currentDatabaseIndex].getTables()[currentTableIndex].isInitialized;
 
-    if (res) {
-      result.fieldCount = mysql_num_fields(res);
+    if (!isInitialized) {
+      std::string logmsg = "Initializing table: " + tableName + " in database: " + getCurrentDatabaseName();
+      log(logmsg, spdlog::level::info);
 
-      // Fetch field types and names
-      while ((field = mysql_fetch_field(res)) != NULL) {
-        result.fieldTypes.push_back(field->type);
-        result.fieldIndexMap[field->name] = mysql_field_tell(res);
-        result.columnNames.push_back(field->name);
-      }
+      std::vector<Header> headers = SVR_getHeaders(getCurrentDatabaseName(), tableName);
+      std::vector<Row> rows = SVR_getAllRows(getCurrentDatabaseName(), tableName);
 
-      // Fetch rows
-      while ((row = mysql_fetch_row(res)) != NULL) {
-        std::vector<std::string> rowData;
-        unsigned long *lengths = mysql_fetch_lengths(res);
-        for (unsigned int i = 0; i < result.fieldCount; ++i) {
-          rowData.push_back(row[i] ? std::string(row[i], lengths[i]) : "NULL");
-        }
-        result.data.push_back(rowData);
-      }
+      m_databases[m_currentDatabaseIndex].setTableData(currentTableIndex, headers, rows);
 
-      mysql_free_result(res);// Free the result set
-    } else {
-      if (mysql_field_count(m_connection) == 0) {
-        result.rowCount = mysql_affected_rows(m_connection);
-      } else {
-        result.success = false;
-        result.error = mysql_error(m_connection);
-        std::string error = "Error fetching result set: " + result.error;
-        log(error, spdlog::level::err);
-        return result;
-      }
+      logmsg = "Initialized table: " + tableName + " in database: " + getCurrentDatabaseName();
+      log(logmsg, spdlog::level::info);
     }
 
-    std::string success = std::string("Executed query: ") + "SHOW TABLES" + " successfully in " +
-                          std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(
-                                                 std::chrono::high_resolution_clock::now() - start)
-                                                 .count()) +
-                          "ms";
-    log(success, spdlog::level::info);
+    std::string logMsg = "Switched to table: " + tableName + " in database: " + getCurrentDatabaseName();
+    log(logMsg, spdlog::level::info);
 
-    result.success = true;
-    result.error = "";
-    result.source = "SHOW TABLES";
-    return result;
+    return true;
   }
 
-  QueryResult SqlConnection::getAllDatabaseNames() {
-    QueryResult result;
-    auto start = std::chrono::high_resolution_clock::now();
-    int q = mysql_query(m_connection, "SHOW DATABASES");
-
-    if (q) {
-      result.success = false;
-      result.error = mysql_error(m_connection);
-      std::string error = "Error executing query: " + result.error;
-      log(error, spdlog::level::err);
-      return result;
+  bool SqlConnection::useTable(const std::string &tableName) {
+    if (!checkConnection() || !checkTableInput(tableName)) {
+      return false;
     }
 
-    MYSQL_RES *res = mysql_store_result(m_connection);
-    MYSQL_FIELD *field;
-    MYSQL_ROW row;
-
-    if (res) {
-      result.fieldCount = mysql_num_fields(res);
-
-      // Fetch field types and names
-      while ((field = mysql_fetch_field(res)) != NULL) {
-        result.fieldTypes.push_back(field->type);
-        result.fieldIndexMap[field->name] = mysql_field_tell(res);
-        result.columnNames.push_back(field->name);
-      }
-
-      // Fetch rows
-      while ((row = mysql_fetch_row(res)) != NULL) {
-        std::vector<std::string> rowData;
-        unsigned long *lengths = mysql_fetch_lengths(res);
-        for (unsigned int i = 0; i < result.fieldCount; ++i) {
-          rowData.push_back(row[i] ? std::string(row[i], lengths[i]) : "NULL");
-        }
-        result.data.push_back(rowData);
-      }
-
-      mysql_free_result(res);// Free the result set
-    } else {
-      if (mysql_field_count(m_connection) == 0) {
-        result.rowCount = mysql_affected_rows(m_connection);
-      } else {
-        result.success = false;
-        result.error = mysql_error(m_connection);
-        std::string error = "Error fetching result set: " + result.error;
-        log(error, spdlog::level::err);
-        return result;
+    for (std::size_t i = 0; i < getCurrentDatabase().getTables().size(); ++i) {
+      if (getCurrentDatabase().getTables()[i].name == tableName) {
+        return useTable(i);
       }
     }
-
-    std::string success = std::string("Executed query: ") + "SHOW TABLES" + " successfully in " +
-                          std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(
-                                                 std::chrono::high_resolution_clock::now() - start)
-                                                 .count()) +
-                          "ms";
-    log(success, spdlog::level::info);
-
-    result.success = true;
-    result.error = "";
-    result.source = "SHOW DATABASES";
-    return result;
+    return false;
   }
 
 }// namespace HummingBirdCore::Sql
