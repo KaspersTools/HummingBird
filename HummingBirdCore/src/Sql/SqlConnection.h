@@ -20,49 +20,20 @@
 #include "CoreRef.h"
 #include "Log.h"
 
+#include "UIWindows/Widget/DataViewer.h"
+
 namespace HummingBirdCore::Sql {
-  struct Header {
-    std::string name;
-    enum_field_types type;
-  };
 
-  struct Row {
-    int id;
-    std::vector<std::string> data;
-  };
 
-  struct Table {
-    std::string name;
-    std::string databaseName;
-    bool isInitialized = false;
-
-    std::vector<Header> headers;
-    std::vector<Row> rows;
-
-    uint currentColumnIndex = 0;
-    std::string currentColumnName = "";
-
-    uint currentRowIndex = 0;
-    std::string currentRowName = "";
-
-    int numOfRows() const {
-      return rows.size();
-    }
-
-    int numOfHeaders() const {
-      return headers.size();
-    }
-
-    void setHeadersAndRows(const std::vector<Header> &headers, const std::vector<Row> &rows) {
-      this->headers = headers;
-      this->rows = rows;
-      isInitialized = true;
-    }
+  //TODO: Add a way to load this from a file
+  struct SqlSettings {
+    int maxTableSize = 1000;
+    int maxRowSize = 10000;
   };
 
   struct Database {
 public:
-    Database(const std::string &name, const std::vector<Table> &tables, spdlog::logger *logger = nullptr) : name(name), tables(tables){
+    Database(const std::string &name, const std::vector<std::shared_ptr<Widgets::Table>> tables) : name(name), tables(tables) {
     }
 
 public:
@@ -71,25 +42,25 @@ public:
     }
 
     //TABLE FUNCTIONS
-    void setTables(const std::vector<Table> &tablevec) {
-      this->tables = {};
-      this->tables = tablevec;
-    }
-    void setTableData(const int tableIndex, const std::vector<Header> &headers, const std::vector<Row> &rows) {
+    void setTableData(const int tableIndex, const std::vector<Widgets::Header> &headers, const std::vector<Widgets::Row> &rows) {
       if (tableIndex < 0 || tableIndex >= tables.size()) {
         log("Table index out of range", spdlog::level::err);
         return;
       }
-      tables[tableIndex].setHeadersAndRows(headers, rows);
+      tables[tableIndex]->setHeadersAndRows(headers, rows);
     }
 
     //GETTERS
-    std::vector<Table> getTables() const {
+    std::vector<std::shared_ptr<Widgets::Table>> getTables() const {
       return tables;
     }
 
     int getCurrentTableIndex() const {
       return currentTableIndex;
+    }
+
+    std::shared_ptr<Widgets::Table> getCurrentTable() const {
+      return tables[currentTableIndex];
     }
 
     //SETTERS
@@ -101,6 +72,9 @@ public:
       log("Setting current table index to: " + std::to_string(index), spdlog::level::info);
       currentTableIndex = index;
     }
+    void setTables(const std::vector<std::shared_ptr<Widgets::Table>> &tables) {
+      this->tables = tables;
+    }
 
 private:
     void log(const std::string &message, spdlog::level::level_enum level = spdlog::level::trace) {
@@ -109,15 +83,8 @@ private:
 
 private:
     std::string name;
-    std::vector<HummingBirdCore::Sql::Table> tables;
-    uint currentTableIndex = 0;
-  };
-
-  enum class QueryType {
-    INSERT,
-    SELECT,
-    UPDATE,
-    DELETE
+    std::vector<std::shared_ptr<Widgets::Table>> tables;
+    int currentTableIndex = 0;
   };
 
   class SqlConnection {
@@ -138,16 +105,15 @@ public:
                  const unsigned int port = 3306);
     void disconnect();
 
+
+    //Database functions
     bool useDatabase(const int databaseIndex, int tableIndex);
     bool useDatabase(const std::string &database, int tableIndex);
 
     bool useTable(const int tableIndex);
     bool useTable(const std::string &table);
 
-    void setLogger(Ref<spdlog::logger> logger) {
-      m_logger = logger;
-    }
-
+    //Server functions
     std::vector<Database> SVR_getDatabases() {
       if (!checkConnection()) {
         return {};
@@ -164,15 +130,11 @@ public:
 
       while ((row = mysql_fetch_row(res)) != NULL) {
         std::string name = row[0];
-        std::vector<Table> tables = {};
-        Database db(name, tables);
+        std::vector<std::shared_ptr<Widgets::Table>> tables = {};
+        Database db{name, tables};
         result.push_back(db);
       }
-
-      //free the result
       mysql_free_result(res);
-
-      //load the tables
       for (Database &db: result) {
         db.setTables(SVR_getTables(db.getName()));
       }
@@ -182,13 +144,12 @@ public:
 
       return result;
     }
-
-    std::vector<Table> SVR_getTables(const std::string &database) {
+    std::vector<std::shared_ptr<Widgets::Table>> SVR_getTables(const std::string &database) {
       if (!checkConnection() || !checkDatabaseInput(database)) {
         return {};
       }
 
-      uint currentDbIndex = m_currentDatabaseIndex;
+      int currentDbIndex = m_currentDatabaseIndex;
 
       int switched = mysql_select_db(m_connection, database.c_str());
       if (switched != 0) {
@@ -196,22 +157,33 @@ public:
         return {};
       }
 
-      MYSQL_RES *res = mysql_list_tables(m_connection, NULL);
+
+      int min = 0;
+      int max = m_settings.maxTableSize;
+
+      std::string query = "SELECT table_name FROM information_schema.tables WHERE table_schema = '" + database + "' LIMIT " + std::to_string(min) + ", " + std::to_string(max);
+      int succes = mysql_query(m_connection, query.c_str());
+      if (succes != 0) {
+        log(mysql_error(m_connection), spdlog::level::err);
+        return {};
+      }
+
+      MYSQL_RES *res = mysql_store_result(m_connection);
       if (res == NULL) {
         log(mysql_error(m_connection), spdlog::level::err);
         return {};
       }
 
-      std::vector<Table> result = {};
+      std::vector<std::shared_ptr<Widgets::Table>> result = {};
 
       MYSQL_ROW row;
 
       while ((row = mysql_fetch_row(res)) != NULL) {
         std::string name = row[0];
-        std::vector<Header> headers = {};// SVR_getHeaders(database, name);
-        std::vector<Row> rows = {};      // SVR_getAllRows(database, name);
-        Table table{name, database, false, headers, rows};
-        result.push_back(table);
+        std::vector<Widgets::Header> headers = {};
+        std::vector<Widgets::Row> rows = {};
+        std::shared_ptr<Widgets::Table> tablePtr = std::make_shared<Widgets::Table>(Widgets::Table{name, database, false, headers, rows, 0, "", 0, ""});
+        result.push_back(tablePtr);
       }
 
       mysql_free_result(res);
@@ -221,8 +193,7 @@ public:
 
       return result;
     }
-
-    std::vector<Header> SVR_getHeaders(const std::string &database, const std::string &table) {
+    std::vector<Widgets::Header> SVR_getHeaders(const std::string &database, const std::string &table) {
       if (!checkConnection() || !checkDatabaseInput(database) || !checkTableInput(table)) {
         return {};
       }
@@ -245,11 +216,11 @@ public:
         return {};
       }
 
-      std::vector<Header> result = {};
+      std::vector<Widgets::Header> result = {};
       MYSQL_FIELD *field;
 
       while ((field = mysql_fetch_field(mysqlres)) != NULL) {
-        Header header{field->name, field->type};
+        Widgets::Header header{field->name, field->type};
         result.push_back(header);
       }
 
@@ -261,8 +232,8 @@ public:
 
       return result;
     }
+    std::vector<Widgets::Row> SVR_getAllRows(const std::string &database, const std::string &table) {
 
-    std::vector<Row> SVR_getAllRows(const std::string &database, const std::string &table) {
       if (!checkConnection() || !checkDatabaseInput(database) || !checkTableInput(table)) {
         return {};
       }
@@ -273,8 +244,12 @@ public:
         log("Could not switch to database on svr: " + database, spdlog::level::err);
         return {};
       }
+      int min = 0;
+      int max = m_settings.maxRowSize;
 
-      if (mysql_query(m_connection, ("SELECT * FROM " + table).c_str()) != 0) {
+      std::string query = "SELECT * FROM " + table + " LIMIT " + std::to_string(min) + ", " + std::to_string(max);
+      int succes = mysql_query(m_connection, query.c_str());
+      if (succes != 0) {
         log(mysql_error(m_connection), spdlog::level::err);
         return {};
       }
@@ -285,12 +260,12 @@ public:
         return {};
       }
 
-      std::vector<Row> rows;
+      std::vector<Widgets::Row> rows;
       MYSQL_ROW mysql_row;
       unsigned int num_fields = mysql_num_fields(result);
 
       while ((mysql_row = mysql_fetch_row(result)) != NULL) {
-        Row row;
+        Widgets::Row row;
         if (mysql_row[0] != NULL) {
           row.id = atoi(mysql_row[0]);
         } else {
@@ -312,25 +287,42 @@ public:
       return rows;
     }
 
+    //TODO: Add a way to load this from a file
+    void setLogger(const Ref<spdlog::logger> &logger) {
+      m_logger = logger;
+    }
+    void setSettings(const SqlSettings &settings) {
+      m_settings = SqlSettings{
+              settings.maxTableSize,
+              settings.maxRowSize};
+    }
+
+
 public:
     //Databases
-    std::vector<Database> getDatabases() { return m_databases; }
-    int getCurrentDatabaseIndex() const { return m_currentDatabaseIndex; }
-    std::string getCurrentDatabaseName() const { return m_databases[getCurrentDatabaseIndex()].getName(); }
-    bool getIsConnected() const { return m_isConnected; }
+    std::vector<Database> getDatabases() const {
+      return m_databases;
+    }
 
-    Database getCurrentDatabase() { return m_databases[getCurrentDatabaseIndex()]; }
+    Database getCurrentDatabase() const {
+      return m_databases[getCurrentDatabaseIndex()];
+    }
+    std::string getCurrentDatabaseName() const { return getCurrentDatabase().getName(); }
+
+    int getCurrentDatabaseIndex() const { return m_currentDatabaseIndex; }
+    bool getIsConnected() const { return m_isConnected; }
 
 private:
     //Custom logger so we can log to the ImGuiLogSink
     void log(std::string message, spdlog::level::level_enum level = spdlog::level::trace) {
       if (m_logger == nullptr) {
-        CORE_ERROR("Logger is null set the logger before using the log function");
-        CORE_WARN("Message: {0}, we will now just log to the core logger", message);
+        CORE_ERROR("-----------------------------------------------------------");
+        CORE_ERROR("SQL Logger is null set the logger before using the log function");
+        HummingBirdCore::Log::GetCoreLogger()->log(level, "SQL: " + message);
+        CORE_ERROR("-----------------------------------------------------------");
       } else {
-        //        CORE_LOG(message, level);
         m_logger->log(level, message);
-        HummingBirdCore::Log::GetCoreLogger()->log(level, message);
+        HummingBirdCore::Log::GetCoreLogger()->log(level, "SQL: " + message);
       }
     }
 
@@ -358,6 +350,8 @@ private:
       return true;
     }
 
+
+
 private:
     std::string m_host;
     std::string m_user;
@@ -372,5 +366,7 @@ private:
     MYSQL *m_connection;
 
     Ref<spdlog::logger> m_logger = nullptr;
+
+    SqlSettings m_settings;
   };
 }// namespace HummingBirdCore::Sql

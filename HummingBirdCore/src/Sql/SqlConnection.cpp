@@ -3,12 +3,9 @@
 //
 
 #include "SqlConnection.h"
-#include "../Log.h"
 #include <chrono>
 
-
 namespace HummingBirdCore::Sql {
-  //TODO: Implement this class
   SqlConnection::SqlConnection(const std::string &host, const std::string &user,
                                const std::string &password,
                                const unsigned int port,
@@ -38,7 +35,6 @@ namespace HummingBirdCore::Sql {
                             "", m_port, NULL, 0)) {
       log("Error connecting to database", spdlog::level::err);
       log(mysql_error(m_connection), spdlog::level::err);
-      CORE_ERROR("Error connecting to database {0}", mysql_error(m_connection));
       return false;
     }
 
@@ -132,16 +128,16 @@ namespace HummingBirdCore::Sql {
     }
 
     m_databases[m_currentDatabaseIndex].setCurrentTableIndex(tableIndex);
-    int currentTableIndex = m_databases[m_currentDatabaseIndex].getCurrentTableIndex();
-    std::string tableName = m_databases[m_currentDatabaseIndex].getTables()[currentTableIndex].name;
-    bool isInitialized = m_databases[m_currentDatabaseIndex].getTables()[currentTableIndex].isInitialized;
+    const int currentTableIndex = m_databases[m_currentDatabaseIndex].getCurrentTableIndex();
+    const std::string tableName = m_databases[m_currentDatabaseIndex].getTables()[currentTableIndex]->name;
+    const bool isInitialized    = m_databases[m_currentDatabaseIndex].getTables()[currentTableIndex]->isInitialized;
 
     if (!isInitialized) {
       std::string logmsg = "Initializing table: " + tableName + " in database: " + getCurrentDatabaseName();
       log(logmsg, spdlog::level::info);
 
-      std::vector<Header> headers = SVR_getHeaders(getCurrentDatabaseName(), tableName);
-      std::vector<Row> rows = SVR_getAllRows(getCurrentDatabaseName(), tableName);
+      std::vector<Widgets::Header> headers = SVR_getHeaders(getCurrentDatabaseName(), tableName);
+      std::vector<Widgets::Row> rows = SVR_getAllRows(getCurrentDatabaseName(), tableName);
 
       m_databases[m_currentDatabaseIndex].setTableData(currentTableIndex, headers, rows);
 
@@ -161,7 +157,7 @@ namespace HummingBirdCore::Sql {
     }
 
     for (std::size_t i = 0; i < getCurrentDatabase().getTables().size(); ++i) {
-      if (getCurrentDatabase().getTables()[i].name == tableName) {
+      if (getCurrentDatabase().getTables()[i]->name == tableName) {
         return useTable(i);
       }
     }
