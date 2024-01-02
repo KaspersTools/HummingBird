@@ -3,7 +3,6 @@
 //
 
 #include "SqlConnection.h"
-#include <chrono>
 
 namespace HummingBirdCore::Sql {
   SqlConnection::SqlConnection(const std::string &host, const std::string &user,

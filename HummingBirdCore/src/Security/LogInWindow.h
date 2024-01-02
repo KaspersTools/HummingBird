@@ -3,8 +3,7 @@
 //
 
 #pragma once
-#include "../UIWindows/UIWindow.h"
-
+#include <PCH/pch.h>
 
 namespace HummingBirdCore::Security {
 

@@ -1,8 +1,7 @@
 # Project exclude paths
 /cmake-build-debug/
-# /vendor/fmt/
-# /vendor/glad/
-# /vendor/imgui/
-# /vendor/ImGui-Addons/
-# /vendor/imguiext/
-# /vendor/spdlog/
+/cmake-build-release/
+/cmake-build-relwithdebinfo/
+/cmake-build-minsizerel/
+/cmake-build-coverage/
+/cmake-build-asan-clang/

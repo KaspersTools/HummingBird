@@ -3,22 +3,7 @@
 //
 #pragma once
 
-#include <iostream>
-#include <mysql.h>
-
-#include <chrono>
-#include <functional>
-#include <map>
-#include <memory>
-#include <vector>
-
-#pragma warning(push, 0)
-#include <spdlog/fmt/ostr.h>
-#include <spdlog/spdlog.h>
-#pragma warning(pop)
-
-#include "CoreRef.h"
-#include "Log.h"
+#include <PCH/pch.h>x
 
 #include "UIWindows/Widget/DataViewer.h"
 

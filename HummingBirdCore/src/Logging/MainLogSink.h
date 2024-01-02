@@ -3,10 +3,7 @@
 //
 
 #pragma once
-
-#include "ImGuiLogSink.h"
-#include <mutex>
-#include "Log.h"
+#include <PCH/pch.h>
 
 namespace HummingBirdCore {
   namespace Logging {

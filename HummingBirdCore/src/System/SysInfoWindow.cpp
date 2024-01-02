@@ -96,10 +96,24 @@ void HummingBirdCore::System::SysInfoWindow::render() {
 
       for (int i = 0; i < m_diskCount; ++i) {
         ImGui::Text("Disk %d", i);
-        ImGui::Text("Name: %s", m_diskNames[i].c_str());
-        std::string label = "Free: " + std::to_string(m_diskSpaceFree[i]) + " GB of the " +
-                            std::to_string(m_diskSpaceTotal[i]) + " GB";
-        ImGui::ProgressBar(m_diskSpaceUsed[i] / m_diskSpaceTotal[i], ImVec2(-1.0f, 0.0f), label.c_str());
+        if (m_diskNames[i].empty()) {
+          ImGui::Text("Name: Unknown");
+        } else {
+          ImGui::Text("Name: %s", m_diskNames[i].c_str());
+        }
+
+        //        Nan is outside the range of representable values of type 'int'
+        if (m_diskSpaceFree[i] == std::numeric_limits<float>::infinity() ||
+            m_diskSpaceTotal[i] == std::numeric_limits<float>::infinity()) {
+          ImGui::Text("Free: Unknown");
+        } else {
+          std::string label = "Free: " + std::to_string(m_diskSpaceFree[i]) + " GB of the " +
+                              std::to_string(m_diskSpaceTotal[i]) + " GB";
+          if(m_diskSpaceTotal[i] != 0)
+            ImGui::ProgressBar(m_diskSpaceFree[i] / m_diskSpaceTotal[i], ImVec2(-1.0f, 0.0f), label.c_str());
+          else
+            ImGui::ProgressBar(0, ImVec2(-1.0f, 0.0f), label.c_str());
+        }
       }
       ImGui::EndTabItem();
     }
@@ -119,8 +133,8 @@ void HummingBirdCore::System::SysInfoWindow::render() {
           static int freeze_rows = 1;
           ImGuiStyle &style = ImGui::GetStyle();
 
-          ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 0.60f)));
-          ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x, (float)(int)(style.ItemSpacing.y * 0.60f)));
+          ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float) (int) (style.FramePadding.y * 0.60f)));
+          ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x, (float) (int) (style.ItemSpacing.y * 0.60f)));
           ImGui::CheckboxFlags("ImGuiTableFlags_ScrollX", &flags, ImGuiTableFlags_ScrollX);
           ImGui::SetNextItemWidth(ImGui::GetFrameHeight());
           ImGui::DragInt("freeze_cols", &freeze_cols, 0.2f, 0, 9, NULL, ImGuiSliderFlags_NoInput);

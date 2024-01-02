@@ -1,10 +1,10 @@
 //
 // Created by Kasper de Bruin on 01/11/2023.
 //
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
 #include "Application.h"
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_sdl2.h>
 
 namespace HummingBirdCore {
 
@@ -58,12 +58,11 @@ namespace HummingBirdCore {
             SDL_GL_CONTEXT_PROFILE_MASK,
             SDL_GL_CONTEXT_PROFILE_CORE);
 
-    SDL_GL_SetAttribute(// required on Mac OS
+    SDL_GL_SetAttribute(// required on Apple
             SDL_GL_CONTEXT_FLAGS,
             SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-    //    SDL_WINDOW_ALLOW_HIGHDPI
 
     auto mainWindowFlags = (SDL_WindowFlags) (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     s_window = SDL_CreateWindow(

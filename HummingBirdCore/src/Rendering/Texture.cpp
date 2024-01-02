@@ -3,9 +3,9 @@
 //
 
 #include "Texture.h"
-#include <glad/glad.h>
 
-#include "../stb_image.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 Texture::Texture(const std::string &path) {
   m_filePath = path;

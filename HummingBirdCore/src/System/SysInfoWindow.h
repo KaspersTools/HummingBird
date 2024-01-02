@@ -4,10 +4,11 @@
 
 #pragma once
 
+#include <PCH/pch.h>
+
 #include "SysInfo.h"
 #include "UIWindows/UIWindow.h"
 
-#include <imgui.h>
 
 namespace HummingBirdCore::System {
   class SysInfoWindow : public UIWindow {

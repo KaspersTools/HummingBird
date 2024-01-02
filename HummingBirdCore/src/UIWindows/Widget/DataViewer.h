@@ -4,19 +4,13 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
-
-#include <mysql.h>
-
-#include "Log.h"
+#include <PCH/pch.h>
 #include "UIWindows/UIWindow.h"
 
 namespace HummingBirdCore::Widgets {
   struct Header {
     std::string name;
-    enum_field_types type;
+    enum_field_types type; //convert to own type
   };
 
   struct Row {

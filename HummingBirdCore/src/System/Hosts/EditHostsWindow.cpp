@@ -4,12 +4,8 @@
 
 
 #include "EditHostsWindow.h"
-#ifdef __APPLE__
-#include <Security/Security.h>
-#endif
 
 void HummingBirdCore::System::EditHostsWindow::render() {
-  //Make imgui table
 
 #ifdef __APPLE__
   if(ImGui::Button("Save")){

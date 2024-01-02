@@ -4,12 +4,13 @@
 
 #pragma once
 
-#include "../../UIWindows/UIWindow.h"
-#include "../../Utils/Utils.h"
+#include <PCH/pch.h>
 
-#include <iostream>
-#include <regex>
-#include <sstream>
+#ifdef __APPLE__
+#include <Security/Security.h>
+#endif
+
+#include "../../UIWindows/UIWindow.h"
 
 namespace HummingBirdCore::System {
   class EditHostsWindow : public HummingBirdCore::UIWindow {
@@ -228,8 +229,6 @@ private:
     const std::string c_hostsPath = "C:\\Windows\\System32\\drivers\\etc\\hosts";
     const std::string c_tempFilePath = "C:\\AppData\\Local\\Temp\\hosts_temp";
 #endif
-
-    //TODO: make this static so its the same for all instances
     std::vector<HostsFileLine> m_hostsFileLines;
 
     const std::regex c_ipv4_regex = std::regex(R"((\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})");
