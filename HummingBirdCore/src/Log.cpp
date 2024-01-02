@@ -12,23 +12,22 @@
 
 namespace HummingBirdCore {
   Ref<spdlog::logger> Log::s_CoreLogger;
-  bool Log::m_isInitialized = false;
-  bool sinkToFile = false;
+  bool Log::s_isInitialized = false;
   std::vector<spdlog::sink_ptr> Log::s_logSinks = {};
 
   void Log::Init(){
-    if (m_isInitialized) {
+    if (s_isInitialized) {
       CORE_ERROR("Log already initialized, not initializing again");
       return;
     }
 
-    m_isInitialized = true;
+    s_isInitialized = true;
 
     auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     consoleSink->set_pattern("%^[%T] %n: %v%$");
     s_logSinks.emplace_back(consoleSink);
 
-    if (sinkToFile) {
+    if (s_isInitialized) {
       auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("HummingBirdCore.log", true);
       fileSink->set_pattern("[%T] [%l] %n: %v");
       s_logSinks.emplace_back(fileSink);

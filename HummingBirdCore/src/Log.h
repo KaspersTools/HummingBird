@@ -27,19 +27,20 @@ namespace HummingBirdCore {
 
         template <typename T>
         static void log(spdlog::level::level_enum lvl, const T &msg) {
-          if (m_isInitialized) {
+          if (s_isInitialized) {
               s_CoreLogger->log(lvl, msg);
           }else{
               std::cout << msg << std::endl;
-              std::cerr << "Logger not initialiazed" << std::endl;
+              std::cerr << "Logger not initialiazed now initializing" << std::endl;
+              Log::Init();
           }
         }
 
     private:
         static HummingBirdCore::Ref<spdlog::logger> s_CoreLogger;
         static std::vector<spdlog::sink_ptr> s_logSinks;
-        static bool m_isInitialized;
-        static bool m_syncToFile;
+        static bool s_isInitialized;
+        static bool s_sinkToFile;
     };
 }
 // Core log macros
