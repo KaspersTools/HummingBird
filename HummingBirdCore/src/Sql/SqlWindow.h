@@ -84,7 +84,7 @@ namespace HummingBirdCore {
       std::string m_inputuser;
       std::string m_inputpassword;
 
-      unsigned int m_port;
+      int m_port;
 
       Ref<spdlog::logger> m_logger = nullptr;
       std::shared_ptr<HummingBirdCore::Logging::ImGuiLogSink_mt> m_logSink = nullptr;
