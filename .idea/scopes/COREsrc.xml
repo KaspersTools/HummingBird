@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="COREsrc" pattern="file[HummingBird]:HummingBirdCore/src//*" />
+</component>
