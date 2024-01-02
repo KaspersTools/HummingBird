@@ -48,7 +48,6 @@ public:
       if (event.type == SDL_KEYUP) {
         for (int i = 0; i < m_pressedKeys.size(); i++) {
           if (m_pressedKeys[i] == event.key.keysym.sym) {
-            CORE_TRACE("Key released: {0}", event.key.keysym.sym);
             m_pressedKeys.erase(m_pressedKeys.begin() + i);
             break;
           }
@@ -57,8 +56,6 @@ public:
 
       if (event.type == SDL_KEYDOWN) {
         bool add = true;
-        //check if already in vec
-        //TODO: OPTIMIZE
         if (m_pressedKeys.size() > 0) {
           for (int i = 0; i < m_pressedKeys.size(); i++) {
             if (m_pressedKeys[i] == event.key.keysym.sym) {
@@ -67,9 +64,7 @@ public:
             }
           }
         }
-
         if (add) {
-          CORE_TRACE("Key pressed: {0}", event.key.keysym.sym);
           m_pressedKeys.push_back(event.key.keysym.sym);
         }
       }

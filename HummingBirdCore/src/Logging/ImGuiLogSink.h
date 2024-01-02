@@ -10,8 +10,28 @@
 #include <spdlog/sinks/base_sink.h>
 #include <string>
 #include <vector>
+#include <imgui.h>
 
 namespace HummingBirdCore::Logging {
+  inline static ImColor getLogColor(spdlog::level::level_enum level) {
+    switch (level) {
+      case spdlog::level::info:
+        return ImColor(0.0f, 1.0f, 0.0f, 1.0f);
+      case spdlog::level::warn:
+        return ImColor(1.0f, 1.0f, 0.0f, 1.0f);
+      case spdlog::level::err:
+        return ImColor(1.0f, 0.0f, 0.0f, 1.0f);
+      case spdlog::level::debug:
+        return ImColor(0.0f, 1.0f, 1.0f, 1.0f);
+      case spdlog::level::critical:
+        return ImColor(1.0f, 0.0f, 1.0f, 1.0f);
+      case spdlog::level::trace:
+        return ImColor(1.0f, 1.0f, 1.0f, 1.0f);
+      default:
+        return ImColor(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+  }
+
   struct ImGuiLogSinkItem {
     ImGuiLogSinkItem(const std::string &message, spdlog::level::level_enum level) : message(message), level(level) {}
     std::string message;

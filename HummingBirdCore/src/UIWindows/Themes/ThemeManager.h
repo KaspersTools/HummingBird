@@ -23,7 +23,7 @@ namespace HummingBirdCore {
         };
         class ThemeManager  : public UIWindow {
         public:
-            ThemeManager() : UIWindow(ImGuiWindowFlags_MenuBar, "Theme Manager") {}
+            explicit ThemeManager(const std::string& name) : UIWindow(ImGuiWindowFlags_MenuBar, name) {}
             ~ThemeManager() = default;
             void render() override;
             void SelectThemeWindow();
