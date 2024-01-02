@@ -3,6 +3,7 @@
 //
 
 //
+#include <PCH/pch.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 
@@ -11,37 +12,15 @@
 #include <IOKit/ps/IOPSKeys.h>
 #include <IOKit/ps/IOPowerSources.h>
 
-//std
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-
 //disk
 #include <sys/mount.h>
-#include <sys/param.h>
 
 //network
-#include <SystemConfiguration/SystemConfiguration.h>
 #include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <net/if_dl.h>
-#include <net/if_types.h>
 #include <netinet/in.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-
-
-#include <SystemConfiguration/SystemConfiguration.h>
-#include <arpa/inet.h>
-#include <ifaddrs.h>
-#include <iostream>
-#include <map>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <string>
-#include <vector>
 
 #include "SysInfo.h"
 
@@ -67,6 +46,8 @@ namespace HummingbirdCore {
       if (closeResult != kIOReturnSuccess) {
         throw std::runtime_error("Failed to close the connection to the SMC!");
       }
+
+      connectionHandle = 0;
     }
 
     DataType SysInfo::getKeyInfo(std::string keyString) {
@@ -279,6 +260,7 @@ namespace HummingbirdCore {
       // get the current max capacity
       SInt32 maxCapacity;
       CFNumberGetValue((CFNumberRef) CFDictionaryGetValue(psDict, CFSTR("MaxCapacity")), (CFNumberType) 3, &maxCapacity);
+      CFRelease(psDict);
 
       return (float) maxCapacity / (float) designCapacity;
     }
@@ -293,36 +275,53 @@ namespace HummingbirdCore {
 
       SInt32 cycles;
       CFNumberGetValue((CFNumberRef) CFDictionaryGetValue(psDict, CFSTR("CycleCount")), (CFNumberType) 3, &cycles);
-
+      CFRelease(psDict);
       return cycles;
     }
 
     ///OWN FUNCTIONS
     //Battery
     int SysInfo::getBatteryCharge() {
-      CFTypeRef blob = IOPSCopyPowerSourcesInfo();
-      CFArrayRef sources = IOPSCopyPowerSourcesList(blob);
-      CFDictionaryRef pSource = NULL;
-      const void *psValue;
-      int numOfSources = CFArrayGetCount(sources);
-      for (int i = 0; i < numOfSources; i++) {
-        pSource = IOPSGetPowerSourceDescription(blob, CFArrayGetValueAtIndex(sources, i));
-        if (!pSource) {
-          std::cout << "Error getting battery info" << std::endl;
-          return -1;
-        }
-        psValue = (CFStringRef) CFDictionaryGetValue(pSource, CFSTR(kIOPSNameKey));
-        int curCapacity = 0;
-        int maxCapacity = 0;
-        int percent;
-        psValue = CFDictionaryGetValue(pSource, CFSTR(kIOPSCurrentCapacityKey));
-        CFNumberGetValue((CFNumberRef) psValue, kCFNumberSInt32Type, &curCapacity);
-        psValue = CFDictionaryGetValue(pSource, CFSTR(kIOPSMaxCapacityKey));
-        CFNumberGetValue((CFNumberRef) psValue, kCFNumberSInt32Type, &maxCapacity);
-        percent = (int) ((double) curCapacity / (double) maxCapacity * 100);
-        return percent;
+      CFTypeRef info = IOPSCopyPowerSourcesInfo();
+      if (!info) {
+        return -1;
       }
-      return -1;
+
+      CFArrayRef sources = IOPSCopyPowerSourcesList(info);
+      if (!sources || CFArrayGetCount(sources) == 0) {
+        if (sources) {
+          CFRelease(sources);
+        }
+        CFRelease(info);
+        return -1;
+      }
+
+      CFDictionaryRef batteryInfo = IOPSGetPowerSourceDescription(info, CFArrayGetValueAtIndex(sources, 0));
+      if (!batteryInfo) {
+        CFRelease(sources);
+        CFRelease(info);
+        return -1;
+      }
+
+      CFNumberRef capacityRef = (CFNumberRef)CFDictionaryGetValue(batteryInfo, CFSTR(kIOPSCurrentCapacityKey));
+      CFNumberRef maxCapacityRef = (CFNumberRef)CFDictionaryGetValue(batteryInfo, CFSTR(kIOPSMaxCapacityKey));
+
+      if (!capacityRef || !maxCapacityRef) {
+        CFRelease(sources);
+        CFRelease(info);
+        return -1; // Early return if capacity references are not available
+      }
+
+      int currentCapacity, maxCapacity;
+      CFNumberGetValue(capacityRef, kCFNumberIntType, &currentCapacity);
+      CFNumberGetValue(maxCapacityRef, kCFNumberIntType, &maxCapacity);
+
+      int batteryPercentage = (int)((double)currentCapacity / (double)maxCapacity * 100);
+
+      CFRelease(sources); // Release sources
+      CFRelease(info); // Release info
+
+      return batteryPercentage;
     }
 
     //Get Battery time
@@ -467,7 +466,7 @@ namespace HummingbirdCore {
           //get link speed in mbps by using iokit
           data.speed = -1;
 
-          //DISABLED FOR NOW
+        //DISAQBLED FOR NOW
           /* TODO:Get the network services using ScNetwork services and iokit.
 
           SCPreferencesRef prefs = SCPreferencesCreate(NULL, CFSTR("NetworkInterfaces"), NULL);

@@ -3,27 +3,8 @@
 //
 
 #pragma once
+#include <PCH/pch.h>
 
-#include <chrono>
-#include <iostream>
-#include <memory>
-#include <sstream>
-#include <string>
-#include <vector>
-
-#pragma warning(push, 0)
-#include <spdlog/fmt/ostr.h>
-#include <spdlog/spdlog.h>
-#pragma warning(pop)
-
-#include <imgui.h>
-#include <imgui_stdlib.h>
-
-#include "Sql/SqlConnection.h"
-
-
-#include "CoreRef.h"
-#include "Logging/ImGuiLogSink.h"
 #include "UIWindows/UIWindow.h"
 #include "UIWindows/Widget/DataViewer.h"
 

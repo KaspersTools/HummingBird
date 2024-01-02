@@ -1,18 +1,13 @@
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${}/bin)
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_OUTPUT_DIRECTORY}/lib)
-
 cmake_minimum_required(VERSION 3.26)
 project(HUMMINGBIRD)
 
 set(CMAKE_CXX_STANDARD 23)
 
-#set cmake build to debug
-set(CMAKE_BUILD_TYPE Debug)
-
 #DISPLAY ALL INFO HERE ABOUT THE BUILD
 message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message("CMAKE_CURRENT_OUTPUT_DIRECTORY: ${CMAKE_CURRENT_OUTPUT_DIRECTORY}")
+message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 set(HUMMINGBIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HUMMINGBIRDCORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HummingbirdCore)
@@ -21,9 +16,27 @@ set(HUMMINGBIRDFRONT_DIR ${HUMMINGBIRD_DIR}/HummingbirdFront)
 # Add cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
+#options
+option(WITHHUMMINGBIRDCOREASLIB "WITH HummingBirdCore as lib" OFF)
+
+#check if there is an cmake build type
+if (NOT CMAKE_BUILD_TYPE)
+    message("No build type selected, defaulting to Release")
+    set(CMAKE_BUILD_TYPE Release)
+endif ()
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "ASAN")
+    message("Building with ASAN")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -g")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -g")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=pointer-compare -g")
+    set(CMAKE_BUILD_TYPE ASAN)
+endif ()
+
 ####MAIN PROJECT####
 # HummingbirdCore
-add_library(HummingbirdCore STATIC
+set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/CoreRef.h
         HummingBirdCore/src/Application.cpp
         HummingBirdCore/src/Application.h
@@ -63,6 +76,19 @@ add_library(HummingbirdCore STATIC
         HummingBirdCore/src/Sql/SqlConnection.h
         HummingBirdCore/src/UIWindows/Widget/DataViewer.h
 )
+if (NOT WITHHUMMINGBIRDCOREASLIB)
+    message("Building with HummingBirdCore as exe")
+    add_executable(HummingbirdCoreEXE
+            ${HUMMINGBIRDCOUREBASESRC}
+            ${HUMMINGBIRDCORE_DIR}/src/main.cpp
+    )
+    target_precompile_headers(HummingbirdCoreEXE PUBLIC HummingBirdCore/src/PCH/pch.h)
+endif ()
+
+add_library(HummingbirdCore STATIC
+        ${HUMMINGBIRDCOUREBASESRC}
+)
+target_precompile_headers(HummingbirdCore PUBLIC HummingBirdCore/src/PCH/pch.h)
 
 # HummingbirdApp
 add_executable(HummingbirdApp
@@ -87,18 +113,25 @@ if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/fmt)
 else ()
     message("fmt folder found")
     add_subdirectory(${HUMMINGBIRD_DIR}/vendor/fmt)
+
+    #include
+    include_directories(
+            ${HUMMINGBIRD_DIR}/vendor/fmt/include
+    )
+
     #link
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                fmt::fmt
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             fmt::fmt
     )
 
     target_link_libraries(HummingbirdApp
             fmt::fmt
-    )
-
-    #include
-    include_directories(
-            ${HUMMINGBIRD_DIR}/vendor/fmt/include
     )
 endif ()
 
@@ -112,17 +145,24 @@ else ()
     set(SDL_SHARED OFF CACHE BOOL "" FORCE)
     add_subdirectory(vendor/sdl sdl)
 
+    #include
+    include_directories(
+            ${HUMMINGBIRD_DIR}/vendor/sdl/include
+    )
+
+    #link
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                SDL2-static
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             SDL2-static
     )
 
     target_link_libraries(HummingbirdApp
             SDL2-static
-    )
-
-    #include
-    include_directories(
-            ${HUMMINGBIRD_DIR}/vendor/sdl/include
     )
 endif ()
 
@@ -142,6 +182,12 @@ else ()
     )
 
     # Link glad
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                glad
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             glad
     )
@@ -165,6 +211,12 @@ else ()
     )
 
     # Link spdlog
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                spdlog::spdlog
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             spdlog::spdlog
     )
@@ -213,6 +265,12 @@ else ()
     )
 
     # Link imgui
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                imgui
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             imgui
     )
@@ -235,20 +293,30 @@ endif ()
 
 #mysql
 find_package(MySQL)
-if(NOT MYSQL_FOUND)
+if (NOT MYSQL_FOUND)
     message(WARNING "MySQL not found")
-else()
+else ()
     message("MySQL found")
+
+    #include
+    include_directories(
+            ${MYSQL_INCLUDE_DIR}
+    )
+
+    #link
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                ${MYSQL_LIBRARIES}
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             ${MYSQL_LIBRARIES}
     )
     target_link_libraries(HummingbirdApp
             ${MYSQL_LIBRARIES}
     )
-    include_directories(
-            ${MYSQL_INCLUDE_DIR}
-    )
-endif()
+endif ()
 
 ####kasper specific#####################################################
 option(WITHHUMMINGBIRDKASPERSPECIFIC "WITH HummingBirdKasperSpecific" OFF)
@@ -260,7 +328,6 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
             ../HummingBirdKasperSpecific/src/HelloLibrary.h
             ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.cpp
             ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.h
-            HummingBirdCore/src/UIWindows/Widget/DataViewer.h
     )
 
     add_library(
@@ -271,73 +338,114 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
     #set cpp def
     add_definitions(-DWITHHUMMINGBIRDKASPERSPECIFIC)
 
+    #include
+    include_directories(
+            ../HummingBirdKasperSpecific/src
+    )
+
     #link
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                KasperSpecificTools
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             KasperSpecificTools
     )
     target_link_libraries(HummingbirdApp
             KasperSpecificTools
-    )
-
-    #include
-    include_directories(
-            ../HummingBirdKasperSpecific/src
     )
 endif ()
 
 ########################################################################
 # Base Link libraries
 #TODO: MAKE THIS MAC SPECIFIC
-target_link_libraries(HummingbirdCore
-        ${SECURITY_FRAMEWORK}
-)
 
-target_link_libraries(HummingbirdApp
-        ${SECURITY_FRAMEWORK}
-)
+# get Security
+find_library(SECURITY_FRAMEWORK Security)
+if (NOT SECURITY_FRAMEWORK)
+    message(FATAL_ERROR "Security not found Are you on mac?")
+else ()
+    message("Security found")
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                ${SECURITY_FRAMEWORK}
+        )
+    endif ()
+
+    target_link_libraries(HummingbirdCore
+            ${SECURITY_FRAMEWORK}
+    )
+
+    target_link_libraries(HummingbirdApp
+            ${SECURITY_FRAMEWORK}
+    )
+endif ()
 
 # get IOKit
 find_library(IOKit IOKit)
-if(NOT IOKit)
-    message(FATAL_ERROR "IOKit not found")
-else()
+if (NOT IOKit)
+    message(FATAL_ERROR "IOKit not found Are you on mac?")
+else ()
     message("IOKit found")
+
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                ${IOKit}
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             ${IOKit}
     )
     target_link_libraries(HummingbirdApp
             ${IOKit}
     )
-endif()
+endif ()
 
 # get CoreFoundation
 find_library(CoreFoundation CoreFoundation)
-if(NOT CoreFoundation)
-    message(FATAL_ERROR "CoreFoundation not found")
-else()
+if (NOT CoreFoundation)
+    message(FATAL_ERROR "CoreFoundation not found Are you on mac?")
+else ()
     message("CoreFoundation found")
+
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                ${CoreFoundation}
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             ${CoreFoundation}
     )
     target_link_libraries(HummingbirdApp
             ${CoreFoundation}
     )
-endif()
+endif ()
 
 
 # Find the System Configuration framework
 find_library(SYSTEM_CONFIGURATION_FRAMEWORK SystemConfiguration)
-if(NOT SYSTEM_CONFIGURATION_FRAMEWORK)
-    message(FATAL_ERROR "SystemConfiguration not found")
-else()
+if (NOT SYSTEM_CONFIGURATION_FRAMEWORK)
+    message(FATAL_ERROR "SystemConfiguration not found Are you on mac?")
+else ()
     message("SystemConfiguration found")
+
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                ${SYSTEM_CONFIGURATION_FRAMEWORK}
+        )
+    endif ()
+
     target_link_libraries(HummingbirdCore
             ${SYSTEM_CONFIGURATION_FRAMEWORK}
     )
     target_link_libraries(HummingbirdApp
             ${SYSTEM_CONFIGURATION_FRAMEWORK}
     )
-endif()
+endif ()
 
 
 ########################################################################

@@ -4,14 +4,8 @@
 
 #pragma once
 
-#include "ApplicationObject.h"
-
-#include <chrono>
-#include <imgui.h>
+#include <PCH/pch.h>
 #include <imgui_internal.h>
-#include <iostream>
-#include <map>
-#include "Log.h"
 
 // Define a UI window structure
 namespace HummingBirdCore {

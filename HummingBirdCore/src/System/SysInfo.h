@@ -6,16 +6,17 @@
 // Created by Kasper de Bruin on 27/12/2023.
 //
 #pragma once
-#include "Updatable.h"
 
-#include "Utils/Utils.h"
+#include <PCH/pch.h>
+
 #include <IOKit/IOKitLib.h>
+
 #include <mach/mach.h>
 #include <mach/mach_host.h>
 #include <mach/processor_info.h>
+
 #include <sys/sysctl.h>
 #include <sys/types.h>
-#include <vector>
 
 namespace HummingbirdCore {
   namespace System {

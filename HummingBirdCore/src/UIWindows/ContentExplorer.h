@@ -4,15 +4,11 @@
 
 #pragma once
 
-#include "../Rendering/Texture.h"
-#include "../Utils/Utils.h"
-#include "../Folder.h"
-#include "Rendering/Texture.h"
+#include <PCH/pch.h>
+
 #include "UIWindow.h"
 
-
 namespace HummingBirdCore {
-
   class ContentBrowserItem {
 public:
     ContentBrowserItem(const std::filesystem::path &path, const std::string &name, const Texture *icon)

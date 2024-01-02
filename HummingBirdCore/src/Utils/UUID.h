@@ -4,6 +4,7 @@
 #pragma once
 
 #include <iostream>
+
 namespace HummingBirdCore::Utils {
   class UUID {
 public:

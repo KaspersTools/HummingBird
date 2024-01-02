@@ -2,23 +2,21 @@
 // Created by Kasper de Bruin on 01/11/2023.
 //
 #pragma once
+#include <PCH/pch.h>
 
 #include "../UIWindows/UIWindow.h"
 
 #include "../Folder.h"
-#include "../Utils/Utils.h"
-#include <csignal>
 
-#include <iostream>
+#include <csignal>
 #include <mutex>
-#ifdef __APPLE__
-#include <pwd.h>
-#endif
 
 #include <thread>
 #include <zconf.h>
 
 //TODO: Move to imgui repo in future
+//TODO: Move terminal to seperate file
+//TODO: Add colors to logs and terminal
 namespace HummingBirdCore::Terminal {
   struct Command {
 public:
@@ -107,6 +105,7 @@ private:
     void errorLog(std::string log) {
       std::lock_guard<std::mutex> lock(m_logMutex);
       m_logs.emplace_back(TerminalLog(getTimestamp(), log, Command("", "")));
+      CORE_ERROR(log);
     }
 
     void killCurrentCommand(){

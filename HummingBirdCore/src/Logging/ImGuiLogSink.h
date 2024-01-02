@@ -3,14 +3,7 @@
 //
 
 #pragma once
-#include <fmt/format.h>
-#include <iostream>
-#include <mutex>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/base_sink.h>
-#include <string>
-#include <vector>
-#include <imgui.h>
+#include <PCH/pch.h>
 
 namespace HummingBirdCore::Logging {
   inline static ImColor getLogColor(spdlog::level::level_enum level) {

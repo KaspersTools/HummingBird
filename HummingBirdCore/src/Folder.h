@@ -3,9 +3,7 @@
 //
 
 #pragma once
-#include <filesystem>
-#include <vector>
-#include "Log.h"
+#include <PCH/pch.h>
 
 namespace HummingBirdCore {
   class Folder {

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <PCH/pch.h>
+
 namespace HummingBirdCore::Security {
   class LoginManager {
 public:

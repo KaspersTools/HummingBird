@@ -4,52 +4,25 @@
 //
 
 #pragma once
-
-#include <iostream>
-#include <map>
-#include <memory>
-#include <string>
-
-#include <iostream>
-#include <vector>
-
-
-// Dear ImGui
-#include <backends/imgui_impl_opengl3.h>
-#include <backends/imgui_impl_sdl2.h>
-#include <imgui.h>
-
-// SDL
-#include <SDL.h>
-#include <glad/glad.h>
-
-// spdlog
-#include <spdlog/spdlog.h>
+#include <PCH/pch.h>
 
 // UIWindows
 #include "UIWindows/ContentExplorer.h"
 #include "UIWindows/LogWindow.h"
 #include "UIWindows/UIWindow.h"
-
-#include "Terminal/TerminalWindow.h"
-
-#include "Security/LogInWindow.h"
-#include "Security/LoginManager.h"
-
-#include "System/Hosts/EditHostsWindow.h"
-#include "System/SysInfoWindow.h"
-
 #include "UIWindows/LogWindow.h"
 #include "UIWindows/Themes/ThemeManager.h"
+#include "Terminal/TerminalWindow.h"
+#include "Security/LogInWindow.h"
+#include "Security/LoginManager.h"
+#include "System/Hosts/EditHostsWindow.h"
+#include "System/SysInfoWindow.h"
 
 #include "Sql/SqlWindow.h"
 #include "UIWindows/Widget/DataViewer.h"
 
 // Rendering
 #include "Rendering/Texture.h"
-
-// Utils
-#include "Utils/Input.h"
 
 // System
 #include "System/SysInfo.h"

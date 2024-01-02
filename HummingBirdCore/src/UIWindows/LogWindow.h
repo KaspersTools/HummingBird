@@ -2,10 +2,7 @@
 // Created by Kasper de Bruin on 22/12/2023.
 //
 #pragma once
-#include "Log.h"
-#include "Logging/MainLogSink.h"
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include <PCH/pch.h>
 #include "UIWindow.h"
 
 namespace HummingBirdCore::UIWindows {
