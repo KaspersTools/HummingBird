@@ -10,9 +10,9 @@ namespace HummingBirdCore {
   namespace Sql {
 
     void SqlWindow::render() {
-      ImGui::InputText("Host", &m_host);
-      ImGui::InputText("User", &m_user);
-      ImGui::InputText("Password", &m_password);
+      ImGui::InputText("Host", &m_inputhost);
+      ImGui::InputText("User", &m_inputuser);
+      ImGui::InputText("Password", &m_inputpassword);
       ImGui::InputInt("Port", (int *) &m_port);
 
       if (m_connection.getIsConnected()) {
@@ -25,42 +25,13 @@ namespace HummingBirdCore {
         ImGui::Text("Not connected to database");
         ImGui::SameLine();
         if (ImGui::Button("Connect")) {
-          m_connection.connect(m_host, m_user, m_password, "", m_port);
+          m_connection.connect(m_inputhost, m_inputuser, m_inputpassword, "", m_port);
         }
       }
 
       if (ImGui::BeginTabBar("Tabs")) {
-        if (ImGui::BeginTabItem("Query")) {
-          renderQueryTab();
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Databases")) {
-          renderDatabasesTab();
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Tables")) {
-          renderTablesTab();
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Columns")) {
-          ImGui::EndTabItem();
-        }
         if (ImGui::BeginTabItem("Data")) {
           renderDataTab();
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Errors")) {
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Warnings")) {
-
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Info")) {
-
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Debug")) {
           ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Logging")) {
@@ -78,9 +49,6 @@ namespace HummingBirdCore {
 
     void SqlWindow::renderQueryTab() {
       ImGui::BeginChild("Query", ImVec2(0, 0), true);
-      ImGui::InputTextMultiline("##Query", &m_queryInput);
-      ImGui::SameLine();
-      ImGui::Dummy(ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 16));
       ImGui::EndChild();
     }
 
@@ -100,13 +68,12 @@ namespace HummingBirdCore {
         return;
       }
 
-      std::vector<Database> dbs = m_connection.getDatabases();
-
-      Database currentDb = m_connection.getCurrentDatabase();
-      std::vector<Table> tables = currentDb.getTables();
-      Table curTable = tables[currentDb.getCurrentTableIndex()];
+      const std::vector<Database> &dbs = m_connection.getDatabases();
+      const int currentDbIndex = m_connection.getCurrentDatabaseIndex();
+      const int currentTableIndex = m_connection.getCurrentDatabase().getCurrentTableIndex();
 
       //Left window
+      getRenderStats(c_renderStatsLeftName)->startUpdateStats();
       {
         ImGui::BeginChild("ChildLeft", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, 0), c_leftChildFlags, c_leftWindowFlags);
         for (int i = 0; i < dbs.size(); ++i) {
@@ -114,68 +81,29 @@ namespace HummingBirdCore {
 
           if (dbNodeOpen) {
             for (int j = 0; j < dbs[i].getTables().size(); ++j) {
-              const std::string tableName = dbs[i].getTables()[j].name;
-              bool isSelectedTable = currentDb.getCurrentTableIndex() == j;
+              const std::string tableName = dbs[i].getTables()[j]->name;
+              bool isSelectedTable = currentDbIndex == i && currentTableIndex == j;
 
               if (ImGui::Selectable(tableName.c_str(), isSelectedTable, c_selectableFlags)) {
-                m_connection.useDatabase(i, j);
-                CORE_TRACE("Selected table {0}", tableName);
-              }
-
-              if (j >= m_settings.c_defaultMaxTableSize) {
-                break;
+                if(m_connection.useDatabase(i, j)) {
+                  m_dataViewer->setTable(dbs[i].getTables()[j]);
+                }
               }
             }
             ImGui::TreePop();
           }
-
-          if (i >= m_settings.c_defaultMaxDatabaseSize) {
-            break;
-          }
         }
         ImGui::EndChild();
       }
+      getRenderStats(c_renderStatsLeftName)->endUpdateStats();
 
       //Right window
+      getRenderStats(c_renderStatsRightName)->startUpdateStats();
       {
         ImGui::SameLine();
-        ImGui::BeginChild("ChildRight", ImVec2(0, 0), c_rightChildFlags, c_rightWindowFlags);
-
-        const int headerCount = currentDb.getTables()[currentDb.getCurrentTableIndex()].headers.size();
-        const int rowCount = currentDb.getTables()[currentDb.getCurrentTableIndex()].rows.size();
-
-        if (headerCount != 0) {
-          if (ImGui::BeginTable("Table Data Table", headerCount, ImGuiTableFlags_Resizable)) {
-            ImGui::TableSetupScrollFreeze(0, 1);// Make top row always visible
-
-            for (int i = 0; i < headerCount; ++i) {
-              ImGui::TableSetupColumn(curTable.headers[i].name.c_str(), ImGuiTableColumnFlags_WidthFixed, 150.0f);
-            }
-            ImGui::TableHeadersRow();
-
-            for (int i = 0; i < rowCount; ++i) {
-              ImGui::TableNextRow();
-              for (int j = 0; j < curTable.rows[i].data.size(); ++j) {
-                ImGui::TableSetColumnIndex(j);
-                ImGui::Text(curTable.rows[i].data[j].c_str());
-              }
-
-              if (i >= m_settings.c_defaultMaxDataSize) {
-                break;
-              }
-            }
-
-            ImGui::EndTable();
-          } else {
-            ImGui::TextColored(ImColor(255, 0, 0), "No headers found");
-          }
-        }
-
-        ImGui::EndChild();
+        m_dataViewer->render();
       }
-
-
-      //      ImGui::EndChild();
+      getRenderStats(c_renderStatsRightName)->endUpdateStats();
     }
   }// namespace Sql
 }// namespace HummingBirdCore

@@ -43,6 +43,7 @@
 #include "UIWindows/Themes/ThemeManager.h"
 
 #include "Sql/SqlWindow.h"
+#include "UIWindows/Widget/DataViewer.h"
 
 // Rendering
 #include "Rendering/Texture.h"
@@ -141,6 +142,7 @@ private:
     int m_debugWindowCount = 0;
     int m_sqlWindowCount = 0;
     int m_themeManagerCount=0;
+    int m_dataViewerCount = 0;
 
     //Updatables
     std::vector<std::shared_ptr<Updatable>> m_updatables = {};

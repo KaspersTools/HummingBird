@@ -5,7 +5,6 @@
 #include "stb_image.h"
 
 #include "Application.h"
-#include "Log.h"
 
 namespace HummingBirdCore {
 
@@ -25,22 +24,6 @@ namespace HummingBirdCore {
     Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
 
     m_backgroundTexture.load();
-
-    //Test mysql connection
-    //    std::string host = "127.0.0.1";
-    //    std::string username = "root";
-    //    std::string passw = "Vuur01-";
-    //    std::string database = "dsu_core";
-    //    unsigned int port = 3306;
-    //
-    //    Sql::SqlConnection sqlConnection(host, username, passw, port);
-    //
-    //    if (sqlConnection.isConnected()) {
-    //      CORE_TRACE("Connected to database");
-    //    } else {
-    //      CORE_ERROR("Failed to connect to database");
-    //    }
-
 
     Run();
   }
@@ -238,14 +221,27 @@ namespace HummingBirdCore {
         }
 
         // Additional Tools
-        if (ImGui::MenuItem("Content Explorer")) {
-          const std::string baseName = "Content Explorer ";
-          if (!openClosedWindow(baseName)) {
-            const std::string name = baseName + std::to_string(m_contentExplorerCount);
-            AddWindow(name, std::make_shared<HummingBirdCore::UIWindows::ContentExplorer>(name));
-            m_contentExplorerCount++;
+        if(ImGui::BeginMenu("Additional Tools")) {
+          if(ImGui::MenuItem("Data Viewer")) {
+            const std::string baseName = "Data Viewer ";
+            if (!openClosedWindow(baseName)) {
+              const std::string name = baseName + std::to_string(m_dataViewerCount);
+              AddWindow(name, std::make_shared<HummingBirdCore::Widgets::DataViewer>(name));
+              m_dataViewerCount++;
+            }
           }
+
+          if (ImGui::MenuItem("Content Explorer")) {
+            const std::string baseName = "Content Explorer ";
+            if (!openClosedWindow(baseName)) {
+              const std::string name = baseName + std::to_string(m_contentExplorerCount);
+              AddWindow(name, std::make_shared<HummingBirdCore::UIWindows::ContentExplorer>(name));
+              m_contentExplorerCount++;
+            }
+          }
+          ImGui::EndMenu();
         }
+
         ImGui::EndMenu();
       }
 

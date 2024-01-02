@@ -61,6 +61,7 @@ add_library(HummingbirdCore STATIC
         HummingBirdCore/src/Sql/SqlWindow.h
         HummingBirdCore/src/Sql/SqlConnection.cpp
         HummingBirdCore/src/Sql/SqlConnection.h
+        HummingBirdCore/src/UIWindows/Widget/DataViewer.h
 )
 
 # HummingbirdApp
@@ -259,6 +260,7 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
             ../HummingBirdKasperSpecific/src/HelloLibrary.h
             ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.cpp
             ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.h
+            HummingBirdCore/src/UIWindows/Widget/DataViewer.h
     )
 
     add_library(

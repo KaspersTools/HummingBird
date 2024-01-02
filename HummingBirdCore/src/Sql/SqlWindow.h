@@ -4,13 +4,6 @@
 
 #pragma once
 
-//#include "../UIWindows/UIWindow.h"
-//#include <imgui_stdlib.h>
-//
-//#include "Logging/ImGuiLogSink.h"
-//#include "SqlConnection.h"
-//#include "CoreRef.h"
-
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -26,43 +19,56 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
-#include "../UIWindows/UIWindow.h"
+#include "Sql/SqlConnection.h"
+
+
 #include "CoreRef.h"
 #include "Logging/ImGuiLogSink.h"
-#include "SqlConnection.h"
+#include "UIWindows/UIWindow.h"
+#include "UIWindows/Widget/DataViewer.h"
 
 namespace HummingBirdCore {
-
-
-
   namespace Sql {
-    struct SqlWindowSettings{
-      const int c_defaultMaxTableSize = 100;
-      const int c_defaultMaxDatabaseSize = 100;
-      const int c_defaultMaxDataSize = 100;
-    };
-
     class SqlWindow : public HummingBirdCore::UIWindow {
   public:
-      SqlWindow(const std::string& name) : SqlWindow(ImGuiWindowFlags_None, name) {
-
+      SqlWindow(const std::string &name) : SqlWindow(ImGuiWindowFlags_None, name) {
       }
-
       SqlWindow(ImGuiWindowFlags flags, const std::string &name, const bool autoEndFrame = true) : UIWindow(flags, name, autoEndFrame) {
-        initializeLogSink();
-
-        //Default values for the sql connection
-        m_host = "127.0.0.1";
-        m_user = "root";
-        m_password = "NONE";
-        m_port = 3306;
+        initialize();
       }
 
       ~SqlWindow() {
       }
 
       void render() override;
+      void initialize() override{
+        initializeLogSink();
 
+        //Default values for the sql connection
+        m_inputhost = "127.0.0.1";
+        m_inputuser = "root";
+        m_inputpassword = "Vuur01-";
+        m_port = 3306;
+
+        m_dataViewer = std::make_shared<HummingBirdCore::Widgets::DataViewer>(getName() + " Data Viewer");
+
+        getRenderStats()->addChildWindow(c_renderStatsMainName);
+        getRenderStats()->addChildWindow(c_renderStatsLeftName);
+        getRenderStats()->addChildWindow(c_renderStatsRightName);
+        getRenderStats()->addChildWindow(m_dataViewer->getRenderStats());
+      }
+
+      void cleanUpOnClose() override{
+        m_dataViewer->cleanUpOnClose();
+        m_dataViewer = nullptr;
+
+        m_logSink = nullptr;
+        m_logger = nullptr;
+
+        spdlog::drop("HummingBirdSQL " + getName());
+
+        m_connection.disconnect();
+      }
   private:
       void initializeLogSink() {
         if (m_logSink == nullptr) {
@@ -85,30 +91,27 @@ namespace HummingBirdCore {
       void renderDataTab();
 
   private:
-      //Window flags
+      //default flags
       const ImGuiWindowFlags c_leftWindowFlags = ImGuiWindowFlags_HorizontalScrollbar;
-      const ImGuiChildFlags c_leftChildFlags   = ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX;
-
-      const ImGuiWindowFlags c_rightWindowFlags = ImGuiWindowFlags_HorizontalScrollbar ;
-      const ImGuiChildFlags c_rightChildFlags = ImGuiChildFlags_AlwaysAutoResize | ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX;
-
-      //Tree node flags
+      const ImGuiChildFlags c_leftChildFlags = ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX;
       const ImGuiTreeNodeFlags c_baseTreeNodeFlagsLeft = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
       const ImGuiSelectableFlags c_selectableFlags = ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns;
 
-      HummingBirdCore::Sql::SqlConnection m_connection;
-      std::string m_host;
-      std::string m_user;
-      std::string m_password;
+      SqlConnection m_connection;
+
+      std::string m_inputhost;
+      std::string m_inputuser;
+      std::string m_inputpassword;
 
       unsigned int m_port;
 
-      std::string m_queryInput = "";
-
       Ref<spdlog::logger> m_logger = nullptr;
       std::shared_ptr<HummingBirdCore::Logging::ImGuiLogSink_mt> m_logSink = nullptr;
+      std::shared_ptr<HummingBirdCore::Widgets::DataViewer> m_dataViewer = nullptr;
 
-      SqlWindowSettings m_settings;
+      const std::string c_renderStatsMainName = getName()  + " Data Main Render Stats : ";
+      const std::string c_renderStatsLeftName = getName()  + " Left Render Stats      : ";
+      const std::string c_renderStatsRightName = getName() + " Right Render Stats     : ";
     };
 
   }// namespace Sql
