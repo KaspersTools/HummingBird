@@ -10,16 +10,25 @@
 #include "UIWindows/ContentExplorer.h"
 #include "UIWindows/LogWindow.h"
 #include "UIWindows/UIWindow.h"
-#include "UIWindows/LogWindow.h"
+
+// UIWindows/Themes
 #include "UIWindows/Themes/ThemeManager.h"
+#include "UIWindows/Themes/Themes.h"
+
+// UIWindows/Widget
+#include "UIWindows/Widget/DataViewer.h"
+#include "UIWindows/Widget/MetricsWidget.h"
+
+// OTHER WINDOWS
 #include "Terminal/TerminalWindow.h"
+
 #include "Security/LogInWindow.h"
 #include "Security/LoginManager.h"
+
 #include "System/Hosts/EditHostsWindow.h"
 #include "System/SysInfoWindow.h"
 
 #include "Sql/SqlWindow.h"
-#include "UIWindows/Widget/DataViewer.h"
 
 // Rendering
 #include "Rendering/Texture.h"
@@ -57,8 +66,14 @@ public:
 
 
     //Getters
-    const int GetWindowWidth() const { return m_windowWidth; }
-    const int GetWindowHeight() const { return m_windowHeight; }
+    const float GetWindowWidth() const {
+      ImGuiIO &io = ImGui::GetIO();
+      return io.DisplaySize.x;
+    }
+    const int GetWindowHeight() const {
+      ImGuiIO &io = ImGui::GetIO();
+      return io.DisplaySize.y;
+    }
 
     static SDL_Window *GetWindow() { return s_window; }
     static Application *GetApplication() {
@@ -79,9 +94,9 @@ private:
     void Render();
 
     bool openClosedWindow(const std::string &baseName) {
-      for (auto &window : m_uiWindows) {
+      for (auto &window: m_uiWindows) {
         if (window.first.find(baseName) == 0) {
-          if(!window.second->isOpen()) {
+          if (!window.second->isOpen()) {
             window.second->m_isOpen = true;
             return true;
           }
@@ -96,9 +111,8 @@ private:
 
     SDL_GLContext m_gl_context{};
     bool m_exit = false;
-    GLsizei m_windowWidth = 1920;
-    GLsizei m_windowHeight = 1080;
-    Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
+
+    //    Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
 
     // UIWindows
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
@@ -114,8 +128,10 @@ private:
     int m_contentExplorerCount = 0;
     int m_debugWindowCount = 0;
     int m_sqlWindowCount = 0;
-    int m_themeManagerCount=0;
+    int m_themeManagerCount = 0;
     int m_dataViewerCount = 0;
+
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     //Updatables
     std::vector<std::shared_ptr<Updatable>> m_updatables = {};

@@ -3,8 +3,11 @@
 //
 
 #include "Application.h"
+
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl2.h>
+
+#include <SDL_opengl.h>
 
 namespace HummingBirdCore {
 
@@ -23,13 +26,7 @@ namespace HummingBirdCore {
 
     Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
 
-    m_backgroundTexture.load();
-
     Run();
-  }
-
-  Application::~Application() {
-    CORE_INFO("Closing HummingBirdCore Application");
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
@@ -40,16 +37,16 @@ namespace HummingBirdCore {
     SDL_Quit();
   }
 
+  Application::~Application() {
+    CORE_INFO("Closing HummingBirdCore Application");
+  }
+
   void Application::InitSDL() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
       CORE_ERROR("Failed to initialize SDL: {0}", SDL_GetError());
       exit(-1);
     }
 
-    SDL_version compiled;
-    SDL_VERSION(&compiled);
-    SDL_version linked;
-    SDL_GetVersion(&linked);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
@@ -69,8 +66,8 @@ namespace HummingBirdCore {
             "Humming Bird",
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
-            m_windowWidth,
-            m_windowHeight,
+            1280,
+            720,
             mainWindowFlags);
 
     // limit to which minimum size user can resize the window
@@ -85,26 +82,13 @@ namespace HummingBirdCore {
 
     // enable VSync
     SDL_GL_SetSwapInterval(1);
-
-    if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
-      CORE_ERROR("Couldn't initialize glad");
-      exit(-1);
-    } else {
-      CORE_INFO("glad initialized");
-    }
-
-    CORE_INFO("OpenGL from glad: {0}.{1}", GLVersion.major, GLVersion.minor);
-
     int sdlOpenGLmajor = 0, sdlOpenGLminor = 0;
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &sdlOpenGLmajor);
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &sdlOpenGLminor);
-    CORE_INFO("OpenGL from SDL: {0}.{1}", sdlOpenGLmajor, sdlOpenGLminor);
-    glViewport(0, 0, m_windowWidth, m_windowHeight);
   }
 
   void Application::InitImGui() {
 
-    // setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -220,8 +204,8 @@ namespace HummingBirdCore {
         }
 
         // Additional Tools
-        if(ImGui::BeginMenu("Additional Tools")) {
-          if(ImGui::MenuItem("Data Viewer")) {
+        if (ImGui::BeginMenu("Additional Tools")) {
+          if (ImGui::MenuItem("Data Viewer")) {
             const std::string baseName = "Data Viewer ";
             if (!openClosedWindow(baseName)) {
               const std::string name = baseName + std::to_string(m_dataViewerCount);
@@ -326,10 +310,6 @@ namespace HummingBirdCore {
   }
 
   void Application::RenderUI() {
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame(s_window);
-    ImGui::NewFrame();
-
     {
       ImGuiWindowFlags mainWindowFlags =
               ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
@@ -347,19 +327,18 @@ namespace HummingBirdCore {
       ImGui::PopStyleVar(3);
     }
 
-    //Render background texture
-    {
-      GLuint textureID = m_backgroundTexture.getTextureID();// Replace with your actual texture ID
-      ImVec2 texSize = ImVec2(
-              m_windowWidth,
-              m_windowHeight);
-      ImGui::GetWindowDrawList()->AddImage(
-              (void *) (intptr_t) textureID,
-              ImVec2(ImGui::GetWindowPos()),
-              ImVec2(ImGui::GetWindowPos().x + texSize.x, ImGui::GetWindowPos().y + texSize.y),
-              ImVec2(0, 0), ImVec2(1, 1));
-    }
-
+    //    //Render background texture
+    //    {
+    //      GLuint textureID = m_backgroundTexture.getTextureID();// Replace with your actual texture ID
+    //      ImVec2 texSize = ImVec2(
+    //              m_windowWidth,
+    //              m_windowHeight);
+    //      ImGui::GetWindowDrawList()->AddImage(
+    //              (void *) (intptr_t) textureID,
+    //              ImVec2(ImGui::GetWindowPos()),
+    //              ImVec2(ImGui::GetWindowPos().x + texSize.x, ImGui::GetWindowPos().y + texSize.y),
+    //              ImVec2(0, 0), ImVec2(1, 1));
+    //    }
 
     SetupDockspace();
 
@@ -377,49 +356,41 @@ namespace HummingBirdCore {
     }
 
     ImGui::End();
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   }
 
   void Application::Render() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
       ImGui_ImplSDL2_ProcessEvent(&event);
-
-      Input::update(event);
-
-      switch (event.type) {
-        case SDL_QUIT:
-          m_exit = true;
-          break;
-
-        case SDL_WINDOWEVENT:
-          switch (event.window.event) {
-            case SDL_WINDOWEVENT_RESIZED:
-              m_windowWidth = event.window.data1;
-              m_windowHeight = event.window.data2;
-              glViewport(0, 0, m_windowWidth, m_windowHeight);
-              break;
-          }
-          break;
-
-        case SDL_KEYDOWN:
-          switch (event.key.keysym.sym) {
-            case SDLK_ESCAPE:
-              m_exit = true;
-              break;
-          }
-          break;
-      }
+      if (event.type == SDL_QUIT)
+        m_exit = true;
+      if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(s_window))
+        m_exit = true;
     }
 
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
     RenderUI();
+    //Render toast notifications
+    {
+      ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
+      ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
+      ImGui::RenderNotifications();
+      ImGui::PopStyleVar(1);// Don't forget to Pop()
+      ImGui::PopStyleColor(1);
+    }
 
+    ImGui::Render();
 
+    glViewport(0, 0, (int) GetWindowWidth(), (int) GetWindowHeight());
+    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     SDL_GL_SwapWindow(s_window);
   }
 }// namespace HummingBirdCore

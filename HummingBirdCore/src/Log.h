@@ -13,6 +13,7 @@
 #pragma warning(pop)
 
 #include "CoreRef.h"
+#include <imgui_notify.h>
 
 //Thanks @TheCherno
 namespace HummingBirdCore {

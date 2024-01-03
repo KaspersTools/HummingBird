@@ -20,7 +20,8 @@ public:
 
       for (auto &log: logMessages) {
         ImColor color = HummingBirdCore::Logging::getLogColor(log.level);
-        ImGui::TextColored(color, log.message.c_str());
+        std::string logMessage = log.message;
+//        ImGui::TextColored(color, logMessage);
       }
     }
   };
