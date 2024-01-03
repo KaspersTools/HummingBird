@@ -3,9 +3,7 @@
 //
 
 //Contains all the precompiled headers for the HummingBirdCore project that are universal for all platforms
-
 #pragma once
-
 
 /////STANDARD LIBRARIES/////
 #include <iostream>
@@ -54,12 +52,16 @@
 /////HUMMINGBIRD CORE/////
 //Contains all the precompiled headers for the HummingBirdCore project that are universal for all platforms
 /////THIRD PARTY LIBRARIES/////
-#include <imgui.h>
+#define IM_VEC2_CLASS_EXTRA
+#include <imconfig.h>
+
 #include <imgui_stdlib.h>
+
+#include <imgui.h>
+#include <imgui_internal.h>
 
 #include <SDL.h>
 
-#include <glad/glad.h>
 #include <spdlog/spdlog.h>
 
 #pragma warning(push, 0)
@@ -78,13 +80,15 @@
 //main
 #include "Log.h"
 
-//rendering
-#include "Rendering/Texture.h"
-
 //utils
 #include "Utils/Utils.h"
 #include "Utils/UUID.h"
 #include "Utils/Input.h"
+#include "Utils/UIUtils.h"
+
+//rendering
+//#include "Rendering/Texture.h"
+
 
 #include "CoreRef.h"
 #include "Updatable.h"
@@ -98,9 +102,6 @@
 #include "Logging/MainLogSink.h"
 //sql
 #include "Sql/SqlConnection.h"
-
-//Main application
-#include "Application.h"
 
 
 

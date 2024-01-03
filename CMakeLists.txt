@@ -49,8 +49,8 @@ set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/UIWindows/Themes/ThemeManager.cpp
         HummingBirdCore/src/UIWindows/Themes/ThemeManager.h
         HummingBirdCore/src/stb_image.h
-        HummingBirdCore/src/Rendering/Texture.cpp
-        HummingBirdCore/src/Rendering/Texture.h
+        #[[HummingBirdCore/src/Rendering/Texture.cpp
+        HummingBirdCore/src/Rendering/Texture.h]]
         HummingBirdCore/src/Security/LogInWindow.cpp
         HummingBirdCore/src/Security/LogInWindow.h
         HummingBirdCore/src/Security/LoginManager.cpp
@@ -75,6 +75,10 @@ set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/Sql/SqlConnection.cpp
         HummingBirdCore/src/Sql/SqlConnection.h
         HummingBirdCore/src/UIWindows/Widget/DataViewer.h
+        HummingBirdCore/src/ThirdParty/MetricsImGui.cpp
+        HummingBirdCore/src/ThirdParty/MetricsImGui.h
+        HummingBirdCore/src/UIWindows/Widget/MetricsWidget.h
+        HummingBirdCore/src/Utils/UIUtils.h
 )
 if (NOT WITHHUMMINGBIRDCOREASLIB)
     message("Building with HummingBirdCore as exe")
@@ -168,35 +172,36 @@ endif ()
 
 
 #glad
-if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glad)
-    message("Glad folder not found")
-else ()
-    message("Glad folder found")
-    add_library(glad STATIC
-            ${HUMMINGBIRD_DIR}/vendor/glad/src/glad.c
-    )
-
-    #include glad
-    include_directories(
-            ${HUMMINGBIRD_DIR}/vendor/glad/include
-    )
-
-    # Link glad
-    if (NOT WITHHUMMINGBIRDCOREASLIB)
-        target_link_libraries(HummingbirdCoreEXE
-                glad
-        )
-    endif ()
-
-    target_link_libraries(HummingbirdCore
-            glad
-    )
-
-    target_link_libraries(HummingbirdApp
-            glad
-    )
-endif ()
-
+#
+#if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glad)
+#    message("Glad folder not found")
+#else ()
+#    message("Glad folder found")
+#    add_library(glad STATIC
+#            ${HUMMINGBIRD_DIR}/vendor/glad/src/glad.c
+#    )
+#
+#    #include glad
+#    include_directories(
+#            ${HUMMINGBIRD_DIR}/vendor/glad/include
+#    )
+#
+#    # Link glad
+#    if (NOT WITHHUMMINGBIRDCOREASLIB)
+#        target_link_libraries(HummingbirdCoreEXE
+#                glad
+#        )
+#    endif ()
+#
+#    target_link_libraries(HummingbirdCore
+#            glad
+#    )
+#
+#    target_link_libraries(HummingbirdApp
+#            glad
+#    )
+#endif ()
+#
 
 #spdlog
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/spdlog)
@@ -231,38 +236,59 @@ endif ()
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/imgui)
     message("Imgui folder not found")
 else ()
-    add_library(imgui STATIC
+    set(IMGUI_SOURCES
             #imgui
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/imconfig.h
+
+            #imgui widgets
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_draw.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_internal.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_tables.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_widgets.cpp
+
+            #imstb
             ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_textedit.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_rectpack.h
-            ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_truetype.h
+            ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_textedit.h
 
             #imgui demos
             ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_demo.cpp
 
             #backends
+            vendor/imgui/backends/imgui_impl_opengl3_loader.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_opengl3.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_opengl3.h
             ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_sdl2.cpp
             ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_sdl2.h
 
+
             #misc
             ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp/imgui_stdlib.cpp
+            ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp/imgui_stdlib.h
+
+            #addons
+            ${HUMMINGBIRD_DIR}/vendor/imgui/addons/imguinotify/imgui_notify.h
+
+            #fonts
+            ${HUMMINGBIRD_DIR}/vendor/imgui/addons/imguinotify/font_awesome_5.h
+            ${HUMMINGBIRD_DIR}/vendor/imgui/addons/imguinotify/fa_solid_900.h
+    )
+
+    add_library(imgui STATIC
+            ${IMGUI_SOURCES}
     )
 
     #include imgui
     include_directories(
-            ${HUMMINGBIRD_DIR}/vendor/imgui
-            ${HUMMINGBIRD_DIR}/vendor/imgui/backends
-            ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
+            vendor/imgui
+            vendor/imgui/backends
+            vendor/imgui/misc/cpp
+            vendor/imgui/addons/imguinotify
     )
+
+
 
     # Link imgui
     if (NOT WITHHUMMINGBIRDCOREASLIB)
@@ -444,6 +470,27 @@ else ()
     )
     target_link_libraries(HummingbirdApp
             ${SYSTEM_CONFIGURATION_FRAMEWORK}
+    )
+endif ()
+
+# Find openg;
+find_package(OpenGL REQUIRED)
+if (NOT OPENGL_FOUND)
+    message(FATAL_ERROR "OpenGL not found")
+else ()
+    message("OpenGL found")
+
+    if (NOT WITHHUMMINGBIRDCOREASLIB)
+        target_link_libraries(HummingbirdCoreEXE
+                ${OPENGL_LIBRARIES}
+        )
+    endif ()
+
+    target_link_libraries(HummingbirdCore
+            ${OPENGL_LIBRARIES}
+    )
+    target_link_libraries(HummingbirdApp
+            ${OPENGL_LIBRARIES}
     )
 endif ()
 
