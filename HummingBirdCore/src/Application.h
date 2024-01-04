@@ -107,12 +107,10 @@ private:
 
 private:
     inline static SDL_Window *s_window;
-    inline static Application *s_application = nullptr;
-
     SDL_GLContext m_gl_context{};
-    bool m_exit = false;
 
-    //    Texture m_backgroundTexture = Texture("Assets/Textures/newbg.png");
+    inline static Application *s_application = nullptr;
+    bool m_exit = false;
 
     // UIWindows
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;

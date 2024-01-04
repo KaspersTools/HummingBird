@@ -15,14 +15,15 @@ public:
     ~LogWindow() = default;
 
     void render() override {
-      std::vector<HummingBirdCore::Logging::ImGuiLogSinkItem> logMessages =
-              HummingBirdCore::Logging::MainLogSink<std::mutex>::getInstance()->getLogMessages();
+      //TODO: Fix this
+//      std::vector<HummingBirdCore::Logging::ImGuiLogSinkItem> logMessages =
+//              HummingBirdCore::Logging::MainLogSink<std::mutex>::getInstance()->getLogMessages();
 
-      for (auto &log: logMessages) {
-        ImColor color = HummingBirdCore::Logging::getLogColor(log.level);
-        std::string logMessage = log.message;
-//        ImGui::TextColored(color, logMessage);
-      }
+//      for (auto &log: logMessages) {
+//        ImColor color = HummingBirdCore::Logging::getLogColor(log.level);
+//        std::string logMessage = log.message;
+////        ImGui::TextColored(color, logMessage);
+//      }
     }
   };
 }// namespace HummingBirdCore::UIWindows
