@@ -54,10 +54,10 @@
 /////THIRD PARTY LIBRARIES/////
 #define IM_VEC2_CLASS_EXTRA
 #include <imconfig.h>
-#include <imgui_stdlib.h>
+#include <misc/cpp/imgui_stdlib.h>
 #include <imgui.h>
 #include <imgui_internal.h>
-#include <imgui_notify.h>
+#include <addons/imguinotify/imgui_notify.h>
 
 #include <SDL.h>
 

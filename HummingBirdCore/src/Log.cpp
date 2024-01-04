@@ -19,7 +19,7 @@ namespace HummingBirdCore {
       return;
 
     auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    consoleSink->set_pattern("%^[%T] %n | %s-%!()-%# | %v%$");
+    consoleSink->set_pattern("%^[%T] %n | %s-%!():%# | %v%$");
     s_logSinks.emplace_back(consoleSink);
 
     auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("HummingBirdCore.log", true);
@@ -49,7 +49,7 @@ namespace HummingBirdCore {
 
     std::unique_ptr<spdlog::formatter> formatter;
 
-    std::string patternForTitle = "[source %s] [function %!] [line %#]";
+    std::string patternForTitle = "%^[%T] %n";
     formatter = std::unique_ptr<spdlog::formatter>(new spdlog::pattern_formatter(patternForTitle));
     fmt::basic_memory_buffer<char, 250> formatted;
     formatter->format(logMsg, formatted);
@@ -61,9 +61,6 @@ namespace HummingBirdCore {
     formatter->format(logMsg, formatted);
     std::string formattedData = std::string(formatted.data(), formatted.size());
 
-    //TODO: Reenable when submodule is updated
-    //    ImGuiToast toast = ImGuiToast(formattedStr, 5000);
-    //    (ImGuiToastType type, std::string title, std::string content, int dismiss_time = NOTIFY_DEFAULT_DISMISS)
     auto type = ImGuiToastType_None;
 
     switch (lvl) {
