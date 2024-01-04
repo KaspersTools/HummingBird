@@ -12,7 +12,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace HummingBirdCore {
-  std::shared_ptr<spdlog::logger>Log::s_coreLogger = nullptr;
+  std::shared_ptr<spdlog::logger> Log::s_coreLogger = nullptr;
 
   void Log::Init() {
     if (s_isInitialized)
@@ -61,8 +61,37 @@ namespace HummingBirdCore {
     formatter->format(logMsg, formatted);
     std::string formattedData = std::string(formatted.data(), formatted.size());
 
-//TODO: Reenable when submodule is updated
-//    ImGuiToast toast = ImGuiToast(formattedStr, 5000);
+    //TODO: Reenable when submodule is updated
+    //    ImGuiToast toast = ImGuiToast(formattedStr, 5000);
+    //    (ImGuiToastType type, std::string title, std::string content, int dismiss_time = NOTIFY_DEFAULT_DISMISS)
+    auto type = ImGuiToastType_None;
+
+    switch (lvl) {
+      case spdlog::level::trace:
+        type = ImGuiToastType_Info;
+        break;
+      case spdlog::level::debug:
+        type = ImGuiToastType_Info;
+        break;
+      case spdlog::level::info:
+        type = ImGuiToastType_Info;
+        break;
+      case spdlog::level::warn:
+        type = ImGuiToastType_Warning;
+        break;
+      case spdlog::level::err:
+        type = ImGuiToastType_Error;
+        break;
+      case spdlog::level::critical:
+        type = ImGuiToastType_Error;
+        break;
+      case spdlog::level::off:
+        type = ImGuiToastType_None;
+        break;
+    }
+
+    ImGuiToast toast = ImGuiToast(type, formattedTitleStr, formattedData, 5000);
+    ImGui::InsertNotification(toast);
   }
 
 }// namespace HummingBirdCore
