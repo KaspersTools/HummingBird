@@ -23,9 +23,6 @@ namespace HummingBirdCore {
 
     InitSDL();
     InitImGui();
-//TODO: Remake this funtion using enum magic
-//    Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
-
     Run();
 
     ImGui_ImplOpenGL3_Shutdown();

@@ -40,7 +40,6 @@ set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/CoreRef.h
         HummingBirdCore/src/Application.cpp
         HummingBirdCore/src/Application.h
-        HummingBirdCore/src/Logging/MainLogSink.h
         HummingBirdCore/src/Log.cpp
         HummingBirdCore/src/Log.h
         HummingBirdCore/src/Terminal/TerminalWindow.cpp
@@ -63,7 +62,6 @@ set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/UIWindows/ContentExplorer.h
         HummingBirdCore/src/Folder.h
         HummingBirdCore/src/UIWindows/LogWindow.h
-        HummingBirdCore/src/Logging/ImGuiLogSink.h
         HummingBirdCore/src/Utils/Input.h
         HummingBirdCore/src/Updatable.h
         HummingBirdCore/src/System/SysInfo.cpp
@@ -94,16 +92,6 @@ add_library(HummingbirdCore STATIC
 )
 target_precompile_headers(HummingbirdCore PUBLIC HummingBirdCore/src/PCH/pch.h)
 
-# HummingbirdApp
-add_executable(HummingbirdApp
-        ${HUMMINGBIRDFRONT_DIR}/main.cpp
-)
-
-# Link HummingbirdCore to HummingbirdApp
-target_link_libraries(HummingbirdApp
-        HummingbirdCore
-)
-
 # Core include directories
 include_directories(
         HummingBirdCore/src
@@ -131,10 +119,6 @@ else ()
     endif ()
 
     target_link_libraries(HummingbirdCore
-            fmt::fmt
-    )
-
-    target_link_libraries(HummingbirdApp
             fmt::fmt
     )
 endif ()
@@ -165,9 +149,6 @@ else ()
             SDL2-static
     )
 
-    target_link_libraries(HummingbirdApp
-            SDL2-static
-    )
 endif ()
 
 #spdlog
@@ -193,9 +174,6 @@ else ()
             spdlog::spdlog
     )
 
-    target_link_libraries(HummingbirdApp
-            spdlog::spdlog
-    )
 endif ()
 
 #imgui
@@ -267,10 +245,6 @@ else ()
             imgui
     )
 
-    target_link_libraries(HummingbirdApp
-            imgui
-    )
-
     #link sdl to imgui if sdl is valid
     if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/sdl)
         message("SDL folder not found AND its needed by imgui")
@@ -303,9 +277,6 @@ else ()
     endif ()
 
     target_link_libraries(HummingbirdCore
-            ${MYSQL_LIBRARIES}
-    )
-    target_link_libraries(HummingbirdApp
             ${MYSQL_LIBRARIES}
     )
 endif ()
@@ -345,9 +316,7 @@ if (WITHHUMMINGBIRDKASPERSPECIFIC)
     target_link_libraries(HummingbirdCore
             KasperSpecificTools
     )
-    target_link_libraries(HummingbirdApp
-            KasperSpecificTools
-    )
+
 endif ()
 
 ########################################################################
@@ -369,10 +338,6 @@ else ()
     target_link_libraries(HummingbirdCore
             ${SECURITY_FRAMEWORK}
     )
-
-    target_link_libraries(HummingbirdApp
-            ${SECURITY_FRAMEWORK}
-    )
 endif ()
 
 # get IOKit
@@ -391,9 +356,6 @@ else ()
     target_link_libraries(HummingbirdCore
             ${IOKit}
     )
-    target_link_libraries(HummingbirdApp
-            ${IOKit}
-    )
 endif ()
 
 # get CoreFoundation
@@ -410,9 +372,6 @@ else ()
     endif ()
 
     target_link_libraries(HummingbirdCore
-            ${CoreFoundation}
-    )
-    target_link_libraries(HummingbirdApp
             ${CoreFoundation}
     )
 endif ()
@@ -434,9 +393,6 @@ else ()
     target_link_libraries(HummingbirdCore
             ${SYSTEM_CONFIGURATION_FRAMEWORK}
     )
-    target_link_libraries(HummingbirdApp
-            ${SYSTEM_CONFIGURATION_FRAMEWORK}
-    )
 endif ()
 
 # Find openg;
@@ -453,9 +409,6 @@ else ()
     endif ()
 
     target_link_libraries(HummingbirdCore
-            ${OPENGL_LIBRARIES}
-    )
-    target_link_libraries(HummingbirdApp
             ${OPENGL_LIBRARIES}
     )
 endif ()
