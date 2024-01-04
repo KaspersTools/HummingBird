@@ -3,30 +3,19 @@
 //
 
 #pragma once
-
 #include <memory>
-#include <vector>
 
-#pragma warning(push, 0)
-#include <spdlog/common.h>
-#include <spdlog/details/backtracer.h>
-#include <spdlog/details/log_msg.h>
-#include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
-#pragma warning(pop)
 
 #include "CoreRef.h"
-#include <imgui_notify.h>
 
 //Thanks @TheCherno
 namespace HummingBirdCore {
   class Log {
 public:
     static void Init();
-
-    static HummingBirdCore::Ref<spdlog::logger> &GetCoreLogger() {
-      return s_CoreLogger;
-    }
+    inline static void notify(spdlog::source_loc loc, spdlog::level::level_enum lvl, spdlog::string_view_t msg);
+    inline static void log   (spdlog::source_loc loc, spdlog::level::level_enum lvl, spdlog::string_view_t msg);
 
     template<typename... Args>
     inline static void log(spdlog::source_loc loc, spdlog::level::level_enum lvl, spdlog::format_string_t<Args...> fmt, Args &&...args) {
@@ -41,63 +30,6 @@ public:
     template<typename T>
     inline static void log(spdlog::level::level_enum lvl, const T &msg) {
       log(spdlog::source_loc{}, lvl, msg);
-    }
-    inline static void notify(spdlog::source_loc loc, spdlog::level::level_enum lvl, spdlog::string_view_t msg) {
-      std::string titleStr = s_CoreLogger->name();
-      std::string contentStr = std::string(msg.data(), msg.size());
-
-      char title[titleStr.length() + 1];
-      strcpy(title, titleStr.c_str());
-
-      char content[contentStr.length() + 1];
-      strcpy(content, contentStr.c_str());
-
-      ImGuiToast toast = ImGuiToast(ImGuiToastType_None, 5000);
-      bool show = true;
-      switch (lvl) {
-        case spdlog::level::trace:
-          show = false;
-          toast.set_type(ImGuiToastType_Info);
-          break;
-        case spdlog::level::debug:
-          toast.set_type(ImGuiToastType_Info);
-          break;
-        case spdlog::level::info:
-          toast.set_type(ImGuiToastType_Info);
-          break;
-        case spdlog::level::warn:
-          toast.set_type(ImGuiToastType_Warning);
-          break;
-        case spdlog::level::err:
-          toast.set_type(ImGuiToastType_Error);
-          break;
-        case spdlog::level::critical:
-          toast.set_type(ImGuiToastType_Error);
-          break;
-        case spdlog::level::off:
-          toast.set_type(ImGuiToastType_None);
-          break;
-        default:
-          toast.set_type(ImGuiToastType_None);
-          break;
-      }
-
-      if (show) {
-        toast.set_title(title);
-        toast.set_content(content);
-
-        ImGui::InsertNotification(toast);
-      }
-    }
-
-    inline static void log(spdlog::source_loc loc, spdlog::level::level_enum lvl, spdlog::string_view_t msg) {
-      s_CoreLogger->log(loc, lvl, msg);
-
-      for (auto sink: s_CoreLogger->sinks())
-        if (sink->should_log(lvl)) {
-          notify(loc, lvl, msg);
-          return;
-        }
     }
 
     template<typename... Args>
@@ -161,17 +93,27 @@ public:
       log(spdlog::level::critical, msg);
     }
 
+    static HummingBirdCore::Ref<spdlog::logger> &getCoreLogger() {
+      return s_coreLogger;
+    }
+
+    inline static void getCoreLogLevel(spdlog::level::level_enum level) {
+      getCoreLogger()->set_level(level);
+    }
 
 private:
-    static HummingBirdCore::Ref<spdlog::logger> s_CoreLogger;
-    static std::vector<spdlog::sink_ptr> s_logSinks;
-    static bool s_isInitialized;
-    static bool s_sinkToFile;
+    static HummingBirdCore::Ref<spdlog::logger> s_coreLogger;
+    inline static std::vector<spdlog::sink_ptr> s_logSinks = {};
+    inline static bool s_isInitialized = false;
   };
 }// namespace HummingBirdCore
+
 // Core log macros
-#define CORE_TRACE(...) ::HummingBirdCore::Log::trace(__VA_ARGS__)
-#define CORE_INFO(...) ::HummingBirdCore::Log::info(__VA_ARGS__)
-#define CORE_WARN(...) ::HummingBirdCore::Log::warn(__VA_ARGS__)
-#define CORE_ERROR(...) ::HummingBirdCore::Log::error(__VA_ARGS__)
-#define CORE_CRITICAL(...) ::HummingBirdCore::Log::critical(__VA_ARGS__)
+#define CORE_TRACE(...) ::HummingBirdCore::Log::log(spdlog::source_loc(__FILE__, __LINE__, __FUNCTION__), \
+                                                    spdlog::level::trace, __VA_ARGS__)
+#define CORE_INFO(...) ::HummingBirdCore::Log::log(spdlog::source_loc(__FILE__, __LINE__, __FUNCTION__), \
+                                                   spdlog::level::info, __VA_ARGS__)
+#define CORE_WARN(...) ::HummingBirdCore::Log::log(spdlog::source_loc(__FILE__, __LINE__, __FUNCTION__), \
+                                                   spdlog::level::warn, __VA_ARGS__)
+#define CORE_ERROR(...) ::HummingBirdCore::Log::log(spdlog::source_loc(__FILE__, __LINE__, __FUNCTION__), \
+                                                    spdlog::level::err, __VA_ARGS__)

@@ -11,9 +11,11 @@ namespace HummingBirdCore::Sql {
                                const bool autoConnect) : m_host(host), m_user(user), m_password(password), m_port(port) {
     m_connection = mysql_init(NULL);
     if (!m_connection) {
-      log("Error initializing mysql", spdlog::level::err);
+      //log("Error initializing mysql", spdlog::level::err);
+      //TODO: Add log
     } else {
-      log("Initialized mysql", spdlog::level::info);
+      //log("Initialized mysql", spdlog::level::info);
+      //TODO: Add log
     }
 
     if (autoConnect) {
@@ -32,15 +34,18 @@ namespace HummingBirdCore::Sql {
 
     if (!mysql_real_connect(m_connection, m_host.c_str(), m_user.c_str(), m_password.c_str(),
                             "", m_port, NULL, 0)) {
-      log("Error connecting to database", spdlog::level::err);
-      log(mysql_error(m_connection), spdlog::level::err);
+//log("Error connecting to database", spdlog::level::err);
+//log(mysql_error(m_connection), spdlog::level::err);
+      //TODO: Add log
+
       return false;
     }
 
     m_isConnected = true;
     m_databases = SVR_getDatabases();
 
-    log("Connected to database", spdlog::level::info);
+//"Connected to database", spdlog::level::info);
+    //TODO: Add log
 
     //Switch to first database
     if (m_databases.size() > 0) {
@@ -68,7 +73,8 @@ namespace HummingBirdCore::Sql {
 
     mysql_close(m_connection);
     m_isConnected = false;
-    log("Disconnected from database", spdlog::level::info);
+//log("Disconnected from database", spdlog::level::info);
+    //TODO: Add log
   }
 
   bool SqlConnection::useDatabase(const int databaseIndex, int tableIndex) {
@@ -76,12 +82,12 @@ namespace HummingBirdCore::Sql {
       return false;
 
     if (databaseIndex < 0 || databaseIndex >= m_databases.size()) {
-      log("Database index out of range", spdlog::level::err);
+      //log("Database index out of range", spdlog::level::err);
       return false;
     }
 
     if(databaseIndex == m_currentDatabaseIndex){
-      log("Database already selected only switching table", spdlog::level::warn);
+      //log("Database already selected only switching table", spdlog::level::warn);
       return useTable(tableIndex);
     }
 
@@ -96,33 +102,33 @@ namespace HummingBirdCore::Sql {
     for (std::size_t i = 0; i < m_databases.size(); ++i) {
       if (m_databases[i].getName() == database) {
         foundIndex = i;
-        log("Found database: " + database, spdlog::level::info);
+        //log("Found database: " + database, spdlog::level::info);
         break;
       }
     }
     if (foundIndex == -1) {
-      log("Database: " + database + " not found", spdlog::level::err);
+      //log("Database: " + database + " not found", spdlog::level::err);
       return false;
     }
     const int savedDBIndex = m_currentDatabaseIndex;
     m_currentDatabaseIndex = foundIndex;
     if (!useTable(tableIndex)) {
-      log("Failed to use table when switching database", spdlog::level::err);
+      //log("Failed to use table when switching database", spdlog::level::err);
       m_currentDatabaseIndex = savedDBIndex;
       return false;
     }
-    log("Switched to database: " + database + " succesfully", spdlog::level::info);
+    //log("Switched to database: " + database + " succesfully", spdlog::level::info);
     return true;
   }
 
   bool SqlConnection::useTable(const int tableIndex) {
-    log("Trying to use table: " + std::to_string(tableIndex), spdlog::level::info);
+    //log("Trying to use table: " + std::to_string(tableIndex), spdlog::level::info);
 
     if (!m_isConnected)
       return false;
 
     if (tableIndex < 0 || tableIndex >= getCurrentDatabase().getTables().size()) {
-      log("Table index out of range", spdlog::level::err);
+      //log("Table index out of range", spdlog::level::err);
       return false;
     }
 
@@ -133,7 +139,7 @@ namespace HummingBirdCore::Sql {
 
     if (!isInitialized) {
       std::string logmsg = "Initializing table: " + tableName + " in database: " + getCurrentDatabaseName();
-      log(logmsg, spdlog::level::info);
+      //log(logmsg, spdlog::level::info);
 
       std::vector<Widgets::Header> headers = SVR_getHeaders(getCurrentDatabaseName(), tableName);
       std::vector<Widgets::Row> rows = SVR_getAllRows(getCurrentDatabaseName(), tableName);
@@ -141,11 +147,11 @@ namespace HummingBirdCore::Sql {
       m_databases[m_currentDatabaseIndex].setTableData(currentTableIndex, headers, rows);
 
       logmsg = "Initialized table: " + tableName + " in database: " + getCurrentDatabaseName();
-      log(logmsg, spdlog::level::info);
+      //log(logmsg, spdlog::level::info);
     }
 
     std::string logMsg = "Switched to table: " + tableName + " in database: " + getCurrentDatabaseName();
-    log(logMsg, spdlog::level::info);
+    //log(logMsg, spdlog::level::info);
 
     return true;
   }

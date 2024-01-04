@@ -23,8 +23,8 @@ namespace HummingBirdCore {
 
     InitSDL();
     InitImGui();
-
-    Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
+//TODO: Remake this funtion using enum magic
+//    Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
 
     Run();
 
@@ -94,9 +94,20 @@ namespace HummingBirdCore {
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
 
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    io.ConfigFlags   |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard;
+
+    io.ConfigWindowsMoveFromTitleBarOnly = true;
+
+    io.ConfigViewportsNoAutoMerge = true;
+    io.ConfigViewportsNoTaskBarIcon = false;
+
+    io.ConfigInputTextCursorBlink = true;
+
+#ifdef __APPLE__
+    io.ConfigMacOSXBehaviors = true;
+#else
+    io.ConfigMacOSXBehaviors = false;
+#endif
 
     // setup platform/renderer bindings
     ImGui_ImplSDL2_InitForOpenGL(s_window, m_gl_context);
@@ -240,39 +251,39 @@ namespace HummingBirdCore {
             }
           }
           if (ImGui::BeginMenu("Themes")) {
-            if (ImGui::MenuItem("Maya")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::MAYA);
-            }
-            if (ImGui::MenuItem("Phocus Green")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
-            }
-            if (ImGui::MenuItem("Dark")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::DARK);
-            }
-            if (ImGui::MenuItem("Light")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::LIGHT);
-            }
-            if (ImGui::MenuItem("Classic")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::CLASSIC);
-            }
-            if (ImGui::MenuItem("Monochrome")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::MONOCHROME);
-            }
-            if (ImGui::MenuItem("The_0n3")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::THE_0N3);
-            }
-            if (ImGui::MenuItem("ModernDarkTheme")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::MODERNDARK);
-            }
-            if (ImGui::MenuItem("EmbraceTheDarkness")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::EMBRACETHEDARKNESS);
-            }
-            if (ImGui::MenuItem("DoughBkins_Black")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_BLACK);
-            }
-            if (ImGui::MenuItem("DoughBkins_White")) {
-              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_WHITE);
-            }
+//            if (ImGui::MenuItem("Maya")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::MAYA);
+//            }
+//            if (ImGui::MenuItem("Phocus Green")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
+//            }
+//            if (ImGui::MenuItem("Dark")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::DARK);
+//            }
+//            if (ImGui::MenuItem("Light")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::LIGHT);
+//            }
+//            if (ImGui::MenuItem("Classic")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::CLASSIC);
+//            }
+//            if (ImGui::MenuItem("Monochrome")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::MONOCHROME);
+//            }
+//            if (ImGui::MenuItem("The_0n3")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::THE_0N3);
+//            }
+//            if (ImGui::MenuItem("ModernDarkTheme")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::MODERNDARK);
+//            }
+//            if (ImGui::MenuItem("EmbraceTheDarkness")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::EMBRACETHEDARKNESS);
+//            }
+//            if (ImGui::MenuItem("DoughBkins_Black")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_BLACK);
+//            }
+//            if (ImGui::MenuItem("DoughBkins_White")) {
+//              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_WHITE);
+//            }
             ImGui::EndMenu();
           }
           ImGui::EndMenu();
@@ -326,20 +337,6 @@ namespace HummingBirdCore {
 
       ImGui::PopStyleVar(3);
     }
-
-    //    //Render background texture
-    //    {
-    //      GLuint textureID = m_backgroundTexture.getTextureID();// Replace with your actual texture ID
-    //      ImVec2 texSize = ImVec2(
-    //              m_windowWidth,
-    //              m_windowHeight);
-    //      ImGui::GetWindowDrawList()->AddImage(
-    //              (void *) (intptr_t) textureID,
-    //              ImVec2(ImGui::GetWindowPos()),
-    //              ImVec2(ImGui::GetWindowPos().x + texSize.x, ImGui::GetWindowPos().y + texSize.y),
-    //              ImVec2(0, 0), ImVec2(1, 1));
-    //    }
-
     SetupDockspace();
 
     {

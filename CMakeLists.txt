@@ -170,39 +170,6 @@ else ()
     )
 endif ()
 
-
-#glad
-#
-#if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glad)
-#    message("Glad folder not found")
-#else ()
-#    message("Glad folder found")
-#    add_library(glad STATIC
-#            ${HUMMINGBIRD_DIR}/vendor/glad/src/glad.c
-#    )
-#
-#    #include glad
-#    include_directories(
-#            ${HUMMINGBIRD_DIR}/vendor/glad/include
-#    )
-#
-#    # Link glad
-#    if (NOT WITHHUMMINGBIRDCOREASLIB)
-#        target_link_libraries(HummingbirdCoreEXE
-#                glad
-#        )
-#    endif ()
-#
-#    target_link_libraries(HummingbirdCore
-#            glad
-#    )
-#
-#    target_link_libraries(HummingbirdApp
-#            glad
-#    )
-#endif ()
-#
-
 #spdlog
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/spdlog)
     message("spdlog folder not found")
@@ -230,7 +197,6 @@ else ()
             spdlog::spdlog
     )
 endif ()
-
 
 #imgui
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/imgui)

@@ -23,8 +23,6 @@ namespace HummingBirdCore {
 
       void render() override;
       void initialize() override{
-        initializeLogSink();
-
         //Default values for the sql connection
         m_inputhost = "127.0.0.1";
         m_inputuser = "root";
@@ -43,29 +41,9 @@ namespace HummingBirdCore {
         m_dataViewer->cleanUpOnClose();
         m_dataViewer = nullptr;
 
-        m_logSink = nullptr;
-        m_logger = nullptr;
-
-        spdlog::drop("HummingBirdSQL " + getName());
-
         m_connection.disconnect();
       }
   private:
-      void initializeLogSink() {
-        if (m_logSink == nullptr) {
-          m_logSink = std::make_shared<HummingBirdCore::Logging::ImGuiLogSink_mt>();
-          m_logSink->set_pattern("[%T] [%l] %n: %v");
-
-          m_logger = std::make_shared<spdlog::logger>("HummingBirdSQL " + getName(), m_logSink);
-          m_logger->set_level(spdlog::level::trace);
-          spdlog::register_logger(m_logger);
-
-          m_connection.setLogger(m_logger);
-        } else {
-          m_logger->warn("Log sink already initialized");
-        }
-      }
-
       void renderQueryTab();
       void renderTablesTab();
       void renderDatabasesTab();
@@ -86,8 +64,6 @@ namespace HummingBirdCore {
 
       int m_port;
 
-      Ref<spdlog::logger> m_logger = nullptr;
-      std::shared_ptr<HummingBirdCore::Logging::ImGuiLogSink_mt> m_logSink = nullptr;
       std::shared_ptr<HummingBirdCore::Widgets::DataViewer> m_dataViewer = nullptr;
 
       const std::string c_renderStatsMainName = getName()  + " Data Main Render Stats : ";

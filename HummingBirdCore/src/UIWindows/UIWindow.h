@@ -9,7 +9,7 @@
 
 // Define a UI window structure
 namespace HummingBirdCore {
-  struct UIWindowRenderStats{
+  struct UIWindowRenderStats {
 
     static const int HISTORY_SIZE = 100;// Adjust as needed
     float frameRenderTimes[HISTORY_SIZE] = {0};
@@ -67,13 +67,13 @@ namespace HummingBirdCore {
     }
 
     void addChildWindow(const std::string &name) {
-      if(childWindows[name] == nullptr)
+      if (childWindows[name] == nullptr)
         childWindows[name] = std::make_shared<UIWindowRenderStats>(name);
     }
 
     void addChildWindow(std::shared_ptr<UIWindowRenderStats> window) {
-        if(childWindows[window->name] == nullptr)
-            childWindows[window->name] = window;
+      if (childWindows[window->name] == nullptr)
+        childWindows[window->name] = window;
     }
 
     void showRenderStatsWindow() {
@@ -94,7 +94,7 @@ namespace HummingBirdCore {
 
       ImGui::Separator();
       if (ImGui::CollapsingHeader("Other Stats")) {
-        for (const auto& stat : otherStats) {
+        for (const auto &stat: otherStats) {
           ImGui::Text("%s: %s", stat.first.c_str(), stat.second.c_str());
         }
       }
@@ -110,15 +110,15 @@ namespace HummingBirdCore {
       }
     }
 
-    void addStat(const std::string& id, const std::string& val){
+    void addStat(const std::string &id, const std::string &val) {
       otherStats[id] = val;
     }
 
-    void addStat(const std::string& id, const int val){
+    void addStat(const std::string &id, const int val) {
       otherStats[id] = std::to_string(val);
     }
 
-    void addStat(const std::string& id, const float val){
+    void addStat(const std::string &id, const float val) {
       otherStats[id] = std::to_string(val);
     }
   };
@@ -126,8 +126,8 @@ namespace HummingBirdCore {
   class UIWindow : public ApplicationObject {
 public:
     UIWindow(ImGuiWindowFlags flags, const std::string &name, const bool autoEndFrame = true) : m_flags(flags), m_name(name), c_autoEndFrame(autoEndFrame) {
-        m_renderStatsWindowTitle = name + " Render Stats";
-        m_renderStats = std::make_shared<UIWindowRenderStats>(m_renderStatsWindowTitle);
+      m_renderStatsWindowTitle = name + " Render Stats";
+      m_renderStats = std::make_shared<UIWindowRenderStats>(m_renderStatsWindowTitle);
     }
 
     void beginFrame() {
@@ -157,8 +157,7 @@ public:
       endUpdateStats();
       showRenderStatsWindow();
 
-      if(!m_isOpen)
-      {
+      if (!m_isOpen) {
         cleanUpOnClose();
       }
     }
@@ -168,7 +167,7 @@ public:
     ImGuiWindowFlags getFlags() const { return m_flags; }
     bool getAutoEndFrame() const { return c_autoEndFrame; }
 
-    std::shared_ptr<UIWindowRenderStats> getRenderStats(const std::string& name) {
+    std::shared_ptr<UIWindowRenderStats> getRenderStats(const std::string &name) {
       if (m_renderStats->name == name) {
         return m_renderStats;
       }
@@ -208,6 +207,13 @@ private:
       }
     }
 
+    void initalizeLogger(){
+      //get source location
+//      std::source_location location = std::source_location::current();
+//      spdlog::source_loc loc = spdlog::source_loc{location.file_name(), location.line(), location.function_name()};
+      //get level
+    }
+
 
 public:
     bool m_isOpen = true;
@@ -222,6 +228,5 @@ public:
 
 private:
     std::shared_ptr<UIWindowRenderStats> m_renderStats = nullptr;
-
-};
+  };
 }// namespace HummingBirdCore

@@ -54,27 +54,22 @@
 /////THIRD PARTY LIBRARIES/////
 #define IM_VEC2_CLASS_EXTRA
 #include <imconfig.h>
-
 #include <imgui_stdlib.h>
-
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <imgui_notify.h>
 
 #include <SDL.h>
-
-#include <spdlog/spdlog.h>
 
 #pragma warning(push, 0)
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 #pragma warning(pop)
 
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/base_sink.h>
-
 #include <fmt/core.h>
 
 #include <mysql.h>  // If using MySQL
+
 
 /////HUMMINGBIRD CORE/////
 //main
@@ -97,9 +92,6 @@
 //helper
 #include "Folder.h"
 
-//log
-#include "Logging/ImGuiLogSink.h"
-#include "Logging/MainLogSink.h"
 //sql
 #include "Sql/SqlConnection.h"
 
