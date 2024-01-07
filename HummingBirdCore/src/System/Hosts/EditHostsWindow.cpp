@@ -70,15 +70,17 @@ void HummingBirdCore::System::EditHostsWindow::render() {
 
 
       int column = 0;
+      std::string uidIP = m_hostsFileLines[row].getOriginalIP() + std::to_string(row) + std::to_string(column);
+      
 
       ImGui::TableSetColumnIndex(column++);
-      ImGui::Checkbox("", &m_hostsFileLines[row].enabled);
+      std::string checkboxID = "##"+ uidIP + "-checkbox";
+      ImGui::Checkbox(checkboxID.c_str(), &m_hostsFileLines[row].enabled);
 
       ImGui::TableSetColumnIndex(column++);
       char ipBuffer[256];
       strncpy(ipBuffer, m_hostsFileLines[row].getIP().c_str(), sizeof(ipBuffer));
       ipBuffer[sizeof(ipBuffer) - 1] = 0;// Ensure null termination
-      std::string uidIP = m_hostsFileLines[row].getOriginalIP() + std::to_string(row) + std::to_string(column);
       std::string labelip = "##" + uidIP;
       if (ImGui::InputText(labelip.c_str(), ipBuffer, sizeof(ipBuffer))) {
         m_hostsFileLines[row].setIP(ipBuffer);
