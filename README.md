@@ -11,7 +11,7 @@
     <img src="Assets/Textures/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">HummingBird C++ Project</h3>
+<h3 align="center">HummingBird C++ Project</h3>
 
   <p align="center">
     An innovative toolkit for software development! 
@@ -64,7 +64,7 @@ The HummingBird C++ Project is a comprehensive suite of development tools, inclu
 
 This project is built using a variety of technologies:
 
-* [C++](https://www.cplusplus.com/)                  
+* [C++](https://www.cplusplus.com/)
 * [SDL2]    og:(https://www.libsdl.org/)            (https://github.com/kasperhbo/SDL)     --> branch 2-28.x
 * [Glad]    og:(https://glad.dav1d.de/)             (https://github.com/kasperhbo/Glad)    --> branch master
 * [Fmt]     og:(https://fmt.dev/latest/index.html)  (https://github.com/kasperhbo/fmt)     --> branch master
@@ -87,17 +87,25 @@ git --version
 ```
 
 ### Installation
+#### Deps
+1. mysql client
+   1.1 Brew
+     ```sh
+     brew install mysql-client
+     ```
+   1.2 mac ports
 
+#### Hummingbird
 1. Clone the HummingBird repository:
    ```sh
    git clone https://github.com/KaspersCult/HummingBird.git —-recursive
    ```
-   
+
 2. go in the folder:
    ```sh 
     cd HummingBird
    ```
-   
+
 3. init and update the submodules:
    ```sh
     git submodule update --init --recursive
@@ -106,22 +114,22 @@ git --version
     ```sh
     mkdir build && cd build
     ```
-   
+
 5. run cmake:
    ```sh
     cmake DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -S ../
     ```
-   
+
 6. run make with the number of cores:
    ```sh
     cmake --build . --target HummingbirdCoreEXE -- -j $(sysctl -n hw.ncpu)
     ```
-   
+
 7. run the executable:
    ```sh
     ./HummingbirdCoreEXE
     ```
-    
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
@@ -165,8 +173,8 @@ See the [open issues](https://github.com/KaspersCult/HummingBird/issues)
 [stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
 [issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
 
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/KaspersCult/HummingBird/blob/main/LICENSE
+[license-shield]: https://img.shields.io/badge/License-GPL%20v2-blue.svg?style=for-the-badge
+[license-url]: https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/kasper-bruin-de-6a48ab1ba/
 [product-screenshot]: images/screenshot.png
