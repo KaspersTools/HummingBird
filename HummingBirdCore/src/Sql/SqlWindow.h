@@ -26,7 +26,7 @@ namespace HummingBirdCore {
         //Default values for the sql connection
         m_inputhost = "127.0.0.1";
         m_inputuser = "root";
-        m_inputpassword = "Vuur01-";
+        m_inputpassword = "pwd";
         m_port = 3306;
 
         m_dataViewer = std::make_shared<HummingBirdCore::Widgets::DataViewer>(getName() + " Data Viewer");

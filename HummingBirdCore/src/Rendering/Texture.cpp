@@ -8,6 +8,9 @@
 #include <stb_image.h>
 
 Texture::Texture(const std::string &path) {
+  //check if file excists
+  if(!std::filesystem::exists(path)) { CORE_ERROR("Texture file does not excist: " + path); return;}
+
   m_filePath = path;
 }
 
@@ -25,7 +28,6 @@ void Texture::load() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);// GL_REPEAT
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_localBuffer);
-  glGenerateMipmap(GL_TEXTURE_2D);
 
   glBindTexture(GL_TEXTURE_2D, 0);
 

@@ -36,7 +36,6 @@
 // System
 #include "System/SysInfo.h"
 
-
 // Kasper specific
 #ifdef WITHHUMMINGBIRDKASPERSPECIFIC
 #include <Hellebrekers/VisualLinkLauncher.h>
@@ -80,6 +79,19 @@ public:
       return s_application;
     }
 
+    ImVec2 getWindowSize() {
+      int w, h;
+      SDL_GetWindowSize(s_window, &w, &h);
+      return{ (float)w, (float)h };
+    }
+
+    float getWindowWidth() {
+      return getWindowSize().x;
+    }
+
+    float getWindowHeight(){
+        return getWindowSize().y;
+    }
 private:
     void InitSDL();
 
@@ -130,6 +142,8 @@ private:
     int m_dataViewerCount = 0;
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    Texture m_backgroundTexture;
 
     //Updatables
     std::vector<std::shared_ptr<Updatable>> m_updatables = {};

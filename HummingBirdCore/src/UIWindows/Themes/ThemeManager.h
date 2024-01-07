@@ -37,10 +37,8 @@ namespace HummingBirdCore {
         ImGuiStyle *style = &ImGui::GetStyle();
         ImGui::StyleColorsDark(style);//Reset to base/dark theme
 
-        SetWindowBGAlpha(156);
-
-        //Example of setting a theme
-        Themes::Blender();
+        Themes::PhocosGreen();
+        Themes::SetWindowBGAlpha(156);
       }
     };
   }// namespace Themes

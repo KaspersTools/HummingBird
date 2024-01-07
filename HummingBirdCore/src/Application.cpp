@@ -11,7 +11,7 @@
 
 namespace HummingBirdCore {
 
-  Application::Application() {
+  Application::Application() : m_backgroundTexture("Assets/Textures/newbg.png") {
     if (s_application != nullptr) {
       CORE_WARN("Application already exists!");
       return;
@@ -23,6 +23,8 @@ namespace HummingBirdCore {
 
     InitSDL();
     InitImGui();
+    m_backgroundTexture.load();
+    Themes::ThemeManager::SetTheme();
     Run();
 
     ImGui_ImplOpenGL3_Shutdown();
@@ -334,6 +336,20 @@ namespace HummingBirdCore {
 
       ImGui::PopStyleVar(3);
     }
+
+    //Render background texture
+    {
+      GLuint textureID = m_backgroundTexture.getTextureID();// Replace with your actual texture ID
+      ImVec2 texSize = ImVec2(
+              getWindowWidth(),
+              getWindowHeight());
+      ImGui::GetWindowDrawList()->AddImage(
+              (void *) (intptr_t) textureID,
+              ImVec2(ImGui::GetWindowPos()),
+              ImVec2(ImGui::GetWindowPos().x + texSize.x, ImGui::GetWindowPos().y + texSize.y),
+              ImVec2(0, 0), ImVec2(1, 1));
+    }
+
     SetupDockspace();
 
     {
