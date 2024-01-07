@@ -52,6 +52,9 @@
 /////HUMMINGBIRD CORE/////
 //Contains all the precompiled headers for the HummingBirdCore project that are universal for all platforms
 /////THIRD PARTY LIBRARIES/////
+#include "SDL_opengl.h"
+#include <SDL.h>
+
 #define IM_VEC2_CLASS_EXTRA
 #include <imconfig.h>
 #include <misc/cpp/imgui_stdlib.h>
@@ -59,17 +62,13 @@
 #include <imgui_internal.h>
 #include <addons/imguinotify/imgui_notify.h>
 
-#include <SDL.h>
-
 #pragma warning(push, 0)
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 #pragma warning(pop)
 
 #include <fmt/core.h>
-
-#include <mysql.h>  // If using MySQL
-
+#include <mysql.h>
 
 /////HUMMINGBIRD CORE/////
 //main
@@ -82,8 +81,7 @@
 #include "Utils/UIUtils.h"
 
 //rendering
-//#include "Rendering/Texture.h"
-
+#include "Rendering/Texture.h"
 
 #include "CoreRef.h"
 #include "Updatable.h"
@@ -94,6 +92,5 @@
 
 //sql
 #include "Sql/SqlConnection.h"
-
 
 

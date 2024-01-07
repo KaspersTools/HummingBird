@@ -1,47 +1,50 @@
-# - Find mysqlclient
-# Find the native MySQL includes and library
-#
-#  MYSQL_INCLUDE_DIR - where to find mysql.h, etc.
-#  MYSQL_LIBRARIES   - List of libraries when using MySQL.
-#  MYSQL_FOUND       - True if MySQL found.
+# FindMySQL.cmake
 
-IF (MYSQL_INCLUDE_DIR)
-    # Already in cache, be silent
-    SET(MYSQL_FIND_QUIETLY TRUE)
-ENDIF (MYSQL_INCLUDE_DIR)
+# Try to find MySQL on the system.
 
-FIND_PATH(MYSQL_INCLUDE_DIR mysql.h
-        /usr/local/include/mysql
-        /usr/include/mysql
+# This module will set the following variables:
+#   MySQL_FOUND - True if MySQL was found.
+#   MySQL_INCLUDE_DIRS - Include directories for MySQL.
+#   MySQL_LIBRARIES - The libraries needed to use MySQL.
+#   MySQL_VERSION_STRING - The version of MySQL found.
+
+# Check for Homebrew and set hints accordingly
+find_program(HOMEBREW_EXECUTABLE brew)
+if(HOMEBREW_EXECUTABLE)
+    execute_process(
+            COMMAND ${HOMEBREW_EXECUTABLE} --prefix
+            OUTPUT_VARIABLE HOMEBREW_PREFIX
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    # Homebrew MySQL include and lib directories
+    set(HOMEBREW_MYSQL_INCLUDE_DIR "${HOMEBREW_PREFIX}/include/mysql")
+    set(HOMEBREW_MYSQL_LIB_DIR "${HOMEBREW_PREFIX}/lib")
+else()
+    set(HOMEBREW_MYSQL_INCLUDE_DIR "")
+    set(HOMEBREW_MYSQL_LIB_DIR "")
+endif()
+
+find_path(MySQL_INCLUDE_DIR
+        NAMES mysql.h
+        PATHS ${HOMEBREW_MYSQL_INCLUDE_DIR} /usr/include/mysql /usr/local/include/mysql /usr/mysql/include/mysql
+        C:/Program Files/MySQL/*/include
 )
 
-SET(MYSQL_NAMES mysqlclient mysqlclient_r)
-FIND_LIBRARY(MYSQL_LIBRARY
-        NAMES ${MYSQL_NAMES}
-        PATHS /usr/lib /usr/local/lib
-        PATH_SUFFIXES mysql
+find_library(MySQL_LIBRARY
+        NAMES mysqlclient mysql libmysql
+        PATHS ${HOMEBREW_MYSQL_LIB_DIR} /usr/lib /usr/local/lib /usr/mysql/lib/mysql
+        C:/Program Files/MySQL/*/lib
 )
 
-IF (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
-    SET(MYSQL_FOUND TRUE)
-    SET( MYSQL_LIBRARIES ${MYSQL_LIBRARY} )
-ELSE (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
-    SET(MYSQL_FOUND FALSE)
-    SET( MYSQL_LIBRARIES )
-ENDIF (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
-
-IF (MYSQL_FOUND)
-    IF (NOT MYSQL_FIND_QUIETLY)
-        MESSAGE(STATUS "Found MySQL: ${MYSQL_LIBRARY}")
-    ENDIF (NOT MYSQL_FIND_QUIETLY)
-ELSE (MYSQL_FOUND)
-    IF (MYSQL_FIND_REQUIRED)
-        MESSAGE(STATUS "Looked for MySQL libraries named ${MYSQL_NAMES}.")
-        MESSAGE(FATAL_ERROR "Could NOT find MySQL library")
-    ENDIF (MYSQL_FIND_REQUIRED)
-ENDIF (MYSQL_FOUND)
-
-MARK_AS_ADVANCED(
-        MYSQL_LIBRARY
-        MYSQL_INCLUDE_DIR
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(MySQL DEFAULT_MSG
+        MySQL_LIBRARY
+        MySQL_INCLUDE_DIR
 )
+
+if(MySQL_FOUND)
+    set(MySQL_INCLUDE_DIRS ${MySQL_INCLUDE_DIR})
+    set(MySQL_LIBRARIES ${MySQL_LIBRARY})
+endif()
+
+mark_as_advanced(MySQL_INCLUDE_DIR MySQL_LIBRARY)

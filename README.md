@@ -92,11 +92,36 @@ git --version
    ```sh
    git clone https://github.com/KaspersCult/HummingBird.git —-recursive
    ```
-2. Open the folder with clion.
-3. Select the cmake list as the project list
-4. 
-5. Follow the build instructions in the repository's README.
-
+   
+2. go in the folder:
+   ```sh 
+    cd HummingBird
+   ```
+   
+3. init and update the submodules:
+   ```sh
+    git submodule update --init --recursive
+    ```
+4. create a build folder and go in it:
+    ```sh
+    mkdir build && cd build
+    ```
+   
+5. run cmake:
+   ```sh
+    cmake DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -S ../
+    ```
+   
+6. run make with the number of cores:
+   ```sh
+    cmake --build . --target HummingbirdCoreEXE -- -j $(sysctl -n hw.ncpu)
+    ```
+   
+7. run the executable:
+   ```sh
+    ./HummingbirdCoreEXE
+    ```
+    
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
