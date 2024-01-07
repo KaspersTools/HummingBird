@@ -58,7 +58,7 @@ namespace HummingbirdCore {
 
       SMCParamStruct readResult = callSMC(inputStruct);
 
-      return {readResult.keyInfo.dataType, readResult.keyInfo.dataSize};
+      return {readResult.keyInfo.dataType, static_cast<UInt32>(readResult.keyInfo.dataSize)};
     }
 
     SMCParamStruct SysInfo::callSMC(SMCParamStruct givenStruct,

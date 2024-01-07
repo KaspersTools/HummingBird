@@ -24,16 +24,19 @@ else()
     set(HOMEBREW_MYSQL_LIB_DIR "")
 endif()
 
+set(MACPORTS_MYSQL_INCLUDE_DIR "/opt/local/include/mysql82/mysql")
+set(MACPORTS_MYSQL_LIB_DIR "/opt/local/lib/mysql82/mysql")
+
 find_path(MySQL_INCLUDE_DIR
         NAMES mysql.h
         PATHS ${HOMEBREW_MYSQL_INCLUDE_DIR} /usr/include/mysql /usr/local/include/mysql /usr/mysql/include/mysql
-        C:/Program Files/MySQL/*/include
+        C:/Program Files/MySQL/*/include ${MACPORTS_MYSQL_INCLUDE_DIR}
 )
 
 find_library(MySQL_LIBRARY
         NAMES mysqlclient mysql libmysql
         PATHS ${HOMEBREW_MYSQL_LIB_DIR} /usr/lib /usr/local/lib /usr/mysql/lib/mysql
-        C:/Program Files/MySQL/*/lib
+        C:/Program Files/MySQL/*/lib ${MACPORTS_MYSQL_LIB_DIR}
 )
 
 include(FindPackageHandleStandardArgs)
