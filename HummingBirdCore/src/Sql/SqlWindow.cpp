@@ -34,12 +34,6 @@ namespace HummingBirdCore {
         }
         if (ImGui::BeginTabItem("Logging")) {
           ImGui::BeginChild("Logs", ImVec2(0, 0), true);
-          //TODO: Add logging
-//          for (auto &log: m_logSink->getLogMessages()) {
-//            ImColor color = HummingBirdCore::Logging::getLogColor(log.level);
-//            ImGui::TextColored(color, log.message.c_str());
-//          }
-
           ImGui::EndChild();
           ImGui::EndTabItem();
         }
