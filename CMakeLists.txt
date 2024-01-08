@@ -3,6 +3,8 @@ project(HUMMINGBIRD)
 
 set(CMAKE_CXX_STANDARD 23)
 
+message(STATUS "------HUMNMING BIRD------")
+
 #DISPLAY ALL INFO HERE ABOUT THE BUILD
 message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
@@ -33,6 +35,7 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "ASAN")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=pointer-compare -g")
   set(CMAKE_BUILD_TYPE ASAN)
 endif ()
+
 
 ####MAIN PROJECT####
 # HummingbirdCore
@@ -78,6 +81,7 @@ set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/UIWindows/Widget/MetricsWidget.h
         HummingBirdCore/src/Utils/UIUtils.h
 )
+
 if (NOT WITHHUMMINGBIRDCOREASLIB)
   message("Building with HummingBirdCore as exe")
   add_executable(HummingbirdCoreEXE
@@ -98,7 +102,32 @@ include_directories(
 )
 
 
-########################################################################
+########################################################################\
+
+#mysql
+find_package(MySQL)
+
+if (NOT MySQL_FOUND)
+  message(WARNING "MySQL not found")
+else ()
+  message("MySQL found")
+  #include
+  include_directories(
+          ${MySQL_INCLUDE_DIRS}
+  )
+  #link
+  if (NOT WITHHUMMINGBIRDCOREASLIB)
+    target_link_libraries(HummingbirdCoreEXE
+            ${MySQL_LIBRARIES}
+    )
+  endif ()
+
+  target_link_libraries(HummingbirdCore
+          ${MySQL_LIBRARIES}
+  )
+endif ()
+
+######vendor
 # fmt
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/fmt)
   message("fmt folder not found")
@@ -254,34 +283,6 @@ else ()
             SDL2-static
     )
   endif ()
-endif ()
-
-
-#mysql
-find_package(MySQL)
-
-if (NOT MySQL_FOUND)
-  message(WARNING "MySQL not found")
-else ()
-  message("MySQL found")
-  set(include_dirs_mysql ${MySQL_INCLUDE_DIRS})
-  message("MySQL include dirs: ${include_dirs_mysql}")
-  message("MySQL libraries: ${MySQL_LIBRARIES}")
-
-  #include
-  include_directories(
-          ${MySQL_INCLUDE_DIRS}
-  )
-  #link
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${MySQL_LIBRARIES}
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          ${MySQL_LIBRARIES}
-  )
 endif ()
 
 ####kasper specific#####################################################
