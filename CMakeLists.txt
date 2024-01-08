@@ -130,6 +130,88 @@ else ()
 endif ()
 
 ######vendor
+# boost
+if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/boost)
+  message("Boost folder not found")
+else ()
+  message("Boost folder found")
+  set(Boost_USE_STATIC_LIBS ON)
+  set(Boost_USE_MULTITHREADED ON)
+  set(Boost_USE_STATIC_RUNTIME OFF)
+  set(Boost_NO_SYSTEM_PATHS ON)
+  set(BoostRoot ${HUMMINGBIRD_DIR}/vendor/boost CACHE STRING "Boost root directory")
+
+  add_subdirectory(vendor/boost EXCLUDE_FROM_ALL)
+
+  target_link_libraries(
+          main
+          PRIVATE Boost::headers
+          Boost::atomic
+          Boost::bzip2
+          Boost::chrono
+          Boost::container
+          Boost::context
+          Boost::coroutine
+          Boost::contract
+          Boost::date_time
+          Boost::fiber
+          Boost::filesystem
+          Boost::graph
+          Boost::iostreams
+          Boost::json
+          Boost::locale
+          Boost::log_setup
+          Boost::log
+          Boost::math_c99f
+          Boost::math_c99l
+          Boost::math_c99
+          Boost::math_tr1f
+          Boost::math_tr1l
+          Boost::math_tr1
+          Boost::nowide
+          Boost::prg_exec_monitor
+          Boost::program_options
+          Boost::python310
+          Boost::random
+          Boost::regex
+          Boost::serialization
+          Boost::stacktrace_noop
+          Boost::stacktrace_windbg_cached
+          Boost::stacktrace_windbg
+          Boost::system
+          Boost::thread
+          Boost::timer
+          Boost::type_erasure
+          Boost::unit_test_framework
+          Boost::url
+          Boost::wave
+          Boost::wserialization
+          Boost::zlib)
+endif ()
+# plistcpp
+if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/plistcpp)
+  message("plistcpp folder not found")
+else ()
+  message("plistcpp folder found")
+  add_subdirectory(${HUMMINGBIRD_DIR}/vendor/plistcpp)
+
+  #include
+  include_directories(
+          ${HUMMINGBIRD_DIR}/vendor/plistcpp/include
+  )
+
+  #link
+  if (NOT WITHHUMMINGBIRDCOREASLIB)
+    target_link_libraries(HummingbirdCoreEXE
+            plistcpp
+    )
+  endif ()
+
+  target_link_libraries(HummingbirdCore
+          plistcpp
+  )
+endif ()
+
 # fmt
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/fmt)
   message("fmt folder not found")

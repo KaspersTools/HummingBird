@@ -1,30 +1,3 @@
-#cmake_minimum_required(VERSION 3.27)
-#project(HUMMINGBIRD)
-#
-#set(CMAKE_CXX_STANDARD 23)
-#
-##check if there is an cmake build type
-#if (NOT CMAKE_BUILD_TYPE)
-#  message("No build type selected, defaulting to Release")
-#  set(CMAKE_BUILD_TYPE Release)
-#endif ()
-#
-#if (${CMAKE_BUILD_TYPE} STREQUAL "ASAN")
-#  message("Building with ASAN")
-#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
-#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -g")
-#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -g")
-#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=pointer-compare -g")
-#  set(CMAKE_BUILD_TYPE ASAN)
-#endif ()
-#
-#
-#add_executable(HummingBirdCore)
-#
-#add_subdirectory("HummingBirdCore")
-#add_subdirectory("vendor")
-
-
 #NEW LIST |
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ../cmake/)
