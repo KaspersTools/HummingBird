@@ -45,6 +45,10 @@ namespace HummingBirdCore {
   }
 
   void Log::notify(spdlog::source_loc loc, spdlog::level::level_enum lvl, spdlog::string_view_t msg) {
+
+    if(lvl == spdlog::level::off || lvl == spdlog::level::trace)
+      return;
+
     spdlog::details::log_msg logMsg(loc, "notify", lvl, msg);
 
     std::unique_ptr<spdlog::formatter> formatter;

@@ -70,6 +70,9 @@
 #include <fmt/core.h>
 #include <mysql.h>
 
+#include <Plist.hpp>
+#include <boost/any.hpp>
+
 /////HUMMINGBIRD CORE/////
 //main
 #include "Log.h"
@@ -92,5 +95,6 @@
 
 //sql
 #include "Sql/SqlConnection.h"
+
 
 

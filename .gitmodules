@@ -16,7 +16,3 @@
 	path = vendor/imgui
 	url = git@github.com:kasperhbo/imgui.git
 	branch = docking
-
-[submodule "vendor/boost"]
-	path = vendor/boost
-	url = git@github.com:boostorg/boost.git

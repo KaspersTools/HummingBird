@@ -7,7 +7,7 @@
 namespace HummingBirdCore {
   namespace System {
     void LaunchDaemonsManager::render() {
-      ImGui::BeginChild("LaunchDaemons", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, 0), c_leftChildFlags, c_leftWindowFlags);
+      ImGui::BeginChild("LaunchDaemons", ImVec2(ImGui::GetContentRegionAvail().x * 0.2f, 0), c_leftChildFlags, c_leftWindowFlags);
       ImGui::Text("LaunchDaemons");
       ImGui::Separator();
 
@@ -42,45 +42,38 @@ namespace HummingBirdCore {
       ImGui::SameLine();
       ImGui::BeginGroup();
 
-      ImGui::BeginChild("LaunchDaemonsManagerRightPanel", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() * 2), true);
-      std::string title = "LaunchDaemon: ";
+      ImGui::BeginChild("LaunchDaemonsManagerRightPanel", ImVec2(0, 0), true);
 
-      if (m_selectedDaemon != NULL) {
-        title += m_selectedDaemon->getName();
-        ImGui::TextColored(ImVec4(1, 1, 1, 1), title.c_str());
-      } else {
-        title += "None";
-        ImGui::TextColored(ImVec4(1, 1, 0, 1), title.c_str());
-      }
+      if (m_selectedDaemon != nullptr) {
+        ImGui::BeginChild("SelectedDeamonLeftXML", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, 0), c_leftChildFlags, c_leftWindowFlags);
+        ImGui::Text("Selected Daemon");
+        ImGui::Checkbox("Wrap Text", &m_wrapText);
+        ImGui::Separator();
 
-      ImGui::Separator();
-
-      if (m_selectedDaemon == NULL) {
-        ImGui::TextColored(ImVec4(1, 0, 0, 1), "No LaunchDaemon selected");
-      } else {
-        if (ImGui::Button("Save")) {
-          CORE_WARN("Saving daemon not implemented yet");
-          CORE_INFO("Saving daemon: " + m_selectedDaemon->getName());
-          //TODO: Save to file and show modal
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyle().Colors[ImGuiCol_WindowBg]);
+        ImGui::BeginChild("SelectedDaemonLeftXMLChild", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
+        if (m_wrapText) {
+          ImGui::TextWrapped(m_selectedDaemon->getFile().content.c_str());
+        }else{
+          ImGui::Text(m_selectedDaemon->getFile().content.c_str());
         }
-        if (ImGui::Button("Revert")) {
-          CORE_WARN("Reverting daemon not implemented yet");
-          CORE_INFO("Reverting daemon: " + m_selectedDaemon->getName() + " to original state");
-          //TODO: Show modal
-        }
-        ImGui::Text("Name: %s", m_selectedDaemon->getName().c_str());
-        ImGui::Text("Path: %s", m_selectedDaemon->getFile().path.c_str());
-        if (ImGui::Checkbox("Enabled", &m_selectedDaemon->getEnabled())) {
-            m_selectedDaemon->setEnabled(m_selectedDaemon->getEnabled());
-        }
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
+        ImGui::PopStyleVar(5);
 
-        ImGui::Text("Status: %s", m_selectedDaemon->getStatus() ==
-                                                  LaunchDaemonStatus::Running
-                                          ? "Running"
-                                  : m_selectedDaemon->getStatus() ==
-                                                  LaunchDaemonStatus::Stopped
-                                          ? "Stopped"
-                                          : "Unknown");
+        ImGui::EndChild();
+
+        ImGui::SameLine();
+
+        ImGui::BeginChild("SelectedDeamonRight", ImVec2(0, 0), true);
+        ImGui::Text("Selected Daemon");
+        ImGui::Separator();
+        ImGui::EndChild();
       }
 
       ImGui::EndChild();
@@ -92,7 +85,7 @@ namespace HummingBirdCore {
       std::vector<HummingBirdCore::Utils::File> files = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_userAgentPath.string(), ".plist");
 
       for (const auto &file: files) {
-        LaunchDaemon *da = new LaunchDaemon(file.name, file, false, LaunchDaemonStatus::Unknown);
+        LaunchDaemon *da = new LaunchDaemon(file, false, LaunchDaemonStatus::Unknown);
         m_userAgent.push_back(da);
       }
     }
@@ -131,6 +124,8 @@ namespace HummingBirdCore {
     void LaunchDaemonsManager::selectDaemon(LaunchDaemon *daemon) {
       //TODO: Check If current is unsaved else show modal
       m_selectedDaemon = daemon;
+      m_selectedDaemon->readPlist();
+      m_selectedDaemon->init();
     }
   }// namespace System
 }// namespace HummingBirdCore

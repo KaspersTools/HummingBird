@@ -12,6 +12,7 @@
 #include <Security/Security.h>
 #endif
 
+#include "../../../vendor/PlistCPP/include/boost/any.hpp"
 #include "../Log.h"
 
 namespace fs = std::filesystem;
@@ -119,11 +120,11 @@ namespace HummingBirdCore {
 
         File file;
 
-        file.path      = fullLocation;
+        file.path = fullLocation;
         //name = without extension
-        file.name      = fullLocation.stem().string();
+        file.name = fullLocation.stem().string();
         file.extension = fullLocation.extension().string();
-        file.content   = readFromFile(fullLocation.string());
+        file.content = readFromFile(fullLocation.string());
         CORE_TRACE("File " + file.name + " loaded");
 
         return file;
@@ -166,11 +167,11 @@ namespace HummingBirdCore {
         std::vector<HummingBirdCore::Utils::File> files;
         std::filesystem::path fullPath = path;
 
-        if(path.contains("~")){
+        if (path.contains("~")) {
           fullPath = getHomeDirectory().string() + path.substr(1, path.length());
         }
 
-        if(!doesFolderExist(fullPath.string())){
+        if (!doesFolderExist(fullPath.string())) {
           CORE_ERROR("Folder " + fullPath.string() + " does not exist with the input path: " + path);
           return files;
         }
@@ -186,5 +187,34 @@ namespace HummingBirdCore {
         return files;
       }
     };
+
+    namespace PlistUtils {
+      inline static Plist::dictionary_type readPlist(const std::string& path) {
+        try {
+          // Read the plist file into a byte array
+          std::ifstream file(path, std::ios::binary);
+          std::vector<char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+          Plist::dictionary_type dict;
+          Plist::readPlist(&buffer[0], buffer.size(), dict);
+          return dict;
+        } catch (const std::exception& e) {
+          CORE_ERROR("Error while reading plist: " + std::string(e.what()));
+          return {};
+        }
+      }
+
+      inline static bool readPlistValue(Plist::dictionary_type& plist, const std::string& key, std::string& value) {
+        if (plist.empty()) {
+          return false;
+        }
+        if (plist.find(key) == plist.end()) {
+          return false;
+        }
+
+        value = boost::any_cast<std::string>(plist[key]);
+        return true;
+      }
+    }// namespace PlistUtils
   }// namespace Utils
 }// namespace HummingBirdCore
