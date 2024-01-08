@@ -79,7 +79,7 @@ public:
             ImGui::Text("No headers found");
           } else {
             ImGuiTableFlags flags =
-                    ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable
+                      ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable
                     | ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable
                     | ImGuiTableFlags_RowBg
                     | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV

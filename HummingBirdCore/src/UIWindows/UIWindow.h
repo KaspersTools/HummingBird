@@ -125,7 +125,7 @@ namespace HummingBirdCore {
 
   class UIWindow : public ApplicationObject {
 public:
-    UIWindow(ImGuiWindowFlags flags, const std::string &name, const bool autoEndFrame = true) : m_flags(flags), m_name(name), c_autoEndFrame(autoEndFrame) {
+    UIWindow(ImGuiWindowFlags flags, const std::string &name, const bool autoEndFrame = true, const bool autoStartFrame=true) : m_flags(flags), m_name(name), c_autoEndFrame(autoEndFrame), c_autoStartFrame(autoStartFrame) {
       m_renderStatsWindowTitle = name + " Render Stats";
       m_renderStats = std::make_shared<UIWindowRenderStats>(m_renderStatsWindowTitle);
     }
@@ -136,15 +136,17 @@ public:
         return;
       }
 
-      ImGui::Begin(m_name.c_str(), &m_isOpen, m_flags | ImGuiWindowFlags_MenuBar);
-      if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("Debug")) {
-          if (ImGui::MenuItem("Render Stats")) {
-            m_showRenderStats = !m_showRenderStats;
+      if(getAutoStartFrame()) {
+        ImGui::Begin(m_name.c_str(), &m_isOpen, m_flags | ImGuiWindowFlags_MenuBar);
+        if (ImGui::BeginMenuBar()) {
+          if (ImGui::BeginMenu("Debug")) {
+            if (ImGui::MenuItem("Render Stats")) {
+              m_showRenderStats = !m_showRenderStats;
+            }
+            ImGui::EndMenu();
           }
-          ImGui::EndMenu();
+          ImGui::EndMenuBar();
         }
-        ImGui::EndMenuBar();
       }
       render();
       endFrame();
@@ -154,6 +156,7 @@ public:
       if (getAutoEndFrame()) {
         ImGui::End();
       }
+
       endUpdateStats();
       showRenderStatsWindow();
 
@@ -165,6 +168,7 @@ public:
     std::string getName() const { return m_name; }
     bool isOpen() const { return m_isOpen; }
     ImGuiWindowFlags getFlags() const { return m_flags; }
+    bool getAutoStartFrame() const { return c_autoStartFrame; }
     bool getAutoEndFrame() const { return c_autoEndFrame; }
 
     std::shared_ptr<UIWindowRenderStats> getRenderStats(const std::string &name) {
@@ -225,6 +229,7 @@ public:
     ImGuiWindowFlags m_flags = ImGuiWindowFlags_None;
 
     const bool c_autoEndFrame;
+    const bool c_autoStartFrame;
 
 private:
     std::shared_ptr<UIWindowRenderStats> m_renderStats = nullptr;

@@ -3,10 +3,10 @@
 //
 #pragma once
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <filesystem>
 
 #ifdef __APPLE__
 #include <Security/Security.h>
@@ -18,6 +18,19 @@ namespace fs = std::filesystem;
 
 namespace HummingBirdCore {
   namespace Utils {
+    struct File {
+      std::string name;
+      std::filesystem::path path;
+      std::string extension;
+      std::string content;
+      bool saved = true;
+
+      File() = default;
+
+      File(const std::string &name, const std::filesystem::path &path, const std::string &extension, const std::string &content) : name(name), path(path), extension(extension), content(content) {
+      }
+    };
+
     /**
      * TODO: Copyright stuff here
      */
@@ -70,85 +83,108 @@ namespace HummingBirdCore {
       std::memcpy(&resultValue, value, 4);
       return (int) resultValue;
     }
-  }
 
-//#TODO: Remove classes and make them static functions in the right namespace
-  class FolderUtils {
-public:
-    inline static bool doesFolderExist(const std::string &fullFolderName) {
-      //edge cases
-      if (fullFolderName == "~") {
-        //get current users home directory
-        std::string homeDir = getenv("HOME");
-        return std::filesystem::exists(homeDir);
-      }
-      return std::filesystem::exists(fullFolderName);
-    }
-
-    inline static bool createFolder(const std::string &fullFolderName) {
-      if (doesFolderExist(fullFolderName)) {
-        CORE_WARN("Folder {0} already exists", fullFolderName);
-        return false;
+    namespace FileUtils {
+      inline static bool fileExists(const std::string &fullname) {
+        return std::filesystem::exists(fullname);
       }
 
-      std::filesystem::create_directories(fullFolderName);
-      CORE_TRACE("Folder {0} created", fullFolderName);
-      return true;
-    }
+      inline static std::string readFromFile(const std::string &fileLocation) {
+        std::string fileContent;
+        std::string line;
 
-    inline static std::filesystem::path getHomeDirectory() {
-      return getenv("HOME");
-    }
+        std::ifstream myFile(fileLocation);
 
-    inline static std::vector<std::filesystem::path> getFilesInFolder(const std::string& path){
-      std::vector<std::filesystem::path> files;
-      for (const auto &entry : std::filesystem::directory_iterator(path)) {
-        files.push_back(entry.path());
-      }
-      return files;
-    }
-  };
+        if (!myFile.is_open()) {
+          CORE_ERROR("Unable to open file: " + fileLocation);
+          return fileContent;
+        }
 
-  class FileUtils {
-public:
-    inline static bool fileExists(const std::string &fullname) {
-      //TODO:HANDLE EDGE CASES FOR EXAMPLE ~/testfile.txt
+        while (std::getline(myFile, line)) {
+          fileContent += line + "\n";
+        }
 
-      std::fstream f(fullname);
-      if (f.good()) {
-        CORE_TRACE("File {0} exists", fullname);
-        return true;
-      }
+        myFile.close();
 
-      if (fullname.find("~") != std::string::npos) {
-        std::string homedir = getenv("HOME");
-        f = std::fstream(homedir + fullname.substr(1));
-      }
-
-      if (!f.good()) {
-        CORE_WARN("File {0} does not exist", fullname);
-      }
-      return f.good();
-    }
-
-    inline static std::string readFromFile(const std::string &fileLocation) {
-      std::string fileContent;
-      std::string line;
-
-      std::ifstream myFile(fileLocation);
-
-      if (!myFile.is_open()) {
-        std::cerr << "Unable to open file: " << fileLocation << std::endl;
         return fileContent;
       }
 
-      while (std::getline(myFile, line)) {
-        fileContent += line + "\n";
+      inline static File getFile(const std::filesystem::path &fileLocation) {
+        std::filesystem::path fullLocation = fileLocation.string();
+
+        if (!fileExists(fullLocation.string())) {
+          CORE_ERROR("File {0} does not exist", fullLocation.string());
+          return File();
+        }
+
+        File file;
+
+        file.path      = fullLocation;
+        //name = without extension
+        file.name      = fullLocation.stem().string();
+        file.extension = fullLocation.extension().string();
+        file.content   = readFromFile(fullLocation.string());
+        CORE_TRACE("File " + file.name + " loaded");
+
+        return file;
+      }
+    }// namespace FileUtils
+
+    //#TODO: Remove classes and make them static functions in the right namespace
+    class FolderUtils {
+  public:
+      inline static bool doesFolderExist(const std::string &fullFolderName) {
+        //edge cases
+        if (fullFolderName == "~") {
+          //get current users home directory
+          std::string homeDir = getenv("HOME");
+          return std::filesystem::exists(homeDir);
+        }
+        return std::filesystem::exists(fullFolderName);
       }
 
-      myFile.close();
+      inline static bool createFolder(const std::string &fullFolderName) {
+        if (doesFolderExist(fullFolderName)) {
+          CORE_WARN("Folder {0} already exists", fullFolderName);
+          return false;
+        }
 
-      return fileContent;
-    }
-  };
+        std::filesystem::create_directories(fullFolderName);
+        CORE_TRACE("Folder {0} created", fullFolderName);
+        return true;
+      }
+
+      inline static std::filesystem::path getHomeDirectory() {
+        return getenv("HOME");
+      }
+
+      inline static std::vector<HummingBirdCore::Utils::File> getFilesInFolder(const std::string &path) {
+        return getFilesInFolder(path, "");
+      }
+
+      inline static std::vector<HummingBirdCore::Utils::File> getFilesInFolder(const std::string &path, const std::string &extension) {
+        std::vector<HummingBirdCore::Utils::File> files;
+        std::filesystem::path fullPath = path;
+
+        if(path.contains("~")){
+          fullPath = getHomeDirectory().string() + path.substr(1, path.length());
+        }
+
+        if(!doesFolderExist(fullPath.string())){
+          CORE_ERROR("Folder " + fullPath.string() + " does not exist with the input path: " + path);
+          return files;
+        }
+
+        for (const auto &entry: std::filesystem::directory_iterator(fullPath)) {
+          if (!extension.empty() && entry.path().extension() != extension) {
+            continue;
+          }
+
+          File file = FileUtils::getFile(entry.path());
+          files.push_back(file);
+        }
+        return files;
+      }
+    };
+  }// namespace Utils
 }// namespace HummingBirdCore
