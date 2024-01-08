@@ -20,7 +20,7 @@ namespace HummingBirdCore::Widgets {
 
   struct Table {
     std::string name;
-    std::string databaseName;
+
     bool isInitialized = false;
 
     std::vector<Header> headers;
