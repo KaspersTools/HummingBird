@@ -27,6 +27,8 @@
 
 #include "System/Hosts/EditHostsWindow.h"
 #include "System/SysInfoWindow.h"
+#include "System/LaunchDaemonsManager.h"
+
 
 #include "Sql/SqlWindow.h"
 
@@ -140,6 +142,7 @@ private:
     int m_sqlWindowCount = 0;
     int m_themeManagerCount = 0;
     int m_dataViewerCount = 0;
+    int m_launchDaemonsManagerCount = 0;
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 

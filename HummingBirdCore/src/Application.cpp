@@ -176,6 +176,17 @@ namespace HummingBirdCore {
               m_editHostsCount++;
             }
           }
+
+          if(ImGui::MenuItem("Launch daemons"))
+          {
+            const std::string baseName = "Launch daemons ";
+            if (!openClosedWindow(baseName)) {
+              const std::string name = baseName + std::to_string(m_launchDaemonsManagerCount);
+              AddWindow(name, std::make_shared<HummingBirdCore::System::LaunchDaemonsManager>(name));
+              m_editHostsCount++;
+            }
+          }
+
           ImGui::EndMenu();
         }
 
