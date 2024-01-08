@@ -10,6 +10,7 @@ namespace HummingBirdCore {
   namespace System {
     enum LaunchDaemonStatus {
       Running,
+      OK,
       Stopped,
       Unknown
     };
@@ -88,11 +89,20 @@ namespace HummingBirdCore {
       }
 
       ~LaunchDaemonsManager(){
-        for (auto &daemon : m_userDaemons) {
-          free(daemon);
+        for (auto &daemon : m_userAgent) {
+          delete daemon;
+        }
+        for (auto &daemon : m_globalAgent) {
+          delete daemon;
         }
         for (auto &daemon : m_globalDaemons) {
-          free(daemon);
+          delete daemon;
+        }
+        for (auto &daemon : m_systemAgent) {
+          delete daemon;
+        }
+        for (auto &daemon : m_systemDaemons) {
+          delete daemon;
         }
       }
 
@@ -100,12 +110,18 @@ namespace HummingBirdCore {
 
       void fetchAllDaemons();
       void selectDaemon(LaunchDaemon *daemon);
+      void renderDaemonsTable(std::vector<LaunchDaemon *> daemons);
 
   private:
       LaunchDaemon* m_selectedDaemon = nullptr;
 
-      std::vector<LaunchDaemon*> m_userDaemons;
+      std::vector<LaunchDaemon*> m_userAgent;
+
+      std::vector<LaunchDaemon*> m_globalAgent;
       std::vector<LaunchDaemon*> m_globalDaemons;
+
+      std::vector<LaunchDaemon*> m_systemAgent;
+      std::vector<LaunchDaemon*> m_systemDaemons;
 
 
       //Service type paths
@@ -117,9 +133,9 @@ namespace HummingBirdCore {
       const std::filesystem::path c_SystemAgentPath = "/System/Library/LaunchAgents";
       const std::filesystem::path c_SystemDaemonPath = "/System/Library/LaunchDaemons";
 
-      const ImGuiWindowFlags c_leftWindowFlags = ImGuiWindowFlags_HorizontalScrollbar;
-      const ImGuiChildFlags c_leftChildFlags = ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX;
-      const ImGuiTreeNodeFlags c_baseTreeNodeFlagsLeft = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+      const ImGuiWindowFlags     c_leftWindowFlags = ImGuiWindowFlags_HorizontalScrollbar;
+      const ImGuiChildFlags      c_leftChildFlags = ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX;
+      const ImGuiTreeNodeFlags   c_baseTreeNodeFlagsLeft = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
       const ImGuiSelectableFlags c_selectableFlags = ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns;
     };
 

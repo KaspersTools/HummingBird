@@ -118,7 +118,6 @@ private:
       }
       return false;
     }
-
 private:
     inline static SDL_Window *s_window;
     SDL_GLContext m_gl_context{};
@@ -129,6 +128,9 @@ private:
     // UIWindows
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
     Security::LogInWindow m_loginWindow;
+
+    const float c_toolbarHeight = 50.0f;
+    float m_menuBarHeight = 0.0f;
 
     //imgui third party windows
     bool m_showDemoWindow = false;

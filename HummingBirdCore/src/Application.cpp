@@ -93,7 +93,7 @@ namespace HummingBirdCore {
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
 
-    io.ConfigFlags   |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard;
 
     io.ConfigWindowsMoveFromTitleBarOnly = true;
 
@@ -118,7 +118,7 @@ namespace HummingBirdCore {
     config.PixelSnapH = true;
 
     io.FontDefault = io.Fonts->AddFontFromFileTTF(
-            "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", 16.0f, &config);
+            "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", 15.0f, &config);
   }
 
   void Application::Run() {
@@ -177,8 +177,7 @@ namespace HummingBirdCore {
             }
           }
 
-          if(ImGui::MenuItem("Launch daemons"))
-          {
+          if (ImGui::MenuItem("Launch daemons")) {
             const std::string baseName = "Launch daemons ";
             if (!openClosedWindow(baseName)) {
               const std::string name = baseName + std::to_string(m_launchDaemonsManagerCount);
@@ -261,39 +260,39 @@ namespace HummingBirdCore {
             }
           }
           if (ImGui::BeginMenu("Themes")) {
-//            if (ImGui::MenuItem("Maya")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::MAYA);
-//            }
-//            if (ImGui::MenuItem("Phocus Green")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
-//            }
-//            if (ImGui::MenuItem("Dark")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::DARK);
-//            }
-//            if (ImGui::MenuItem("Light")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::LIGHT);
-//            }
-//            if (ImGui::MenuItem("Classic")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::CLASSIC);
-//            }
-//            if (ImGui::MenuItem("Monochrome")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::MONOCHROME);
-//            }
-//            if (ImGui::MenuItem("The_0n3")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::THE_0N3);
-//            }
-//            if (ImGui::MenuItem("ModernDarkTheme")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::MODERNDARK);
-//            }
-//            if (ImGui::MenuItem("EmbraceTheDarkness")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::EMBRACETHEDARKNESS);
-//            }
-//            if (ImGui::MenuItem("DoughBkins_Black")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_BLACK);
-//            }
-//            if (ImGui::MenuItem("DoughBkins_White")) {
-//              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_WHITE);
-//            }
+            //            if (ImGui::MenuItem("Maya")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::MAYA);
+            //            }
+            //            if (ImGui::MenuItem("Phocus Green")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
+            //            }
+            //            if (ImGui::MenuItem("Dark")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::DARK);
+            //            }
+            //            if (ImGui::MenuItem("Light")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::LIGHT);
+            //            }
+            //            if (ImGui::MenuItem("Classic")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::CLASSIC);
+            //            }
+            //            if (ImGui::MenuItem("Monochrome")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::MONOCHROME);
+            //            }
+            //            if (ImGui::MenuItem("The_0n3")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::THE_0N3);
+            //            }
+            //            if (ImGui::MenuItem("ModernDarkTheme")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::MODERNDARK);
+            //            }
+            //            if (ImGui::MenuItem("EmbraceTheDarkness")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::EMBRACETHEDARKNESS);
+            //            }
+            //            if (ImGui::MenuItem("DoughBkins_Black")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_BLACK);
+            //            }
+            //            if (ImGui::MenuItem("DoughBkins_White")) {
+            //              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_WHITE);
+            //            }
             ImGui::EndMenu();
           }
           ImGui::EndMenu();
@@ -395,7 +394,6 @@ namespace HummingBirdCore {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
-
     RenderUI();
     //Render toast notifications
     {
