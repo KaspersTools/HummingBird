@@ -84,6 +84,29 @@ public:
       }
       return std::filesystem::exists(fullFolderName);
     }
+
+    inline static bool createFolder(const std::string &fullFolderName) {
+      if (doesFolderExist(fullFolderName)) {
+        CORE_WARN("Folder {0} already exists", fullFolderName);
+        return false;
+      }
+
+      std::filesystem::create_directories(fullFolderName);
+      CORE_TRACE("Folder {0} created", fullFolderName);
+      return true;
+    }
+
+    inline static std::filesystem::path getHomeDirectory() {
+      return getenv("HOME");
+    }
+
+    inline static std::vector<std::filesystem::path> getFilesInFolder(const std::string& path){
+      std::vector<std::filesystem::path> files;
+      for (const auto &entry : std::filesystem::directory_iterator(path)) {
+        files.push_back(entry.path());
+      }
+      return files;
+    }
   };
 
   class FileUtils {

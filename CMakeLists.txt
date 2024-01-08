@@ -80,6 +80,8 @@ set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/ThirdParty/MetricsImGui.h
         HummingBirdCore/src/UIWindows/Widget/MetricsWidget.h
         HummingBirdCore/src/Utils/UIUtils.h
+        HummingBirdCore/src/System/LaunchDaemonsManager.cpp
+        HummingBirdCore/src/System/LaunchDaemonsManager.h
 )
 
 if (NOT WITHHUMMINGBIRDCOREASLIB)
@@ -416,7 +418,6 @@ else ()
           ${OPENGL_LIBRARIES}
   )
 endif ()
-
 
 ########################################################################
 # Copying resources from source to build

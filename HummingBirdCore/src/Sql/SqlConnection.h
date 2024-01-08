@@ -169,7 +169,7 @@ public:
         std::string name = row[0];
         std::vector<Widgets::Header> headers = {};
         std::vector<Widgets::Row> rows = {};
-        std::shared_ptr<Widgets::Table> tablePtr = std::make_shared<Widgets::Table>(Widgets::Table{name, database, false, headers, rows, 0, "", 0, ""});
+        std::shared_ptr<Widgets::Table> tablePtr = std::make_shared<Widgets::Table>(Widgets::Table{name, false, headers, rows, 0, "", 0, ""});
         result.push_back(tablePtr);
       }
 
@@ -221,11 +221,12 @@ public:
       //TODO: Add log
       return result;
     }
+
     std::vector<Widgets::Row> SVR_getAllRows(const std::string &database, const std::string &table) {
 
-      if (!checkConnection() || !checkDatabaseInput(database) || !checkTableInput(table)) {
-        return {};
-      }
+      //      if (!checkConnection() || !checkDatabaseInput(database) || !checkTableInput(table)) {
+      //        return {};
+      //      }
 
       int switched = mysql_select_db(m_connection, database.c_str());
 
@@ -239,15 +240,11 @@ public:
       std::string query = "SELECT * FROM " + table + " LIMIT " + std::to_string(min) + ", " + std::to_string(max);
       int succes = mysql_query(m_connection, query.c_str());
       if (succes != 0) {
-        //        log(mysql_error(m_connection), spdlog::level::err);
-        //TODO: Add log
         return {};
       }
 
       MYSQL_RES *result = mysql_store_result(m_connection);
       if (result == NULL) {
-        //        log(mysql_error(m_connection), spdlog::level::err);
-        //TODO: Add log
         return {};
       }
 
@@ -256,7 +253,7 @@ public:
       unsigned int num_fields = mysql_num_fields(result);
 
       while ((mysql_row = mysql_fetch_row(result)) != NULL) {
-        Widgets::Row row;
+        Widgets::Row row = Widgets::Row(0);
         if (mysql_row[0] != NULL) {
           row.id = atoi(mysql_row[0]);
         } else {
@@ -264,7 +261,13 @@ public:
         }
 
         for (unsigned int i = 0; i < num_fields; i++) {
-          row.data.push_back(mysql_row[i] ? mysql_row[i] : "NULL");
+          if (mysql_row[i] != NULL) {
+            std::string key = mysql_fetch_field_direct(result, i)->name;
+            std::string value = mysql_row[i];
+            row.setValue(key, value);
+          } else {
+            row.setValue(mysql_fetch_field_direct(result, i)->name, "NULL");
+          }
         }
         rows.push_back(row);
       }
@@ -273,7 +276,6 @@ public:
       mysql_free_result(result);
 
       std::string logMsg = "Loaded " + std::to_string(rows.size()) + " rows from table: " + table + " in database: " + database;
-      //      log(logMsg, spdlog::level::info);
       //TODO: Add log
       return rows;
     }
@@ -314,17 +316,17 @@ private:
     }
 
     bool checkDatabaseInput(const std::string &dbName) {
-//      if (dbName.empty()) {
-//        log("Database name is empty", spdlog::level::warn);
-//        return false;
-//      }
+      //      if (dbName.empty()) {
+      //        log("Database name is empty", spdlog::level::warn);
+      //        return false;
+      //      }
       //TODO: Add log
       return true;
     }
 
     bool checkTableInput(const std::string &tableName) {
       if (tableName.empty()) {
-//        log("Table name is empty", spdlog::level::warn);
+        //        log("Table name is empty", spdlog::level::warn);
         //TODO: Add log
         return false;
       }

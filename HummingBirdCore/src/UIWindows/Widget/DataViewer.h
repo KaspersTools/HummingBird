@@ -15,7 +15,21 @@ namespace HummingBirdCore::Widgets {
 
   struct Row {
     int id;
-    std::vector<std::string> data;
+    std::map<std::string, std::string> data;
+
+    Row(int id) : Row(id, {}) {
+    }
+
+    Row(int id, const std::map<std::string, std::string> &data) : id(id), data(data) {
+    }
+
+    std::string& operator[](const std::string& key) {
+      return data[key];
+    }
+
+    void setValue(const std::string &key, const std::string &value) {
+      data[key] = value;
+    }
   };
 
   struct Table {
@@ -97,7 +111,9 @@ public:
 
                   for (int column_n = 0; column_n < m_table->numOfHeaders(); column_n++) {
                     ImGui::TableSetColumnIndex(column_n);
-                    ImGui::TextUnformatted(row->data[column_n].c_str());
+                    std::string header = m_table->headers[column_n].name;
+                    std::string value = row->data[header];
+                    ImGui::Text("%s", value.c_str());
                   }
                   ImGui::PopID();
                 }
