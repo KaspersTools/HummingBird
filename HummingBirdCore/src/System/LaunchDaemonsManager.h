@@ -7,6 +7,18 @@
 #include <PCH/pch.h>
 
 namespace HummingBirdCore {
+  struct LaunchDaemonValue {
+    LaunchDaemonValue() = default;
+    const std::string key;
+    const std::string type;
+    std::string value;
+
+    LaunchDaemonValue(const std::string &key, const std::string &value, const std::string &type) : key(key), value(value), type(type) {}
+    void setValue(const std::string &value) {
+      LaunchDaemonValue::value = value;
+    }
+  };
+
   namespace System {
     enum LaunchDaemonStatus {
       Running,
@@ -17,36 +29,33 @@ namespace HummingBirdCore {
 
     struct LaunchDaemon {
   private:
-      std::string name;
-      std::string program;
-
       Utils::File file;
-
-      bool enabled;
       LaunchDaemonStatus status;
       Plist::dictionary_type plist;
 
   public:
+      std::map<std::string, LaunchDaemonValue> m_values;
+
+  public:
       LaunchDaemon() = default;
-      LaunchDaemon(const Utils::File &file, bool enabled, LaunchDaemonStatus status) : file(file), enabled(enabled), status(status) {
+      LaunchDaemon(const Utils::File &file, LaunchDaemonStatus status) : file(file), status(status) {
         init();
       }
 
-      void init(){
+      void init() {
         readPlist();
-        getLabel();
-        getProgram();
+        fetchLabel();
+        fetchProgram();
+        if (file.name == "com.kasper") {
+          fetchStartInterval();
+        }
       }
 
       LaunchDaemon copy() const {
-        return LaunchDaemon(file, enabled, status);
-      }
-
-      bool operator==(const LaunchDaemon &other) const {
-        if (this == NULL || &other == NULL) {
-          return false;
-        }
-        return name == other.name && file.path == other.file.path;
+        //TODO: Check what needs to be copied.
+        LaunchDaemon daemon;
+        daemon.plist = plist;
+        return daemon;
       }
 
   public:
@@ -57,69 +66,34 @@ namespace HummingBirdCore {
         }
         plist = Utils::PlistUtils::readPlist(file.path);
       }
+
   public:
-      [[nodiscard]] const std::string &getName() const {
-        return name;
+      const std::map<std::string, LaunchDaemonValue> &getValues() const {
+        return m_values;
       }
 
-      void setName(const std::string &name) {
-        LaunchDaemon::name = name;
-        LaunchDaemon::file.saved = false;
-      }
-
-      [[nodiscard]] const Utils::File &getFile() const {
+      Utils::File getFile() const {
         return file;
       }
 
-      void setFile(const Utils::File &file) {
-        LaunchDaemon::file = file;
-        LaunchDaemon::file.saved = false;
-      }
-
-      [[nodiscard]] bool isEnabled() const {
-        return enabled;
-      }
-
-      bool &getEnabled() {
-        return enabled;
-      }
-
-      void setEnabled(bool enabled) {
-        LaunchDaemon::enabled = enabled;
-        LaunchDaemon::file.saved = false;
-      }
-
-      [[nodiscard]] LaunchDaemonStatus getStatus() const {
-        return status;
-      }
-
-      void setStatus(LaunchDaemonStatus status) {
-        LaunchDaemon::status = status;
-        LaunchDaemon::file.saved = false;
-      }
-
-      [[nodiscard]] const Plist::dictionary_type &getPlist() const {
-        return plist;
-      }
-
   private:
-      //Default get functions
-      void getLabel(){
-        if(Utils::PlistUtils::readPlistValue(plist, "Label", name)){
-          CORE_TRACE("Label property found in plist: " + file.path.string());
-        }else{
-          CORE_TRACE("Label property not found in plist: " + file.path.string());
-          name = file.name;
-        }
+      //Default fetch functions
+      void fetchLabel() {
+        std::string label;
+        Utils::PlistUtils::readPlistValue(plist, "Label", label);
+
       }
 
-      void getProgram(){
-        if(Utils::PlistUtils::readPlistValue(plist, "Program", program)){
-          CORE_TRACE("Program property found in plist: " + file.path.string());
-        }else{
-          CORE_TRACE("Program property not found in plist: " + file.path.string());
-          program = "";
-        }
+      void fetchProgram() {
+        std::string program;
+        Utils::PlistUtils::readPlistValue(plist, "Program", program);
+
+      }
+
+      void fetchStartInterval() {
+        int startInterval;
+        Utils::PlistUtils::readPlistValue(plist, "StartInterval", startInterval);
+
       }
     };
 
