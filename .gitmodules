@@ -16,3 +16,6 @@
 	path = vendor/imgui
 	url = git@github.com:kasperhbo/imgui.git
 	branch = docking
+[submodule "vendor/libplist"]
+	path = vendor/libplist
+	url = git@github.com:kasperhbo/libplist.git
