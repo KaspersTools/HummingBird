@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <PCH/pch.h>z
+#include <PCH/pch.h>
 
 namespace HummingBirdCore {
   struct LaunchDaemonValue {
@@ -34,7 +34,7 @@ namespace HummingBirdCore {
       Utils::File file;
       LaunchDaemonStatus status;
 
-      plist_t plistData;//type = void*
+//      plist_t plistData;//type = void*
 
   public:
       std::map<std::string, LaunchDaemonValue> m_values;
@@ -72,7 +72,8 @@ namespace HummingBirdCore {
           CORE_ERROR("File content is empty of file: " + file.path.string());
           return false;
         }
-        Utils::PlistUtils::readPlist(file, plistData);
+        return true;
+//        Utils::PlistUtils::readPlist(file, plistData);
       }
 
   public:

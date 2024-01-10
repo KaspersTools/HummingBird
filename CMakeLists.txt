@@ -106,60 +106,26 @@ include_directories(
 
 
 ########################################################################\
-#cd libplist-1.3/build && PKG_CONFIG_PATH=/Users/dan/projects/sandbox/target/lib/pkgconfig cmake .. -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_INSTALL_PREFIX=/Users/dan/projects/sandbox/target -DQT_HEADERS_DIR=/Users/dan/projects/sandbox/target/include/ -DQT_LIBRARY_DIR=/Users/dan/projects/sandbox/target/bin -DENABLE_PYTHON=OFF
-#libplist from vendor/libplist
-if(NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/libplist)
-  message("libplist folder not found")
-else()
-  message("libplist folder found")
-  set(LIBPLIST_DIR ${HUMMINGBIRD_DIR}/vendor/libplist)
-  set(LIBPLIST_BUILD_DIR ${LIBPLIST_DIR}/build)
-  set(LIBPLIST_INSTALL_DIR ${LIBPLIST_DIR}/install)
-  set(LIBPLIST_INCLUDE_DIR ${LIBPLIST_INSTALL_DIR}/include)
-  set(LIBPLIST_LIB_DIR ${LIBPLIST_INSTALL_DIR}/lib)
+#libplist
+message("Building with libplist")
+add_subdirectory(vendor/libplist libplist)
 
-  #build libplist
-  if (NOT EXISTS ${LIBPLIST_BUILD_DIR})
-    message("libplist build folder not found")
-    message("Building libplist")
-    execute_process(
-            COMMAND mkdir ${LIBPLIST_BUILD_DIR}
-    )
-    execute_process(
-            COMMAND cmake .. -DCMAKE_INSTALL_PREFIX=${LIBPLIST_INSTALL_DIR} -DENABLE_PYTHON=OFF
-            WORKING_DIRECTORY ${LIBPLIST_BUILD_DIR}
-    )
-    execute_process(
-            COMMAND make
-            WORKING_DIRECTORY ${LIBPLIST_BUILD_DIR}
-    )
-    execute_process(
-            COMMAND make install
-            WORKING_DIRECTORY ${LIBPLIST_BUILD_DIR}
-    )
-  else()
-    message("libplist build folder found")
-  endif()
+# include
+include_directories(
+        vendor/libplist/Headers
+)
 
-  #include libplist
-  include_directories(
-          ${LIBPLIST_INCLUDE_DIR}
+# link
+if (NOT WITHHUMMINGBIRDCOREASLIB)
+  target_link_libraries(HummingbirdCoreEXE
+          plist
   )
+endif ()
 
-  #link libplist
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${LIBPLIST_LIB_DIR}/libplist++.a
-            ${LIBPLIST_LIB_DIR}/libplist.a
-    )
-  endif()
-
-  target_link_libraries(HummingbirdCore
-          ${LIBPLIST_LIB_DIR}/libplist++.a
-          ${LIBPLIST_LIB_DIR}/libplist.a
-  )
-
-endif()
+target_link_libraries(HummingbirdCore
+        plist
+)
+########################################################################
 
 
 #mysql

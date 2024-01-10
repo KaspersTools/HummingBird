@@ -14,6 +14,8 @@
 
 #include "../Log.h"
 
+#include <err.h>
+
 namespace fs = std::filesystem;
 
 namespace HummingBirdCore {
@@ -188,42 +190,6 @@ namespace HummingBirdCore {
     };
 
     namespace PlistUtils {
-      inline static bool readPlist(File file, plist_t plist) {
-        //read plist docs for understanding plist_from_memory function oogahboogah
-        // Default format, this will be set by plist_from_memory
-        plist_format_t format = PLIST_FORMAT_BINARY;
-
-        // Convert the string to a byte array
-        const char *data = file.content.c_str();
-        uint32_t length = static_cast<uint32_t>(file.content.size());
-
-        // Call plist_from_memory
-        plist_err_t err = plist_from_memory(data, length, &plist, &format);
-        const std::string baseErrMsg = "while loading plist";
-        switch (err) {
-          case (PLIST_ERR_SUCCESS):
-            CORE_TRACE("PLIST READ SUCCES");
-            return true;
-          case (PLIST_ERR_INVALID_ARG):
-            CORE_ERROR(baseErrMsg + " PLIST_ERR_INVALID_ARG");
-            return false;
-          case (PLIST_ERR_FORMAT):
-            CORE_ERROR(baseErrMsg + " PLIST_ERR_FORMAT");
-            return false;
-          case (PLIST_ERR_PARSE):
-            CORE_ERROR(baseErrMsg + " PLIST_ERR_PARSE");
-            return false;
-          case (PLIST_ERR_NO_MEM):
-            CORE_ERROR(baseErrMsg + " PLIST_ERR_NO_MEM");
-            return false;
-          case (PLIST_ERR_IO):
-            CORE_ERROR(baseErrMsg + " PLIST_ERR_IO");
-            return false;
-          case (PLIST_ERR_UNKNOWN):
-            CORE_ERROR(baseErrMsg + " PLIST_ERR_UNKNOWN");
-            return false;
-        }
-      }
 
     }// namespace PlistUtils
   }// namespace Utils
