@@ -12,7 +12,6 @@
 #include <Security/Security.h>
 #endif
 
-#include "../../../vendor/PlistCPP/include/boost/any.hpp"
 #include "../Log.h"
 
 namespace fs = std::filesystem;
@@ -189,95 +188,43 @@ namespace HummingBirdCore {
     };
 
     namespace PlistUtils {
-      inline static Plist::dictionary_type readPlist(const std::string &path) {
-        try {
-          // Read the plist file into a byte array
-          std::ifstream file(path, std::ios::binary);
-          std::vector<char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+      inline static bool readPlist(File file, plist_t plist) {
+        //read plist docs for understanding plist_from_memory function oogahboogah
+        // Default format, this will be set by plist_from_memory
+        plist_format_t format = PLIST_FORMAT_BINARY;
 
-          Plist::dictionary_type dict;
-          Plist::readPlist(&buffer[0], buffer.size(), dict);
-          return dict;
-        } catch (const std::exception &e) {
-          CORE_ERROR("Error while reading plist: " + std::string(e.what()));
-          return {};
+        // Convert the string to a byte array
+        const char *data = file.content.c_str();
+        uint32_t length = static_cast<uint32_t>(file.content.size());
+
+        // Call plist_from_memory
+        plist_err_t err = plist_from_memory(data, length, &plist, &format);
+        const std::string baseErrMsg = "while loading plist";
+        switch (err) {
+          case (PLIST_ERR_SUCCESS):
+            CORE_TRACE("PLIST READ SUCCES");
+            return true;
+          case (PLIST_ERR_INVALID_ARG):
+            CORE_ERROR(baseErrMsg + " PLIST_ERR_INVALID_ARG");
+            return false;
+          case (PLIST_ERR_FORMAT):
+            CORE_ERROR(baseErrMsg + " PLIST_ERR_FORMAT");
+            return false;
+          case (PLIST_ERR_PARSE):
+            CORE_ERROR(baseErrMsg + " PLIST_ERR_PARSE");
+            return false;
+          case (PLIST_ERR_NO_MEM):
+            CORE_ERROR(baseErrMsg + " PLIST_ERR_NO_MEM");
+            return false;
+          case (PLIST_ERR_IO):
+            CORE_ERROR(baseErrMsg + " PLIST_ERR_IO");
+            return false;
+          case (PLIST_ERR_UNKNOWN):
+            CORE_ERROR(baseErrMsg + " PLIST_ERR_UNKNOWN");
+            return false;
         }
       }
-      inline static bool readPlistValue(Plist::dictionary_type &plist, const std::string &key, boost::any &value) {
-        if (plist.empty()) {
-          return false;
-        }
-        if (plist.find(key) == plist.end()) {
-          return false;
-        }
 
-        value = plist[key];
-        return true;
-      }
-
-      inline static bool readPlistValue(Plist::dictionary_type &plist, const std::string &key, std::string &value) {
-        boost::any valCop = value;
-        bool succes = readPlistValue(plist, key, valCop);
-        if (!succes) {
-          return false;
-        }
-
-        value = boost::any_cast<std::string>(valCop);
-        return true;
-      }
-
-      inline static bool readPlistValue(Plist::dictionary_type &plist, const std::string &key, int &value) {
-        boost::any valCop = value;
-        bool succes = readPlistValue(plist, key, valCop);
-
-        //check what type is set by boost
-        if (valCop.type() == typeid(int)) {
-          value = boost::any_cast<int>(valCop);
-          return true;
-        }
-        if (valCop.type() == typeid(int64_t)) {
-          value = boost::any_cast<int64_t>(valCop);
-          //cast vaue to int
-          value = (int) value;
-          return true;
-        }
-        if (valCop.type() == typeid(int32_t)) {
-          value = boost::any_cast<int32_t>(valCop);
-          return true;
-        }
-        if (valCop.type() == typeid(int16_t)) {
-          value = boost::any_cast<int16_t>(valCop);
-          return true;
-        }
-        if (valCop.type() == typeid(int8_t)) {
-          value = boost::any_cast<int8_t>(valCop);
-          return true;
-        }
-        if (valCop.type() == typeid(uint)) {
-          value = boost::any_cast<uint>(valCop);
-          return true;
-        }
-        if (valCop.type() == typeid(boost::long_long_type)) {
-          value = boost::any_cast<boost::long_long_type>(valCop);
-          return true;
-        }
-        return true;
-      }
-
-      inline static bool readPlistValue(Plist::dictionary_type &plist, const std::string &key, std::optional<int> &value) {
-        int valCop = value.value_or(-1);
-
-        bool succes = readPlistValue(plist, key, valCop);
-
-        if (!succes) {
-          return false;
-        }
-        if (valCop == -1) {
-          return false;
-        }
-        value = valCop;
-        return true;
-      }
     }// namespace PlistUtils
   }// namespace Utils
 }// namespace HummingBirdCore

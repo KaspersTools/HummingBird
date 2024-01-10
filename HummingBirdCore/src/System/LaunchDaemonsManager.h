@@ -4,13 +4,15 @@
 
 #pragma once
 
-#include <PCH/pch.h>
+#include <PCH/pch.h>z
 
 namespace HummingBirdCore {
   struct LaunchDaemonValue {
     LaunchDaemonValue() = default;
+
     const std::string key;
     const std::string type;
+
     std::string value;
 
     LaunchDaemonValue(const std::string &key, const std::string &value, const std::string &type) : key(key), value(value), type(type) {}
@@ -31,7 +33,8 @@ namespace HummingBirdCore {
   private:
       Utils::File file;
       LaunchDaemonStatus status;
-      Plist::dictionary_type plist;
+
+      plist_t plistData;//type = void*
 
   public:
       std::map<std::string, LaunchDaemonValue> m_values;
@@ -44,6 +47,7 @@ namespace HummingBirdCore {
 
       void init() {
         readPlist();
+
         fetchLabel();
         fetchProgram();
         if (file.name == "com.kasper") {
@@ -54,17 +58,21 @@ namespace HummingBirdCore {
       LaunchDaemon copy() const {
         //TODO: Check what needs to be copied.
         LaunchDaemon daemon;
-        daemon.plist = plist;
         return daemon;
       }
 
   public:
-      void readPlist() {
-        if (file.path.empty()) {
+      bool readPlist() {
+        if (file.path.empty() || file.path.string().empty()) {
           CORE_ERROR("File path is empty");
-          return;
+          return false;
         }
-        plist = Utils::PlistUtils::readPlist(file.path);
+        if(file.content.empty() || file.content == "")
+        {
+          CORE_ERROR("File content is empty of file: " + file.path.string());
+          return false;
+        }
+        Utils::PlistUtils::readPlist(file, plistData);
       }
 
   public:
@@ -79,21 +87,26 @@ namespace HummingBirdCore {
   private:
       //Default fetch functions
       void fetchLabel() {
+
         std::string label;
-        Utils::PlistUtils::readPlistValue(plist, "Label", label);
 
       }
 
       void fetchProgram() {
+
         std::string program;
-        Utils::PlistUtils::readPlistValue(plist, "Program", program);
 
       }
 
       void fetchStartInterval() {
         int startInterval;
-        Utils::PlistUtils::readPlistValue(plist, "StartInterval", startInterval);
+      }
 
+      void fetchProperty(){
+        if(file.content.empty())
+        {
+          CORE_ERROR("File content is empty of file: " + file.path.string());
+        }
       }
     };
 
