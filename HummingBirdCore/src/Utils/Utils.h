@@ -14,8 +14,6 @@
 
 #include "../Log.h"
 
-#include <err.h>
-
 namespace fs = std::filesystem;
 
 namespace HummingBirdCore {
