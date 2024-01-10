@@ -18,4 +18,4 @@
 	branch = docking
 [submodule "vendor/libplist"]
 	path = vendor/libplist
-	url = git@github.com:kasperhbo/libplist.git
+	url = git@github.com:kasperhbo/libplist_facebook.git
