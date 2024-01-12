@@ -59,10 +59,10 @@ namespace HummingBirdCore {
 
   private:
       std::filesystem::path path;
-
-  public:
       std::string name;
       std::string extension;
+
+  public:
       std::string content;
       bool saved = true;
 
@@ -73,6 +73,18 @@ namespace HummingBirdCore {
       }
 
   public:
+      const std::string getName() const {
+        return name;
+      }
+      std::string getExtension() const {
+        return extension;
+      }
+
+
+      std::string getPath() const {
+        return path.string();
+      }
+
       std::string getFullPath() const {
         if (path.string().contains("~")) {
           std::string homeDir = getenv("HOME");
@@ -85,6 +97,13 @@ namespace HummingBirdCore {
         return path.string() + "/" + name + extension;
       }
 
+      //todo: more filechecking
+      void setName(const std::string &newName) {
+        name = newName;
+      }
+      void setExtension(const std::string &newExtension) {
+        extension = newExtension;
+      }
       void setPath(const std::filesystem::path &newPath) {
         if (path.string().contains("~")) {
           std::string homeDir = getenv("HOME");
@@ -178,12 +197,12 @@ namespace HummingBirdCore {
         File file;
 
         file.setPath(fullLocation.parent_path());
-        file.name = fullLocation.stem().string();
-        file.extension = fullLocation.extension().string();
+        file.setName(fullLocation.stem().string());
+        file.setExtension(fullLocation.extension().string());
 
         readFromFile(fullLocation.string(), &file.content);
 
-        CORE_TRACE("File " + file.name + " loaded");
+        CORE_TRACE("File " + file.getFullPath() + " loaded");
 
         return file;
       }

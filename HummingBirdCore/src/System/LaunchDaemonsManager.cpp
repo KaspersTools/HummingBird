@@ -16,7 +16,7 @@ namespace HummingBirdCore {
         if (ImGui::BeginTabItem("User Agent")) {
           int index = 0;
           for (auto &daemon: m_userAgent) {
-            if (ImGui::Selectable(daemon.getLabel().c_str(), m_selectedDaemon == index)) {
+            if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedDaemon == index)) {
               m_selectedDaemon = index;
             }
             index++;
@@ -52,6 +52,17 @@ namespace HummingBirdCore {
           ImGui::Separator();
           {
             ImGui::BeginChild("SelectedDaemonRightChild", ImVec2(0, 0), true);
+
+            std::string copyPath = m_userAgent[m_selectedDaemon].getPath();
+            std::string copyName = m_userAgent[m_selectedDaemon].getFileName();
+
+            if(ImGui::InputText("file path:", &copyPath)){
+                m_userAgent[m_selectedDaemon].getFile().setPath(copyPath);
+            }
+            if(ImGui::InputText("file name:", &copyName)){
+              m_userAgent[m_selectedDaemon].getFile().setName(copyName);
+            }
+
             if (m_selectedDaemon >= m_userAgent.size()) {
               m_selectedDaemon = 0;
             }
