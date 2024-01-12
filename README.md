@@ -143,13 +143,18 @@ Use HummingBird for developing applications, creating tools, or automating tasks
 ## Roadmap
 
 ### Application
+#### Roadmap
 - [x] Core library for basic functionalities
 - [x] Application for text editting -- finished
 - [x] Host edittor -- in dev
+- [ ] Plist launchd editor
 - [ ] Integrated VNC viewer
 - [ ] Terminal rewrite
 - [ ] Java build tool integration
 - [ ] Creating custom scripts to run your commands
+
+#### In progress
+- [x] Plist launchd editor 
 
 ### Documentation
 - [ ] All documentation lol
