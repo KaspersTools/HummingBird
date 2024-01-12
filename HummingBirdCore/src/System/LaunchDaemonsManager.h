@@ -10,20 +10,6 @@
 
 
 namespace HummingBirdCore {
-  struct LaunchDaemonValue {
-    LaunchDaemonValue() = default;
-
-    const std::string key;
-    const std::string type;
-
-    std::string value;
-
-    LaunchDaemonValue(const std::string &key, const std::string &value, const std::string &type) : key(key), value(value), type(type) {}
-    void setValue(const std::string &value) {
-      LaunchDaemonValue::value = value;
-    }
-  };
-
   namespace System {
     enum LaunchDaemonStatus {
       Running,
@@ -35,93 +21,45 @@ namespace HummingBirdCore {
     struct LaunchDaemon {
   private:
       Utils::File file;
-      Utils::PlistUtil::Plist plist;
+      std::unique_ptr<Utils::PlistUtil::Plist> plist;
 
   public:
-      LaunchDaemon() = default;
-      LaunchDaemon(const Utils::File &file) : file(file) {
-        init();
-      }
-
-      void init() {
-        if(file.name == "com.kasper")
-          readPlist();
-      }
-
-      LaunchDaemon copy() const {
-        //TODO: Check what needs to be copied.
-        LaunchDaemon daemon;
-        return daemon;
+      explicit LaunchDaemon(const Utils::File &file) : file(file),
+                                                       plist(std::make_unique<Utils::PlistUtil::Plist>(file.path.string())) {
       }
 
   public:
-      const Utils::File getFile() const {
-        return file;
+      std::string getLabel() const {
+        return file.name;
       }
 
-      const Utils::PlistUtil::Plist getPlist() const {
-        return plist;
+      Utils::PlistUtil::Plist* getPlist() {
+        return plist.get();
       }
 
   public:
-      bool readPlist() {
-        if (file.path.empty() || file.path.string().empty()) {
-          CORE_ERROR("File path is empty");
-          return false;
-        }
-        if (file.content.empty() || file.content == "") {
-          CORE_ERROR("File content is empty of file: " + file.path.string());
-          return false;
-        }
-        if (!plist.parsePlist(file.path.c_str())) {
-          CORE_ERROR("Failed to parse plist: " + file.path.string());
-          return false;
-        }
+      void save(){
+        getPlist()->writePlist(file);
       }
     };
 
     class LaunchDaemonsManager : public UIWindow {
   public:
-      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name) {
+      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name), m_userAgent() {
         fetchAllDaemons();
       }
 
       ~LaunchDaemonsManager() {
-        for (auto &daemon: m_userAgent) {
-          delete daemon;
-        }
-        for (auto &daemon: m_globalAgent) {
-          delete daemon;
-        }
-        for (auto &daemon: m_globalDaemons) {
-          delete daemon;
-        }
-        for (auto &daemon: m_systemAgent) {
-          delete daemon;
-        }
-        for (auto &daemon: m_systemDaemons) {
-          delete daemon;
-        }
       }
 
       void render() override;
-
+      void renderDaemon(LaunchDaemon &daemon);
+      void renderNode(Utils::PlistUtil::PlistNode &node, int index);
       void fetchAllDaemons();
-      void renderNode(Utils::PlistUtil::PlistNode &node);
-      void selectDaemon(LaunchDaemon *daemon);
-      void renderDaemonsTable(std::vector<LaunchDaemon *> daemons);
 
   private:
-      LaunchDaemon *m_selectedDaemon = nullptr;
-
-      std::vector<LaunchDaemon *> m_userAgent;
-
-      std::vector<LaunchDaemon *> m_globalAgent;
-      std::vector<LaunchDaemon *> m_globalDaemons;
-
-      std::vector<LaunchDaemon *> m_systemAgent;
-      std::vector<LaunchDaemon *> m_systemDaemons;
-
+      int m_selectedDaemon = 0;
+      std::vector<LaunchDaemon> m_userAgent = {};
 
       //Service type paths
       const std::filesystem::path c_userAgentPath = "~/Library/LaunchAgents";

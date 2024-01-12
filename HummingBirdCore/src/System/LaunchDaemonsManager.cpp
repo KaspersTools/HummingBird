@@ -6,71 +6,6 @@
 
 namespace HummingBirdCore {
   namespace System {
-
-    void LaunchDaemonsManager::renderNode(Utils::PlistUtil::PlistNode &node) {
-      std::string id;
-      if (node.key.empty()) {
-        id = "##Unknown";
-        ImGui::Text("Unknown");
-      } else {
-        id = "##" + node.key;
-        ImGui::Text(node.key.c_str());
-      }
-      if (node.type == Utils::PlistUtil::PlistTypeString) {
-        std::string val = std::get<std::string>(node.value);
-        if (ImGui::InputText(id.c_str(), &val)) {
-          node.value = val;
-        }
-      } else if (node.type == Utils::PlistUtil::PlistTypeInteger) {
-        int val = std::get<int>(node.value);
-        if (ImGui::DragInt(id.c_str(), &val)) {
-          node.value = val;
-        }
-      } else if (node.type == Utils::PlistUtil::PlistTypeReal) {
-        float val = std::get<float>(node.value);
-        if (ImGui::DragFloat(id.c_str(), &val)) {
-          node.value = val;
-        }
-      } else if (node.type == Utils::PlistUtil::PlistTypeBoolean) {
-        bool val = std::get<bool>(node.value);
-        if (ImGui::Checkbox(id.c_str(), &val)) {
-          node.value = val;
-        }
-      } else if (node.type == Utils::PlistUtil::PlistTypeDate) {
-        Utils::PlistUtil::PlistNode::Date val = std::get<Utils::PlistUtil::PlistNode::Date>(node.value);
-        if (ImGui::DragInt("Month", &val.month)) {
-          node.value = val;
-        }
-        ImGui::SameLine();
-        if (ImGui::DragInt("Day", &val.day)) {
-          node.value = val;
-        }
-        ImGui::SameLine();
-        if (ImGui::DragInt("Hour", &val.hour)) {
-          node.value = val;
-        }
-        ImGui::SameLine();
-        if (ImGui::DragInt("Minute", &val.minute)) {
-          node.value = val;
-        }
-        ImGui::SameLine();
-        if (ImGui::DragInt("Weekday", &val.weekday)) {
-          node.value = val;
-        }
-      } else if (node.type == Utils::PlistUtil::PlistTypeData) {
-        ImGui::Text("Data");
-      } else if (node.type == Utils::PlistUtil::PlistTypeArray) {
-        for (auto &child: node.children) {
-          renderNode(child);
-        }
-      } else if (node.type == Utils::PlistUtil::PlistTypeDictionary) {
-        for (auto &child: node.children) {
-          renderNode(child);
-        }
-      } else if (node.type == Utils::PlistUtil::PlistTypeNone) {
-        ImGui::Text("Unknown");
-      }
-    }
     void LaunchDaemonsManager::render() {
       ImGui::BeginChild("LaunchDaemons", ImVec2(ImGui::GetContentRegionAvail().x * 0.2f, 0), c_leftChildFlags, c_leftWindowFlags);
       ImGui::Text("LaunchDaemons");
@@ -79,7 +14,13 @@ namespace HummingBirdCore {
       //tab
       if (ImGui::BeginTabBar("LaunchDaemonsTabBar")) {
         if (ImGui::BeginTabItem("User Agent")) {
-          renderDaemonsTable(m_userAgent);
+          int index = 0;
+          for (auto &daemon: m_userAgent) {
+            if(ImGui::Selectable(daemon.getLabel().c_str(), m_selectedDaemon == index)){
+              m_selectedDaemon = index;
+            }
+            index++;
+          }
           ImGui::EndTabItem();
           ImGui::EndTabBar();
         }
@@ -97,17 +38,18 @@ namespace HummingBirdCore {
         {
           ImGui::BeginChild("SelectedDeamonRight", ImVec2(0, 0), true);
           ImGui::Text("Selected Daemon");
+          ImGui::SameLine();
+          if(ImGui::Button("Save")){
+            m_userAgent[m_selectedDaemon].save();
+          }
           ImGui::Separator();
           {
             ImGui::BeginChild("SelectedDaemonRightChild", ImVec2(0, 0), true);
-            if (m_selectedDaemon != nullptr) {
-              const Utils::PlistUtil::Plist pl = m_selectedDaemon->getPlist();
-              if (pl.parsed && pl.hasChildren()) {
-                for (auto &child: pl.getChildren()) {
-                  renderNode(child);
-                }
-              }
+            if(m_selectedDaemon >= m_userAgent.size()) {
+              m_selectedDaemon = 0;
             }
+            LaunchDaemon &daemon = m_userAgent[m_selectedDaemon];
+            renderDaemon(daemon);
             ImGui::EndChild();
           }
           ImGui::EndChild();
@@ -118,43 +60,74 @@ namespace HummingBirdCore {
       ImGui::EndGroup();
     }
 
-    void LaunchDaemonsManager::fetchAllDaemons() {
+    void LaunchDaemonsManager::renderDaemon(HummingBirdCore::System::LaunchDaemon &daemon) {
+      Utils::PlistUtil::Plist *plist = daemon.getPlist();
 
+      if (plist != nullptr) {
+        int index = 0;
+        for (auto &node: plist->getRootNode().children) {
+          renderNode(node, index);
+          index += 1;
+        }
+      }
+    }
+
+    void LaunchDaemonsManager::renderNode(HummingBirdCore::Utils::PlistUtil::PlistNode &node, int index) {
+      //make a child that always fits the content
+
+      std::string id = node.key + " - " + std::to_string(index);
+
+      if (node.type == Utils::PlistUtil::PlistTypeString) {
+
+        ImGui::InputText(id.c_str(), &std::get<std::string>(node.value));
+
+      } else if (node.type == Utils::PlistUtil::PlistTypeInteger) {
+
+        ImGui::InputInt(id.c_str(), &std::get<int>(node.value));
+
+      } else if (node.type == Utils::PlistUtil::PlistTypeBoolean) {
+
+        ImGui::Checkbox(id.c_str(), &std::get<bool>(node.value));
+
+      } else if (node.type == Utils::PlistUtil::PlistTypeDate) {
+
+        int items  = 5;
+        float offset = 12;
+
+        float sizeY = (ImGui::CalcTextSize("Weekday").y * items) + (offset*items);
+
+        ImGui::BeginChild(id.c_str(), ImVec2(0, sizeY), true);
+        {
+          ImGui::PushID(id.c_str());
+          ImGui::InputInt("Minute", &std::get<Utils::PlistUtil::PlistNode::Date>(node.value).minute);
+          ImGui::InputInt("Hour", &std::get<Utils::PlistUtil::PlistNode::Date>(node.value).hour);
+          ImGui::InputInt("Day", &std::get<Utils::PlistUtil::PlistNode::Date>(node.value).day);
+          ImGui::InputInt("Month", &std::get<Utils::PlistUtil::PlistNode::Date>(node.value).month);
+          ImGui::InputInt("Weekday", &std::get<Utils::PlistUtil::PlistNode::Date>(node.value).weekday);
+          ImGui::PopID();
+        }
+        ImGui::EndChild();
+      } else if (node.type == Utils::PlistUtil::PlistTypeArray) {
+        ImGui::Text("Array");
+        for (auto &childNode: node.children) {
+          index++;
+          renderNode(childNode, index);
+        }
+      } else if (node.type == Utils::PlistUtil::PlistTypeDictionary) {
+        ImGui::Text("Dictionary");
+        for (auto &childNode: node.children) {
+          index++;
+          renderNode(childNode, index);
+        }
+      }
+    }
+
+    void LaunchDaemonsManager::fetchAllDaemons() {
       std::vector<HummingBirdCore::Utils::File> files = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_userAgentPath.string(), ".plist");
 
       for (const auto &file: files) {
-        LaunchDaemon *da = new LaunchDaemon(file);
-        m_userAgent.push_back(da);
+        m_userAgent.emplace_back(file);
       }
-    }
-
-    void LaunchDaemonsManager::renderDaemonsTable(std::vector<LaunchDaemon *> daemons) {
-      ImGui::BeginTable("LaunchDaemonsTable", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders);
-
-      ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
-
-      ImGui::TableSetupScrollFreeze(0, 1);// Make row(header) always visible
-      ImGui::TableHeadersRow();
-
-      for (LaunchDaemon *daemon: daemons) {
-        ImGui::PushID(daemon);
-        ImGui::TableNextRow();
-        {
-          ImGui::TableNextColumn();
-          if (ImGui::Selectable(daemon->getFile().name.c_str(), m_selectedDaemon == daemon)) {
-            selectDaemon(daemon);
-          }
-        }
-        ImGui::PopID();
-      }
-      ImGui::EndTable();
-    }
-
-    void LaunchDaemonsManager::selectDaemon(LaunchDaemon *daemon) {
-      //TODO: Check If current is unsaved else show modal
-      CORE_TRACE("Selected daemon: " + daemon->getFile().name);
-      m_selectedDaemon = daemon;
-      m_selectedDaemon->init();
     }
   }// namespace System
 }// namespace HummingBirdCore

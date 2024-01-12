@@ -4,46 +4,42 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
+#include <random>
+#include <iomanip>
+#include <ctime>
 
 namespace HummingBirdCore::Utils {
-  class UUID {
-public:
-    UUID() = default;
-    ~UUID() = default;
 
-    static std::string generateUUID() {
-      std::string uuid = "";
-      uuid += generateUUIDPart();
-      uuid += generateUUIDPart();
-      uuid += "-";
-      uuid += generateUUIDPart();
-      uuid += "-";
-      uuid += generateUUIDPart();
-      uuid += "-";
-      uuid += generateUUIDPart();
-      uuid += "-";
-      uuid += generateUUIDPart();
-      uuid += generateUUIDPart();
-      uuid += generateUUIDPart();
-      return uuid;
+  inline static std::string generate_uuid() {
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<unsigned long long> dis;
+
+    std::stringstream ss;
+    ss << std::hex << std::setfill('0');
+
+    for (int i = 0; i < 8; i++) {
+      ss << std::setw(2) << (dis(gen) & 0xff);
     }
 
-private:
-    static std::string generateUUIDPart() {
-      std::string uuidPart = "";
-      for (int i = 0; i < 4; i++) {
-        uuidPart += generateRandomChar();
-      }
-      return uuidPart;
+    ss << "-";
+
+    for (int i = 0; i < 4; i++) {
+      ss << std::setw(2) << (dis(gen) & 0xff);
     }
 
-    static char generateRandomChar() {
-      int random = rand() % 16;
-      if (random < 10) {
-        return (char) (random + 48);
-      } else {
-        return (char) (random + 87);
-      }
+    ss << "-";
+    ss << std::setw(4) << (dis(gen) & 0xffff);
+    ss << "-";
+    ss << std::setw(4) << (dis(gen) & 0xffff);
+    ss << "-";
+
+    for (int i = 0; i < 12; i++) {
+      ss << std::setw(2) << (dis(gen) & 0xff);
     }
-  };
+
+    return ss.str();
+  }
+
 }// namespace HummingBirdCore::Utils

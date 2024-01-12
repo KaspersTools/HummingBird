@@ -16,10 +16,6 @@ public:
     ~ApplicationObject() {
 
     }
-
-    const std::string getUUID() const { return c_uuid; }
-
 private:
-    const std::string c_uuid = HummingBirdCore::Utils::UUID::generateUUID();
   };
 }

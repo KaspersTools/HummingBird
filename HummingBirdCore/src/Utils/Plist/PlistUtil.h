@@ -10,6 +10,8 @@
 #include <libxml2/libxml/parser.h>
 #include <libxml2/libxml/tree.h>
 
+#include <Utils/UUID.h>
+
 //Kasper coding at 3:00 AM so no idea what this doe
 
 namespace HummingBirdCore::Utils::PlistUtil {
@@ -61,96 +63,82 @@ public:
 
     std::vector<PlistNode> children = {};
     PlistType type = PlistTypeNone;
+    PlistType parentType = PlistTypeNone;
 
     PlistNode() {}
-    PlistNode(std::string keyName, std::variant<std::string, int, float, bool, Date> nodeValue, PlistType type)
-        : key(keyName), value(nodeValue), type(type) {}
-
-    std::vector<PlistNode> getNodes() const {
-      return children;
-    }
-
-    bool const hasChildren() const {
-      return !children.empty();
+    PlistNode(std::string keyName, std::variant<std::string, int, float, bool, Date> nodeValue, PlistType type, PlistType parentType)
+        : key(keyName), value(nodeValue), type(type), parentType(parentType) {
     }
   };
 
   class Plist {
 public:
-    std::vector<PlistNode> nodes;
-    bool parsed = false;
+    explicit Plist(const std::string &filename) {
+      parsePlist(filename);
+    }
 
+    ~Plist() {
+    }
+
+public:
     ///STRUCTURE
 
     bool parseNode(xmlNode *node, PlistNode &parent, std::string &currentKey) {
       for (xmlNode *currentNode = node; currentNode; currentNode = currentNode->next) {
         if (currentNode->type == XML_ELEMENT_NODE) {
           std::string nodeName = (const char *) currentNode->name;
-          //<key> is identifier plist looks like this:
-          //<valuetype(string)(integer)> is the value </valuetype>
-
-          //<key>Label</key>                       //identifier
-          //<string>kasperslabel</string>          //value
-          //<key>StartInterval</key>               //identifier
-          //<array>                                //holder
-          //  <key>Day</key>                       //identifier
-          //  <integer>1</integer>                 //value
-
           if (nodeName == "key") {
-            currentKey = (const char *) xmlNodeGetContent(currentNode);
-          } else if (!currentKey.empty()) {
-            PlistType type = PlistTypeNone;
-
-            if (nodeName == "string") {
-              type = PlistTypeString;
-            } else if (nodeName == "integer") {
-              type = PlistTypeInteger;
-            } else if (nodeName == "real") {
-              type = PlistTypeReal;
-            } else if (nodeName == "true" || nodeName == "false") {
-              type = PlistTypeBoolean;
-              type = PlistTypeBoolean;
-            } else if (nodeName == "data") {
-              type = PlistTypeData;
-            } else if (nodeName == "array") {
-              type = PlistTypeArray;
-            } else if (nodeName == "dict") {
-              type = PlistTypeDictionary;
-            }
-
-            PlistNode childNode(currentKey, "", type);
-
-            if (nodeName == "dict" || nodeName == "array") {
-              PlistNode childNode(currentKey, "", PlistTypeArray);// Use appropriate type
-              std::string newKey;
-              parseNode(currentNode->children, childNode, newKey);
-              parent.children.push_back(childNode);
-              currentKey.clear();
-            } else if (currentNode->children && currentNode->children->type == XML_TEXT_NODE) {
-              //TODO: CLEAN THIS UP AND ADD MORE TYPES
-              if (childNode.type == PlistTypeInteger) {
-                childNode.value = std::stoi((const char *) xmlNodeGetContent(currentNode));
-              } else if (childNode.type == PlistTypeReal) {
-                childNode.value = std::stof((const char *) xmlNodeGetContent(currentNode));
-              } else if (childNode.type == PlistTypeBoolean) {
-                childNode.value = (nodeName == "true");
-              } else if (childNode.type == PlistTypeDate) {
-                std::string date = (const char *) xmlNodeGetContent(currentNode);
-                childNode.value = PlistNode::Date();
-              } else {
-                childNode.value = (const char *) xmlNodeGetContent(currentNode);
-              }
-            }
-            parent.children.push_back(childNode);
-            currentKey.clear();
-          } else if (nodeName == "array" || nodeName == "dict") {
-            // For nested <array> or <dict> without a preceding <key>
-            PlistNode childNode("", "", PlistTypeArray);// Or PlistTypeDictionary
-            std::string newKey;
-            parseNode(currentNode->children, childNode, newKey);
-            parent.children.push_back(childNode);
+            currentKey = (const char *) currentNode->children->content;
           } else {
-            parseNode(currentNode->children, parent, currentKey);
+            int ind = 0;
+            std::string itemKey = currentKey;
+            if (parent.type == PlistTypeArray) {
+              ind = parent.children.size();
+            }
+
+            PlistNode plnode = plnode;
+            plnode.key = itemKey;
+            if (parent.type == PlistTypeArray) {
+              plnode.key = std::to_string(ind);
+            }
+
+            plnode.parentType = parent.type;
+
+
+            if (currentKey.empty()) {
+              parseNode(currentNode->children, parent, currentKey);
+            } else if (nodeName == "string") {
+              plnode.type = PlistTypeString;
+              plnode.value = (const char *) currentNode->children->content;
+            } else if (nodeName == "integer") {
+              plnode.type = PlistTypeInteger;
+              plnode.value = std::stoi((const char *) currentNode->children->content);
+            } else if (nodeName == "real") {
+              plnode.type = PlistTypeReal;
+              plnode.value = std::stof((const char *) currentNode->children->content);
+            } else if (nodeName == "true") {
+              plnode.type = PlistTypeBoolean;
+              plnode.value = true;
+            } else if (nodeName == "false") {
+              plnode.type = PlistTypeBoolean;
+              plnode.value = false;
+            } else if (nodeName == "date") {
+              plnode.type = PlistTypeDate;
+              plnode.value = (const char *) currentNode->children->content;
+            } else if (nodeName == "data") {
+              plnode.type = PlistTypeData;
+              plnode.value = (const char *) currentNode->children->content;
+            } else if (nodeName == "array") {
+              plnode.type = PlistTypeArray;
+              parseNode(currentNode->children, plnode, currentKey);
+            } else if (nodeName == "dict") {
+              plnode.type = PlistTypeDictionary;
+              parseNode(currentNode->children, plnode, currentKey);
+            } else {
+              plnode.type = PlistTypeNone;
+            }
+
+            parent.children.push_back(plnode);
           }
         }
       }
@@ -158,7 +146,7 @@ public:
       return true;
     }
 
-    bool parsePlist(const std::string &filename) {
+    bool parsePlist(const std::string filename) {
       xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
       if (doc == NULL) {
         CORE_TRACE("Error: could not parse file " + filename);
@@ -171,22 +159,15 @@ public:
         return false;
       }
 
-      PlistNode root;
-      std::string currentKey;
-      if (!parseNode(root_element, root, currentKey)) {
-        CORE_TRACE("Error: could not parse file " + filename);
-        return false;
-      }
 
-      nodes = root.children;
+      std::string currentKey;
+      rootNode = PlistNode();
+      parseNode(root_element, rootNode, currentKey);
 
       xmlFreeDoc(doc);
       xmlCleanupParser();
 
-      for (auto &node: nodes) {
-        checkForDateNodes(node);
-      }
-
+      checkForDateNodes(rootNode);
       parsed = true;
       return true;
     }
@@ -225,72 +206,72 @@ public:
       }
     }
 
-    std::vector<PlistNode> getChildren() const {
-      return nodes;
-    }
-
-    PlistNode getChild(const std::string &key) const {
-      for (auto &node: nodes) {
-        if (node.key == key) {
-          return node;
-        }
-      }
-      return PlistNode();
-    }
-
-    std::variant<std::string, int, float, bool, PlistNode::Date> getValue(const std::string &key) const {
-      for (auto &node: nodes) {
-        if (node.key == key) {
-          return node.value;
-        }
-      }
-      return std::variant<std::string, int, float, bool, PlistNode::Date>();
-    }
-
-
-    std::string getString(const std::string &key) const {
-      for (auto &node: nodes) {
-        if (node.key == key) {
-          return std::get<std::string>(node.value);
-        }
-      }
-      return "";
-    }
-
-    int getInt(const std::string &key) const {
-      for (auto &node: nodes) {
-        if (node.key == key) {
-          return std::get<int>(node.value);
-        }
-      }
-      return 0;
-    }
-
-    float getFloat(const std::string &key) const {
-      for (auto &node: nodes) {
-        if (node.key == key) {
-          return std::get<float>(node.value);
-        }
-      }
-      return 0;
-    }
-
-    bool getBool(const std::string &key) const {
-      for (auto &node: nodes) {
-        if (node.key == key) {
-          return std::get<bool>(node.value);
-        }
-      }
-      return false;
-    }
-
-    bool const hasChildren() const {
-      return !nodes.empty();
-    }
-
-    bool const isParsed() const {
+    bool getIsParsed() const {
       return parsed;
     }
+
+    PlistNode &getRootNode() {
+      return rootNode;
+    }
+
+    void writePlist(const File &file) {
+      std::string plistString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+      plistString += "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n";
+      plistString += "<plist version=\"1.0\">\n";
+      plistString += "<dict>\n";
+
+      for (auto &node: rootNode.children) {
+        writeNode(node, plistString);
+      }
+
+      plistString += "</dict>\n";
+      plistString += "</plist>\n";
+
+      CORE_TRACE("SAVING PLIST TO: " + file.path.string());
+      CORE_TRACE("SAVING PLIST: \n " + plistString);
+
+      std::ofstream plistFile(file.path);
+      plistFile << plistString;
+      plistFile.close();
+    }
+
+private:
+    void writeNode(const PlistNode &node, std::string &plistString) {
+      if(node.parentType != PlistTypeArray){
+        plistString += "<key>" + node.key + "</key>\n";
+      }
+
+      if (node.type == PlistTypeString) {
+        plistString += "<string>" + std::get<std::string>(node.value) + "</string>\n";
+      } else if (node.type == PlistTypeInteger) {
+        plistString += "<integer>" + std::to_string(std::get<int>(node.value)) + "</integer>\n";
+      } else if (node.type == PlistTypeReal) {
+        plistString += "<real>" + std::to_string(std::get<float>(node.value)) + "</real>\n";
+      } else if (node.type == PlistTypeBoolean) {
+        plistString += "<" + std::to_string(std::get<bool>(node.value)) + "/>\n";
+      } else if (node.type == PlistTypeDate) {
+        //        plistString += "<date>" + std::get<std::string>(node.value) + "</date>\n";
+      } else if (node.type == PlistTypeData) {
+        plistString += "<data>" + std::get<std::string>(node.value) + "</data>\n";
+      } else if (node.type == PlistTypeArray) {
+        plistString += "<array>\n";
+        for (auto &childNode: node.children) {
+          writeNode(childNode, plistString);
+        }
+        plistString += "</array>\n";
+      } else if (node.type == PlistTypeDictionary) {
+        plistString += "<dict>\n";
+        for (auto &childNode: node.children) {
+          writeNode(childNode, plistString);
+        }
+        plistString += "</dict>\n";
+      }
+    }
+
+
+private:
+    bool parsed = false;
+    PlistNode rootNode;
   };
 
 
