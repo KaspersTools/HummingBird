@@ -30,7 +30,6 @@ namespace HummingBirdCore {
       File(const std::string &name, const std::filesystem::path &path, const std::string &extension, const std::string &content) : name(name), path(path), extension(extension), content(content) {
       }
     };
-
     /**
      * TODO: Copyright stuff here
      */
@@ -88,27 +87,65 @@ namespace HummingBirdCore {
       inline static bool fileExists(const std::string &fullname) {
         return std::filesystem::exists(fullname);
       }
-
-      inline static std::string readFromFile(const std::string &fileLocation) {
-        std::string fileContent;
-        std::string line;
-
-        std::ifstream myFile(fileLocation);
+      inline static bool readFromFile(const std::string &path, std::string *contents) {
+        std::ifstream myFile(path);
 
         if (!myFile.is_open()) {
-          CORE_ERROR("Unable to open file: " + fileLocation);
-          return fileContent;
+          CORE_ERROR("Unable to open file: " + path);
+          return false;
         }
 
-        while (std::getline(myFile, line)) {
-          fileContent += line + "\n";
-        }
+        std::stringstream buffer;
+        buffer << myFile.rdbuf();
+        *contents = buffer.str();
 
         myFile.close();
 
-        return fileContent;
+        return true;
       }
+      inline static bool readFromFile(const std::string &path, std::vector<uint8_t> *contents, size_t offset = 0, std::optional<size_t> length = std::nullopt) {
+        FILE *fp = fopen(path.c_str(), "rb");
 
+        if (fp == nullptr) {
+          return false;
+        }
+
+        if (std::fseek(fp, 0, SEEK_END) != 0) {
+          std::fclose(fp);
+          return false;
+        }
+
+        long size = std::ftell(fp);
+        if (size == (long) -1) {
+          std::fclose(fp);
+          return false;
+        }
+
+        if (length) {
+          if (offset + *length > static_cast<size_t>(size)) {
+            std::fclose(fp);
+            return false;
+          }
+
+          size = *length;
+        }
+
+        if (std::fseek(fp, offset, SEEK_SET) != 0) {
+          std::fclose(fp);
+          return false;
+        }
+
+        *contents = std::vector<uint8_t>(size);
+
+        if (size > 0) {
+          if (std::fread(contents->data(), size, 1, fp) != 1) {
+            std::fclose(fp);
+            return false;
+          }
+        }
+
+        std::fclose(fp);
+      }
       inline static File getFile(const std::filesystem::path &fileLocation) {
         std::filesystem::path fullLocation = fileLocation.string();
 
@@ -123,7 +160,9 @@ namespace HummingBirdCore {
         //name = without extension
         file.name = fullLocation.stem().string();
         file.extension = fullLocation.extension().string();
-        file.content = readFromFile(fullLocation.string());
+
+        readFromFile(fullLocation.string(), &file.content);
+
         CORE_TRACE("File " + file.name + " loaded");
 
         return file;
@@ -142,7 +181,6 @@ namespace HummingBirdCore {
         }
         return std::filesystem::exists(fullFolderName);
       }
-
       inline static bool createFolder(const std::string &fullFolderName) {
         if (doesFolderExist(fullFolderName)) {
           CORE_WARN("Folder {0} already exists", fullFolderName);
@@ -153,15 +191,12 @@ namespace HummingBirdCore {
         CORE_TRACE("Folder {0} created", fullFolderName);
         return true;
       }
-
       inline static std::filesystem::path getHomeDirectory() {
         return getenv("HOME");
       }
-
       inline static std::vector<HummingBirdCore::Utils::File> getFilesInFolder(const std::string &path) {
         return getFilesInFolder(path, "");
       }
-
       inline static std::vector<HummingBirdCore::Utils::File> getFilesInFolder(const std::string &path, const std::string &extension) {
         std::vector<HummingBirdCore::Utils::File> files;
         std::filesystem::path fullPath = path;
@@ -186,9 +221,5 @@ namespace HummingBirdCore {
         return files;
       }
     };
-
-    namespace PlistUtils {
-
-    }// namespace PlistUtils
   }// namespace Utils
 }// namespace HummingBirdCore

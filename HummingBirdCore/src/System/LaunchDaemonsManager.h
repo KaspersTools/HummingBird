@@ -6,6 +6,9 @@
 
 #include <PCH/pch.h>
 
+#include "Utils/Plist/PlistUtil.h"
+
+
 namespace HummingBirdCore {
   struct LaunchDaemonValue {
     LaunchDaemonValue() = default;
@@ -32,27 +35,17 @@ namespace HummingBirdCore {
     struct LaunchDaemon {
   private:
       Utils::File file;
-      LaunchDaemonStatus status;
-
-//      plist_t plistData;//type = void*
-
-  public:
-      std::map<std::string, LaunchDaemonValue> m_values;
+      Utils::PlistUtil::Plist plist;
 
   public:
       LaunchDaemon() = default;
-      LaunchDaemon(const Utils::File &file, LaunchDaemonStatus status) : file(file), status(status) {
+      LaunchDaemon(const Utils::File &file) : file(file) {
         init();
       }
 
       void init() {
-        readPlist();
-
-        fetchLabel();
-        fetchProgram();
-        if (file.name == "com.kasper") {
-          fetchStartInterval();
-        }
+        if(file.name == "com.kasper")
+          readPlist();
       }
 
       LaunchDaemon copy() const {
@@ -62,51 +55,27 @@ namespace HummingBirdCore {
       }
 
   public:
+      const Utils::File getFile() const {
+        return file;
+      }
+
+      const Utils::PlistUtil::Plist getPlist() const {
+        return plist;
+      }
+
+  public:
       bool readPlist() {
         if (file.path.empty() || file.path.string().empty()) {
           CORE_ERROR("File path is empty");
           return false;
         }
-        if(file.content.empty() || file.content == "")
-        {
+        if (file.content.empty() || file.content == "") {
           CORE_ERROR("File content is empty of file: " + file.path.string());
           return false;
         }
-        return true;
-//        Utils::PlistUtils::readPlist(file, plistData);
-      }
-
-  public:
-      const std::map<std::string, LaunchDaemonValue> &getValues() const {
-        return m_values;
-      }
-
-      Utils::File getFile() const {
-        return file;
-      }
-
-  private:
-      //Default fetch functions
-      void fetchLabel() {
-
-        std::string label;
-
-      }
-
-      void fetchProgram() {
-
-        std::string program;
-
-      }
-
-      void fetchStartInterval() {
-        int startInterval;
-      }
-
-      void fetchProperty(){
-        if(file.content.empty())
-        {
-          CORE_ERROR("File content is empty of file: " + file.path.string());
+        if (!plist.parsePlist(file.path.c_str())) {
+          CORE_ERROR("Failed to parse plist: " + file.path.string());
+          return false;
         }
       }
     };
@@ -138,6 +107,7 @@ namespace HummingBirdCore {
       void render() override;
 
       void fetchAllDaemons();
+      void renderNode(Utils::PlistUtil::PlistNode &node);
       void selectDaemon(LaunchDaemon *daemon);
       void renderDaemonsTable(std::vector<LaunchDaemon *> daemons);
 

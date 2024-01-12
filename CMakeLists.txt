@@ -83,6 +83,7 @@ set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/Utils/UIUtils.h
         HummingBirdCore/src/System/LaunchDaemonsManager.cpp
         HummingBirdCore/src/System/LaunchDaemonsManager.h
+        HummingBirdCore/src/Utils/Plist/PlistUtil.h
 )
 
 if (NOT WITHHUMMINGBIRDCOREASLIB)
@@ -103,30 +104,30 @@ target_precompile_headers(HummingbirdCore PUBLIC HummingBirdCore/src/PCH/pch.h)
 include_directories(
         HummingBirdCore/src
 )
+########################################################################
+#tinyxml2
+find_package(LibXml2 REQUIRED)
+if (NOT LIBXML2_FOUND)
+  message(FATAL_ERROR "libxml2 not found")
+else ()
+message("libxml2 found")
 
+  #include
+  include_directories(
+          ${LIBXML2_INCLUDE_DIRS}
+  )
 
-########################################################################\
-#libplist
-message("Building with libplist")
-add_subdirectory(vendor/libplist libplist)
+  #link
+  if (NOT WITHHUMMINGBIRDCOREASLIB)
+    target_link_libraries(HummingbirdCoreEXE
+            ${LIBXML2_LIBRARIES}
+    )
+  endif ()
 
-# include
-include_directories(
-        vendor/libplist/Headers
-)
-
-# link
-if (NOT WITHHUMMINGBIRDCOREASLIB)
-  target_link_libraries(HummingbirdCoreEXE
-          plist
+  target_link_libraries(HummingbirdCore
+          ${LIBXML2_LIBRARIES}
   )
 endif ()
-
-target_link_libraries(HummingbirdCore
-        plist
-)
-########################################################################
-
 
 #mysql
 find_package(MySQL)
@@ -185,6 +186,9 @@ else ()
   message("SDL folder found needed by imgui")
   set(SDL_STATIC ON CACHE BOOL "" FORCE)
   set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+  set(SDL_LIBC ON CACHE BOOL "" FORCE)
+  set(SDL_TEST OFF CACHE BOOL "" FORCE)
+
   add_subdirectory(vendor/sdl sdl)
 
   #include
