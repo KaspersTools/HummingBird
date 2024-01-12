@@ -15,64 +15,130 @@ namespace HummingBirdCore {
         ImGui::Separator();
 
         //tab
-        if (ImGui::BeginTabBar("LaunchDaemonsTabBar")) {
-          if (ImGui::BeginTabItem("User Agent")) {
-            int index = 0;
-            for (auto &daemon: m_userAgent) {
-              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedDaemon == index)) {
-                m_selectedDaemon = index;
-              }
-              index++;
-            }
-            ImGui::EndTabItem();
-            ImGui::EndTabBar();
-          }
+        ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_Reorderable;
+        tabBarFlags |= ImGuiTabBarFlags_FittingPolicyDefault_;
+        tabBarFlags &= ~(ImGuiTabBarFlags_FittingPolicyMask_ ^ ImGuiTabBarFlags_FittingPolicyScroll);
+        //
+        //        if (ImGui::BeginTabBar("LaunchDaemonsTabBar"), tabBarFlags) {
+        //          if (ImGui::BeginTabItem("User Agent")) {
+        //            int index = 0;
+        //            for (auto &daemon: m_userAgent) {
+        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
+        //                m_selectedUserAgentDaemon = index;
+        //              }
+        //              index++;
+        //            }
+        //            ImGui::EndTabItem();
+        //          }
+        //          if (ImGui::BeginTabItem("Global Agent")) {
+        //            int index = 0;
+        //            for (auto &daemon: m_userAgent) {
+        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
+        //                m_selectedUserAgentDaemon = index;
+        //              }
+        //              index++;
+        //            }
+        //            ImGui::EndTabItem();
+        //          }
+        //          if (ImGui::BeginTabItem("Global Daemon")) {
+        //            int index = 0;
+        //            for (auto &daemon: m_userAgent) {
+        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
+        //                m_selectedUserAgentDaemon = index;
+        //              }
+        //              index++;
+        //            }
+        //            ImGui::EndTabItem();
+        //          }
+        //          if (ImGui::BeginTabItem("System Agent")) {
+        //            int index = 0;
+        //            for (auto &daemon: m_userAgent) {
+        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
+        //                m_selectedUserAgentDaemon = index;
+        //              }
+        //              index++;
+        //            }
+        //            ImGui::EndTabItem();
+        //          }
+        //          if (ImGui::BeginTabItem("System Daemon")) {
+        //            int index = 0;
+        //            for (auto &daemon: m_userAgent) {
+        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
+        //                m_selectedUserAgentDaemon = index;
+        //              }
+        //              index++;
+        //            }
+        //            ImGui::EndTabItem();
+        //          }
+        //
+        //          ImGui::EndTabBar();
+        //        }
+
+
+        static ImVector<int> active_tabs;
+        static int next_tab_id = 0;
+        if (next_tab_id == 0)// Initialize with some default tabs
+          for (int i = 0; i < 5; i++)
+            active_tabs.push_back(next_tab_id++);
+
+
+        // Expose some other flags which are useful to showcase how they interact with Leading/Trailing tabs
+        static ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable
+                                                | ImGuiTabBarFlags_FittingPolicyScroll
+                                                | ImGuiTabBarFlags_TabListPopupButton;
+
+        if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
+          renderTab("User Agent", m_userAgent);
+          renderTab("Global Agent", m_globalAgent);
+          renderTab("Global Daemon", m_globalDaemon);
+          renderTab("System Agent", m_systemAgent);
+          renderTab("System Daemon", m_systemDaemon);
+          ImGui::EndTabBar();
         }
 
+
+        ImGui::Separator();
         ImGui::EndChild();
       }
 
       //Right resizeable panel
       {
-          ImGui::SameLine();
-          ImGui::BeginChild("SelectedDeamonRight", ImVec2(0, 0), true);
+        ImGui::SameLine();
+        ImGui::BeginChild("SelectedDeamonRight", ImVec2(0, 0), true);
 
-          ImGui::Text("Selected Daemon");
-          ImGui::SameLine();
+        ImGui::Text("Selected Daemon");
+        ImGui::SameLine();
 
-          if (ImGui::Button("Save")) {
-            m_userAgent[m_selectedDaemon].save();
-          }
-          ImGui::SameLine();
-
-          if(ImGui::Button("New"))
-          {
-            Utils::File f = Utils::File("NewDaemon", c_userAgentPath, ".plist", "");
-            m_userAgent.emplace_back(f);
-          }
-          ImGui::Separator();
-          // bottom panel
-          {
-            std::string copyPath = m_userAgent[m_selectedDaemon].getPath();
-            std::string copyName = m_userAgent[m_selectedDaemon].getFileName();
-
-            if(ImGui::InputText("file path:", &copyPath)){
-                m_userAgent[m_selectedDaemon].getFile().setPath(copyPath);
-            }
-            if(ImGui::InputText("file name:", &copyName)){
-              m_userAgent[m_selectedDaemon].getFile().setName(copyName);
-            }
-
-            if (m_selectedDaemon >= m_userAgent.size()) {
-              m_selectedDaemon = 0;
-            }
-            LaunchDaemon &daemon = m_userAgent[m_selectedDaemon];
-            renderDaemon(daemon);
-
-          }
-          ImGui::EndChild();
+        if (ImGui::Button("Save")) {
+          m_userAgent[m_selectedUserAgentDaemon].save();
         }
+        ImGui::SameLine();
 
+        if (ImGui::Button("New")) {
+          Utils::File f = Utils::File("NewDaemon", c_userAgentPath, ".plist", "");
+          m_userAgent.emplace_back(f);
+        }
+        ImGui::Separator();
+        // bottom panel
+        {
+          std::string copyPath = m_userAgent[m_selectedUserAgentDaemon].getPath();
+          std::string copyName = m_userAgent[m_selectedUserAgentDaemon].getFileName();
+
+          if (ImGui::InputText("file path:", &copyPath)) {
+            m_userAgent[m_selectedUserAgentDaemon].getFile().setPath(copyPath);
+          }
+          if (ImGui::InputText("file name:", &copyName)) {
+            m_userAgent[m_selectedUserAgentDaemon].getFile().setName(copyName);
+          }
+
+          if (m_selectedUserAgentDaemon >= m_userAgent.size()) {
+            m_selectedUserAgentDaemon = 0;
+          }
+          LaunchDaemon &daemon = m_userAgent[m_selectedUserAgentDaemon];
+          renderDaemon(daemon);
+        }
+        ImGui::EndChild();
+      }
     }
 
     void LaunchDaemonsManager::renderDaemon(HummingBirdCore::System::LaunchDaemon &daemon) {
@@ -207,11 +273,50 @@ namespace HummingBirdCore {
     }
 
     void LaunchDaemonsManager::fetchAllDaemons() {
-      std::vector<HummingBirdCore::Utils::File> files = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_userAgentPath.string(), ".plist");
+      std::vector<HummingBirdCore::Utils::File> fileUserAgent = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_userAgentPath.string(), ".plist");
+      std::vector<HummingBirdCore::Utils::File> fileGlobalAgent = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_globalAgentPath.string(), ".plist");
+      std::vector<HummingBirdCore::Utils::File> fileGlobalDaemon = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_globalDaemonPath.string(), ".plist");
+      std::vector<HummingBirdCore::Utils::File> fileSystemAgent = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_SystemAgentPath.string(), ".plist");
+      std::vector<HummingBirdCore::Utils::File> fileSystemDaemon = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_SystemDaemonPath.string(), ".plist");
 
-      for (const auto &file: files) {
+      for (const auto &file: fileUserAgent) {
         m_userAgent.emplace_back(file);
       }
+
+      for (const auto &file: fileGlobalAgent) {
+        m_globalAgent.emplace_back(file);
+      }
+
+      for (const auto &file: fileGlobalDaemon) {
+        m_globalDaemon.emplace_back(file);
+      }
+
+      for (const auto &file: fileSystemAgent) {
+        m_systemAgent.emplace_back(file);
+      }
+
+      for (const auto &file: fileSystemDaemon) {
+        m_systemDaemon.emplace_back(file);
+      }
+    }
+
+    bool LaunchDaemonsManager::renderTab(const std::string &name, const std::vector<LaunchDaemon> &daemons) {
+      bool userAgentOpen = true;
+
+      if (ImGui::BeginTabItem(name.c_str(), &userAgentOpen, ImGuiTabItemFlags_None)) {
+        int index = 0;
+
+        for (auto &daemon: daemons) {
+          if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
+            m_selectedUserAgentDaemon = index;
+          }
+          index++;
+        }
+
+        ImGui::EndTabItem();
+      }
+
+      return open;
     }
   }// namespace System
 }// namespace HummingBirdCore

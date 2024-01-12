@@ -24,14 +24,12 @@ namespace HummingBirdCore {
       std::unique_ptr<Utils::PlistUtil::Plist> plist;
 
   public:
-
       explicit LaunchDaemon(Utils::File file) : file(file),
-                                                       plist(std::make_unique<Utils::PlistUtil::Plist>()) {
+                                                plist(std::make_unique<Utils::PlistUtil::Plist>()) {
         CORE_TRACE("Loading plist file: " + file.getFullPath());
-        if(Utils::FileUtils::fileExists(file.getFullPath()) || file.getName().empty())
-        {
+        if (Utils::FileUtils::fileExists(file.getFullPath()) || file.getName().empty()) {
           plist->parsePlist(file.getFullPath());
-        }else{
+        } else {
           CORE_INFO("File " + file.getFullPath() + " does not exist, creating a new plist file");
           plist->createNewPlist();
           file.setName("NewDaemon");
@@ -40,31 +38,32 @@ namespace HummingBirdCore {
       }
 
   public:
-      Utils::PlistUtil::Plist* getPlist() {
+      Utils::PlistUtil::Plist *getPlist() {
         return plist.get();
       }
 
-      Utils::File& getFile(){
+      Utils::File &getFile() {
         return file;
       }
 
-      const std::string getPath() const{
+      const std::string getPath() const {
         return file.getPath();
       }
 
-      const std::string getFileName() const{
+      const std::string getFileName() const {
         return file.getName();
       }
 
   public:
-      void save(){
+      void save() {
         getPlist()->writePlist(file);
       }
     };
 
     class LaunchDaemonsManager : public UIWindow {
   public:
-      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name), m_userAgent() {
+      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name), m_userAgent()
+      , m_globalAgent(), m_globalDaemon(), m_systemAgent(), m_systemDaemon(){
         fetchAllDaemons();
       }
 
@@ -75,10 +74,15 @@ namespace HummingBirdCore {
       void renderDaemon(LaunchDaemon &daemon);
       void renderNode(Utils::PlistUtil::PlistNode &node, int index);
       void fetchAllDaemons();
+      bool renderTab(const std::string &name, const std::vector<LaunchDaemon> &daemons);
 
   private:
-      int m_selectedDaemon = 0;
+      int m_selectedUserAgentDaemon = 0;
       std::vector<LaunchDaemon> m_userAgent = {};
+      std::vector<LaunchDaemon> m_globalAgent = {};
+      std::vector<LaunchDaemon> m_systemAgent = {};
+      std::vector<LaunchDaemon> m_globalDaemon = {};
+      std::vector<LaunchDaemon> m_systemDaemon = {};
 
       //Service type paths
       const std::filesystem::path c_userAgentPath = "~/Library/LaunchAgents";
@@ -91,10 +95,8 @@ namespace HummingBirdCore {
 
 
       //UI
-      const ImGuiWindowFlags c_leftWindowFlags = ImGuiWindowFlags_HorizontalScrollbar;
+      const ImGuiWindowFlags c_leftWindowFlags = ImGuiWindowFlags_NoScrollbar;
       const ImGuiChildFlags c_leftChildFlags = ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX;
-      const ImGuiTreeNodeFlags c_baseTreeNodeFlagsLeft = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-      const ImGuiSelectableFlags c_selectableFlags = ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns;
 
       bool m_wrapText = false;
     };

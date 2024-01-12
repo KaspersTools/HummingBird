@@ -117,7 +117,7 @@ namespace HummingBirdCore {
     ImFontConfig config;
     config.OversampleH = 3;
     config.OversampleV = 3;
-    config.PixelSnapH = true;
+    config.RasterizerDensity = 1.0f;
 
     io.FontDefault = io.Fonts->AddFontFromFileTTF(
             "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", 15.0f, &config);
