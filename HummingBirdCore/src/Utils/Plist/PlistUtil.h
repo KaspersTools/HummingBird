@@ -64,7 +64,9 @@ public:
     std::optional<std::variant<std::string, int, float, bool, Date>> value;
     bool required = false;
 
-    std::vector<PlistNode> children = {};
+//    std::vector<PlistNode> children = {};
+    std::map<std::string, PlistNode> children = {};
+
     PlistType type = PlistTypeNone;
     PlistType parentType = PlistTypeNone;
 
@@ -81,7 +83,10 @@ public:
               std::vector<PlistNode> children,
               std::variant<std::string, int, float, bool, Date> placeholder,
               bool required = false)
-        : key(keyName), value(nodeValue), type(type), parentType(parentType), children(children), placeholder(placeholder), required(required) {
+        : key(keyName), value(nodeValue), type(type), parentType(parentType), placeholder(placeholder), required(required) {
+        for (auto &child: children) {
+          addChild(child);
+        }
     }
 
     PlistNode(std::string keyName,
@@ -90,12 +95,15 @@ public:
               std::vector<PlistNode> children,
               std::variant<std::string, int, float, bool, Date> placeholder,
               bool required = false)
-        : key(keyName), type(type), parentType(parentType), children(children), placeholder(placeholder), required(required) {
+        : key(keyName), type(type), parentType(parentType), placeholder(placeholder), required(required) {
+      for (auto &child: children) {
+        addChild(child);
+      }
     }
 
     void addChild(PlistNode &node) {
       node.parentType = type;
-      children.push_back(node);
+      children.insert(std::pair<std::string, PlistNode>(node.key, node));
     }
 
     std::variant<std::string, int, float, bool, Date> &getValue() {
@@ -260,29 +268,29 @@ public:
         int weekday = 0;
 
         for (auto &childNode: node.children) {
-          if (childNode.key == "Minute") {
-            if (childNode.value.has_value())
-              minute = std::get<int>(childNode.value.value());
+          if (childNode.second.key == "Minute") {
+            if (childNode.second.value.has_value())
+              minute = std::get<int>(childNode.second.value.value());
             else
               minute = 0;
-          } else if (childNode.key == "Hour") {
-            if (childNode.value.has_value())
-              hour = std::get<int>(childNode.value.value());
+          } else if (childNode.second.key == "Hour") {
+            if (childNode.second.value.has_value())
+              hour = std::get<int>(childNode.second.value.value());
             else
               hour = 0;
-          } else if (childNode.key == "Day") {
-            if (childNode.value.has_value())
-              day = std::get<int>(childNode.value.value());
+          } else if (childNode.second.key == "Day") {
+            if (childNode.second.value.has_value())
+              day = std::get<int>(childNode.second.value.value());
             else
               day = 0;
-          } else if (childNode.key == "Month") {
-            if (childNode.value.has_value())
-              month = std::get<int>(childNode.value.value());
+          } else if (childNode.second.key == "Month") {
+            if (childNode.second.value.has_value())
+              month = std::get<int>(childNode.second.value.value());
             else
               month = 0;
-          } else if (childNode.key == "Weekday") {
-            if (childNode.value.has_value())
-              weekday = std::get<int>(childNode.value.value());
+          } else if (childNode.second.key == "Weekday") {
+            if (childNode.second.value.has_value())
+              weekday = std::get<int>(childNode.second.value.value());
             else
               weekday = 0;
           };
@@ -293,8 +301,8 @@ public:
       }
 
       for (auto &childNode: node.children) {
-        if (childNode.children.size() > 0) {
-          checkForDateNodes(childNode);
+        if (childNode.second.children.size() > 0) {
+          checkForDateNodes(childNode.second);
         }
       }
     }
@@ -314,7 +322,7 @@ public:
       plistString += "<dict>\n";
 
       for (auto &node: rootNode.children) {
-        writeNode(node, plistString);
+        writeNode(node.second, plistString);
       }
 
       plistString += "</dict>\n";
@@ -354,136 +362,88 @@ public:
     void addCalendarIntervalToRootNode() {
       PlistNode::Date date = PlistNode::Date{-1, -1, -1, -1, -1};
       PlistNode dateNode = PlistNode("StartCalendarInterval", PlistTypeDate, PlistTypeArray, {}, date, true);
-      rootNode.children.at(3).addChild(dateNode);
+      int childCount = rootNode.children["StartCalendarInterval"].children.size();
+      rootNode.children["StartCalendarInterval"].children.insert(std::pair<std::string, PlistNode>(std::to_string(childCount), dateNode));
     }
 
 private:
     void createDefaultTypes() {
-      //create label type
-      // Create label type
-      //label of node, nodetype, parenttype, children, placeholder
-      //      PlistNode labelNode = PlistNode("Label", PlistTypeString, PlistTypeDictionary, {}, "LabelPlaceHolder", true);
-      //      rootNode.children.push_back(labelNode);
-      //
-      //      PlistNode programNode = PlistNode("Program", PlistTypeDictionary, PlistTypeDictionary, {}, "ProgramPlaceHolder", true);
-      //      rootNode.children.push_back(programNode);
-      //
-      //      PlistNode startIntervalNode = PlistNode("StartInterval", PlistTypeInteger, PlistTypeDictionary, {}, -1, true);
-      //      rootNode.children.push_back(startIntervalNode);
-      //    Label: A unique identifier for the job. It's a required key.
-      //
-      //ProgramArguments: An array of strings, representing the executable and its arguments.
-      //
-      //StartInterval: Runs the job at regular intervals, specified in seconds.
-      //
-      //StartCalendarInterval: Allows you to schedule a job similar to a cron job, specifying time components like minute, hour, day, etc.
-      //
-      //WatchPaths and QueueDirectories: Triggers the job when specified paths or directories change.
-      //
-      //RunAtLoad: If true, runs the job once when the job is loaded.
-      //
-      //KeepAlive: Keeps the job running under specified conditions.
-      //
-      //StandardInPath, StandardOutPath, StandardErrorPath: Specifies files for standard input, output, and error streams.
-      //
-      //EnvironmentVariables: A dictionary of environment variables to be set before running the job.
-      //
-      //Umask: Specifies the umask value for the job.
-      //
-      //TimeOut, ExitTimeOut: Specifies timeouts for the job.
-      //
-      //ThrottleInterval: Controls how frequently the job can be restarted.
-      //
-      //InitGroups: Determines whether to initialize the group list for the job.
-
       PlistNode label = PlistNode("Label", PlistTypeString, PlistTypeDictionary, {}, "LabelPlaceHolder", true);
-      rootNode.children.push_back(label);
+      rootNode.children["Label"] = label;
+
+      otherTypes();
+    }
+
+    void otherTypes(){
 
       PlistNode programArguments = PlistNode("ProgramArguments", PlistTypeArray, PlistTypeDictionary, {}, "ProgramArgumentsPlaceHolder", false);
-      rootNode.children.push_back(programArguments);
+      rootNode.children["ProgramArguments"] = programArguments;
 
       PlistNode program = PlistNode("Program", PlistTypeString, PlistTypeDictionary, {}, "ProgramPlaceHolder", false);
-      programArguments.children.push_back(program);
+      programArguments.children["Program"] = program;
 
       PlistNode startInterval = PlistNode("StartInterval", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-      rootNode.children.push_back(startInterval);
+      rootNode.children["StartInterval"] = startInterval;
 
       //Calendar node
       {
-
-        //        PlistNode minute = PlistNode("Minute", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-        //        //        rootNode.children.at(3).children.push_back(minute);
-        //
-        //        PlistNode hour = PlistNode("Hour", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-        //        //        rootNode.children.at(3).children.push_back(hour);
-        //
-        //        PlistNode day = PlistNode("Day", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-        //        //        rootNode.children.at(3).children.push_back(day);
-        //
-        //        PlistNode month = PlistNode("Month", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-        //        //        rootNode.children.at(3).children.push_back(month);
-        //
-        //        //if i disable this it works, all childs disappear on the parent node
-        //        PlistNode weekday = PlistNode("Weekday", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-        //        //        rootNode.children.at(3).children.push_back(weekday);
-
         PlistNode startCalendarInterval = PlistNode("StartCalendarInterval", PlistTypeDictionary, PlistTypeDictionary, {}, "StartCalendarIntervalPlaceHolder", false);
-        rootNode.children.push_back(startCalendarInterval);
+        rootNode.children["StartCalendarInterval"] = startCalendarInterval;
       }
 
       PlistNode watchPaths = PlistNode("WatchPaths", PlistTypeArray, PlistTypeDictionary, {}, "WatchPathsPlaceHolder", false);
-      rootNode.children.push_back(watchPaths);
+      rootNode.children["WatchPaths"] = watchPaths;
 
       PlistNode queueDirectories = PlistNode("QueueDirectories", PlistTypeArray, PlistTypeDictionary, {}, "QueueDirectoriesPlaceHolder", false);
-      rootNode.children.push_back(queueDirectories);
+      rootNode.children["QueueDirectories"] = queueDirectories;
 
       PlistNode runAtLoad = PlistNode("RunAtLoad", PlistTypeBoolean, PlistTypeDictionary, {}, false, false);
-      rootNode.children.push_back(runAtLoad);
+      rootNode.children["RunAtLoad"] = runAtLoad;
 
       PlistNode keepAlive = PlistNode("KeepAlive", PlistTypeBoolean, PlistTypeDictionary, {}, false, false);
-      rootNode.children.push_back(keepAlive);
+      rootNode.children["KeepAlive"] = keepAlive;
 
       PlistNode standardInPath = PlistNode("StandardInPath", PlistTypeString, PlistTypeDictionary, {}, "StandardInPathPlaceHolder", false);
-      rootNode.children.push_back(standardInPath);
+      rootNode.children["StandardInPath"] = standardInPath;
 
       PlistNode standardOutPath = PlistNode("StandardOutPath", PlistTypeString, PlistTypeDictionary, {}, "StandardOutPathPlaceHolder", false);
-      rootNode.children.push_back(standardOutPath);
+      rootNode.children["StandardOutPath"] = standardOutPath;
 
       PlistNode standardErrorPath = PlistNode("StandardErrorPath", PlistTypeString, PlistTypeDictionary, {}, "StandardErrorPathPlaceHolder", false);
-      rootNode.children.push_back(standardErrorPath);
+      rootNode.children["StandardErrorPath"] = standardErrorPath;
 
       PlistNode environmentVariables = PlistNode("EnvironmentVariables", PlistTypeDictionary, PlistTypeDictionary, {}, "EnvironmentVariablesPlaceHolder", false);
-      rootNode.children.push_back(environmentVariables);
+      rootNode.children["EnvironmentVariables"] = environmentVariables;
 
       PlistNode umask = PlistNode("Umask", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-      rootNode.children.push_back(umask);
+      rootNode.children["Umask"] = umask;
 
       PlistNode timeout = PlistNode("Timeout", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-      rootNode.children.push_back(timeout);
+      rootNode.children["Timeout"] = timeout;
 
       PlistNode exitTimeout = PlistNode("ExitTimeout", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-      rootNode.children.push_back(exitTimeout);
+      rootNode.children["ExitTimeout"] = exitTimeout;
 
       PlistNode throttleInterval = PlistNode("ThrottleInterval", PlistTypeInteger, PlistTypeDictionary, {}, -1, false);
-      rootNode.children.push_back(throttleInterval);
+      rootNode.children["ThrottleInterval"] = throttleInterval;
 
       PlistNode initGroups = PlistNode("InitGroups", PlistTypeBoolean, PlistTypeDictionary, {}, false, false);
-      rootNode.children.push_back(initGroups);
+      rootNode.children["InitGroups"] = initGroups;
 
       PlistNode startOnMount = PlistNode("StartOnMount", PlistTypeBoolean, PlistTypeDictionary, {}, false, false);
-      rootNode.children.push_back(startOnMount);
+      rootNode.children["StartOnMount"] = startOnMount;
 
       PlistNode rootDirectory = PlistNode("RootDirectory", PlistTypeString, PlistTypeDictionary, {}, "RootDirectoryPlaceHolder", false);
-      rootNode.children.push_back(rootDirectory);
+      rootNode.children["RootDirectory"] = rootDirectory;
 
       PlistNode workingDirectory = PlistNode("WorkingDirectory", PlistTypeString, PlistTypeDictionary, {}, "WorkingDirectoryPlaceHolder", false);
-      rootNode.children.push_back(workingDirectory);
+      rootNode.children["WorkingDirectory"] = workingDirectory;
 
       PlistNode debug = PlistNode("Debug", PlistTypeBoolean, PlistTypeDictionary, {}, false, false);
-      rootNode.children.push_back(debug);
+      rootNode.children["Debug"] = debug;
 
       PlistNode limitLoadToHosts = PlistNode("LimitLoadToHosts", PlistTypeArray, PlistTypeDictionary, {}, "LimitLoadToHostsPlaceHolder", false);
-      rootNode.children.push_back(limitLoadToHosts);
+      rootNode.children["LimitLoadToHosts"] = limitLoadToHosts;
     }
 
     void writeNode(const PlistNode &node, std::string &plistString) {
@@ -509,13 +469,13 @@ private:
       } else if (node.type == PlistTypeArray) {
         plistString += "<array>\n";
         for (auto &childNode: node.children) {
-          writeNode(childNode, plistString);
+          writeNode(childNode.second, plistString);
         }
         plistString += "</array>\n";
       } else if (node.type == PlistTypeDictionary) {
         plistString += "<dict>\n";
         for (auto &childNode: node.children) {
-          writeNode(childNode, plistString);
+          writeNode(childNode.second, plistString);
         }
         plistString += "</dict>\n";
       }

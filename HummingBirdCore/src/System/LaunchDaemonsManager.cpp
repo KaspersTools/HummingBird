@@ -7,38 +7,39 @@
 namespace HummingBirdCore {
   namespace System {
     void LaunchDaemonsManager::render() {
-      ImGui::BeginChild("LaunchDaemons", ImVec2(ImGui::GetContentRegionAvail().x * 0.2f, 0), c_leftChildFlags, c_leftWindowFlags);
-      ImGui::Text("LaunchDaemons");
-      ImGui::Separator();
 
-      //tab
-      if (ImGui::BeginTabBar("LaunchDaemonsTabBar")) {
-        if (ImGui::BeginTabItem("User Agent")) {
-          int index = 0;
-          for (auto &daemon: m_userAgent) {
-            if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedDaemon == index)) {
-              m_selectedDaemon = index;
+      //Left resizeable panel
+      {
+        ImGui::BeginChild("LaunchDaemons", ImVec2(ImGui::GetContentRegionAvail().x * 0.2f, 0), c_leftChildFlags, c_leftWindowFlags);
+        ImGui::Text("LaunchDaemons");
+        ImGui::Separator();
+
+        //tab
+        if (ImGui::BeginTabBar("LaunchDaemonsTabBar")) {
+          if (ImGui::BeginTabItem("User Agent")) {
+            int index = 0;
+            for (auto &daemon: m_userAgent) {
+              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedDaemon == index)) {
+                m_selectedDaemon = index;
+              }
+              index++;
             }
-            index++;
+            ImGui::EndTabItem();
+            ImGui::EndTabBar();
           }
-          ImGui::EndTabItem();
-          ImGui::EndTabBar();
         }
 
         ImGui::EndChild();
+      }
 
-        //Right resizeable panel
-        ImGui::SameLine();
-        ImGui::BeginGroup();
-
-        ImGui::BeginChild("LaunchDaemonsManagerRightPanel", ImVec2(0, 0), true);
-
-        ImGui::SameLine();
-
-        {
+      //Right resizeable panel
+      {
+          ImGui::SameLine();
           ImGui::BeginChild("SelectedDeamonRight", ImVec2(0, 0), true);
+
           ImGui::Text("Selected Daemon");
           ImGui::SameLine();
+
           if (ImGui::Button("Save")) {
             m_userAgent[m_selectedDaemon].save();
           }
@@ -50,9 +51,8 @@ namespace HummingBirdCore {
             m_userAgent.emplace_back(f);
           }
           ImGui::Separator();
+          // bottom panel
           {
-            ImGui::BeginChild("SelectedDaemonRightChild", ImVec2(0, 0), true);
-
             std::string copyPath = m_userAgent[m_selectedDaemon].getPath();
             std::string copyName = m_userAgent[m_selectedDaemon].getFileName();
 
@@ -68,14 +68,11 @@ namespace HummingBirdCore {
             }
             LaunchDaemon &daemon = m_userAgent[m_selectedDaemon];
             renderDaemon(daemon);
-            ImGui::EndChild();
+
           }
           ImGui::EndChild();
         }
-      }
 
-      ImGui::EndChild();
-      ImGui::EndGroup();
     }
 
     void LaunchDaemonsManager::renderDaemon(HummingBirdCore::System::LaunchDaemon &daemon) {
@@ -89,7 +86,7 @@ namespace HummingBirdCore {
         ImGui::Separator();
 
         for (auto &node: plist->getRootNode().children) {
-          renderNode(node, index);
+          renderNode(node.second, index);
           index += 1;
         }
       }
@@ -150,7 +147,7 @@ namespace HummingBirdCore {
         if (ImGui::TreeNode(id.c_str())) {
           int index = 0;
           for (auto &child: node.children) {
-            renderNode(child, index);
+            renderNode(child.second, index);
             index++;
           }
           ImGui::TreePop();
@@ -168,7 +165,7 @@ namespace HummingBirdCore {
         if (ImGui::TreeNode(id.c_str())) {
           int index = 0;
           for (auto &child: node.children) {
-            renderNode(child, index);
+            renderNode(child.second, index);
             index++;
           }
           ImGui::TreePop();
