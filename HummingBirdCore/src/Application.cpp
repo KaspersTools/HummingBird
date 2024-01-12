@@ -24,7 +24,9 @@ namespace HummingBirdCore {
     InitSDL();
     InitImGui();
     m_backgroundTexture.load();
-    Themes::ThemeManager::SetTheme();
+
+    Themes::ApplyTheme(Themes::ImGuiTheme_PhotoshopStyle);
+
     Run();
 
     ImGui_ImplOpenGL3_Shutdown();
@@ -260,39 +262,57 @@ namespace HummingBirdCore {
             }
           }
           if (ImGui::BeginMenu("Themes")) {
-            //            if (ImGui::MenuItem("Maya")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::MAYA);
-            //            }
-            //            if (ImGui::MenuItem("Phocus Green")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::PHOCOSGREEN);
-            //            }
-            //            if (ImGui::MenuItem("Dark")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::DARK);
-            //            }
-            //            if (ImGui::MenuItem("Light")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::LIGHT);
-            //            }
-            //            if (ImGui::MenuItem("Classic")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::CLASSIC);
-            //            }
-            //            if (ImGui::MenuItem("Monochrome")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::MONOCHROME);
-            //            }
-            //            if (ImGui::MenuItem("The_0n3")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::THE_0N3);
-            //            }
-            //            if (ImGui::MenuItem("ModernDarkTheme")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::MODERNDARK);
-            //            }
-            //            if (ImGui::MenuItem("EmbraceTheDarkness")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::EMBRACETHEDARKNESS);
-            //            }
-            //            if (ImGui::MenuItem("DoughBkins_Black")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_BLACK);
-            //            }
-            //            if (ImGui::MenuItem("DoughBkins_White")) {
-            //              Themes::ThemeManager::SetTheme(Themes::THEMES::DOUGHBKINS_WHITE);
-            //            }
+            if (ImGui::MenuItem("ImGuiColorsClassic")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_ImGuiColorsClassic);
+            }
+            if (ImGui::MenuItem("ImGuiColorsDark")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_ImGuiColorsDark);
+            }
+            if (ImGui::MenuItem("ImGuiColorsLight")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_ImGuiColorsLight);
+            }
+            if (ImGui::MenuItem("MaterialFlat")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_MaterialFlat);
+            }
+            if (ImGui::MenuItem("PhotoshopStyle")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_PhotoshopStyle);
+            }
+            if (ImGui::MenuItem("GrayVariations")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_GrayVariations);
+            }
+            if (ImGui::MenuItem("GrayVariations_Darker")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_GrayVariations_Darker);
+            }
+            if (ImGui::MenuItem("MicrosoftStyle")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_MicrosoftStyle);
+            }
+            if (ImGui::MenuItem("Cherry")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_Cherry);
+            }
+            if (ImGui::MenuItem("Darcula")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_Darcula);
+            }
+            if (ImGui::MenuItem("DarculaDarker")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_DarculaDarker);
+            }
+            if (ImGui::MenuItem("LightRounded")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_LightRounded);
+            }
+            if (ImGui::MenuItem("SoDark_AccentBlue")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_SoDark_AccentBlue);
+            }
+            if (ImGui::MenuItem("SoDark_AccentYellow")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_SoDark_AccentYellow);
+            }
+            if (ImGui::MenuItem("SoDark_AccentRed")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_SoDark_AccentRed);
+            }
+            if (ImGui::MenuItem("BlackIsBlack")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_BlackIsBlack);
+            }
+            if (ImGui::MenuItem("WhiteIsWhite")) {
+              Themes::ApplyTheme(Themes::ImGuiTheme_WhiteIsWhite);
+            }
             ImGui::EndMenu();
           }
           ImGui::EndMenu();

@@ -49,6 +49,7 @@ set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/Terminal/TerminalWindow.cpp
         HummingBirdCore/src/Terminal/TerminalWindow.h
         HummingBirdCore/src/UIWindows/Themes/Themes.h
+        HummingBirdCore/src/UIWindows/Themes/Themes.cpp
         HummingBirdCore/src/UIWindows/Themes/ThemeManager.cpp
         HummingBirdCore/src/UIWindows/Themes/ThemeManager.h
         HummingBirdCore/src/stb_image.h

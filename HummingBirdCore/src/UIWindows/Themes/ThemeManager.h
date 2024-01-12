@@ -4,42 +4,58 @@
 
 #pragma once
 #include "../UIWindow.h"
-#include "Themes.h"
+#include <UIWindows/Themes/Themes.h>
 
-namespace HummingBirdCore {
-  namespace Themes {
-    enum THEMES {
-      MAYA,
-      PHOCOSGREEN,
-      DARK,
-      LIGHT,
-      CLASSIC,
-      MONOCHROME,
-      THE_0N3,
-      MODERNDARK,
-      EMBRACETHEDARKNESS,
-      DOUGHBKINS_BLACK,
-      DOUGHBKINS_WHITE,
-      BLENDER,
-      Cyberpunk_T,
-      Nord_T,
-      THEMES_COUNT
-    };
+namespace HummingBirdCore::Themes{
+  const std::vector<ImGuiTheme_> ALL_THEMES = {
+          ImGuiTheme_ImGuiColorsClassic,
+          ImGuiTheme_ImGuiColorsDark,
+          ImGuiTheme_ImGuiColorsLight,
+          ImGuiTheme_MaterialFlat,
+          ImGuiTheme_PhotoshopStyle,
+          ImGuiTheme_GrayVariations,
+          ImGuiTheme_GrayVariations_Darker,
+          ImGuiTheme_MicrosoftStyle,
+          ImGuiTheme_Cherry,
+          ImGuiTheme_Darcula,
+          ImGuiTheme_DarculaDarker,
+          ImGuiTheme_LightRounded,
+          ImGuiTheme_SoDark_AccentBlue,
+          ImGuiTheme_SoDark_AccentYellow,
+          ImGuiTheme_SoDark_AccentRed,
+          ImGuiTheme_BlackIsBlack,
+          ImGuiTheme_WhiteIsWhite,
+  };
 
-    class ThemeManager : public UIWindow {
-  public:
-      explicit ThemeManager(const std::string &name) : UIWindow(ImGuiWindowFlags_MenuBar, name) {}
-      ~ThemeManager() = default;
-      void render() override;
-      void SelectThemeWindow();
+  const std::vector<std::string> ALL_THEMES_NAMES = {
+          "ImGuiColorsClassic",
+          "ImGuiColorsDark",
+          "ImGuiColorsLight",
+          "MaterialFlat",
+          "PhotoshopStyle",
+          "GrayVariations",
+          "GrayVariations_Darker",
+          "MicrosoftStyle",
+          "Cherry",
+          "Darcula",
+          "DarculaDarker",
+          "LightRounded",
+          "SoDark_AccentBlue",
+          "SoDark_AccentYellow",
+          "SoDark_AccentRed",
+          "BlackIsBlack",
+          "WhiteIsWhite"};
+  class ThemeManager : public UIWindow {
+public:
+    ThemeManager(const std::string &name) :
+                     UIWindow(ImGuiWindowFlags_None, name) {
 
-      inline static void SetTheme() {
-        ImGuiStyle *style = &ImGui::GetStyle();
-        ImGui::StyleColorsDark(style);//Reset to base/dark theme
+    }
 
-        Themes::PhocosGreen();
-        Themes::SetWindowBGAlpha(156);
-      }
-    };
-  }// namespace Themes
-}// namespace HummingBirdCore
+    ~ThemeManager() = default;
+public:
+    void render() override;
+private:
+    static int currentThemeIDX;
+  };
+}// namespace HummingBirdCore::Themes
