@@ -54,9 +54,19 @@
 </details>
 
 <!-- ABOUT THE PROJECT -->
+#### Important Note: 
+   a lot of the code is still in development and is not ready for production use. alot of windows are half functional and some are not even implemented yet.
+   Also this is my first c++ project so the code is not the best and i am still learning c++ so if you have any tips or tricks please let me know.
+
+#### Important Note 2: 
+   This project is developed for Mac x86-64 architecture . I have not tested it on any other platform. I am planning to make it cross platform but i am not sure when that will happen.
+
+#### Important Note 3: 
+   I still need to find some licences for some of the code I used. Please if you find any code that is not properly licensed let me know so i can fix it!
 ## About The Project
 
 [![PRODUCT SS][product-screenshot]](https://github.com/KaspersCult/HummingBird)
+[![PRODUCT SS][product-screenshot2]](https://github.com/KaspersCult/HummingBird)
 
 The HummingBird C++ Project is a comprehensive suite of development tools, including a core library and various applications for software development and automation tasks. It's designed to be modular and flexible, catering to a wide range of development needs.
 
@@ -65,11 +75,13 @@ The HummingBird C++ Project is a comprehensive suite of development tools, inclu
 This project is built using a variety of technologies:
 
 * [C++](https://www.cplusplus.com/)
-* [SDL2]    og:(https://www.libsdl.org/)            (https://github.com/kasperhbo/SDL)     --> branch 2-28.x
-* [Glad]    og:(https://glad.dav1d.de/)             (https://github.com/kasperhbo/Glad)    --> branch master
-* [Fmt]     og:(https://fmt.dev/latest/index.html)  (https://github.com/kasperhbo/fmt)     --> branch master
-* [Spdlog]  og:(https://github.com/gabime/spdlog)   (https://github.com/kasperhbo/spdlog)  --> branch v1.x
-* [Imgui]   og:(https://github.com/ocornut/imgui)   (https://github.com/kasperhbo/imgui)   --> branch docking
+* [SDL2]    og:(https://www.libsdl.org/)            my fork:(https://github.com/kasperhbo/SDL)     --> branch 2-28.x
+* [Glad]    og:(https://glad.dav1d.de/)             my fork:(https://github.com/kasperhbo/Glad)    --> branch master
+* [Fmt]     og:(https://fmt.dev/latest/index.html)  my fork:(https://github.com/kasperhbo/fmt)     --> branch master
+* [Spdlog]  og:(https://github.com/gabime/spdlog)   my fork:(https://github.com/kasperhbo/spdlog)  --> branch v1.x
+* [Imgui]   og:(https://github.com/ocornut/imgui)   my fork (make sure to use mine when cloning because it contains my own and others widgets):(https://github.com/kasperhbo/imgui)   --> branch docking
+* [mysql8.2-client]   og:(https://dev.mysql.com/downloads/)
+* [libxml2]og:(https://github.com/GNOME/libxml2) 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -155,10 +167,11 @@ Use HummingBird for developing applications, creating tools, or automating tasks
 
 #### In progress
 - [x] Plist launchd editor 
+- [x] Cleaning up cmake list
 
 ### Documentation
-- [ ] All documentation lol
-- [ ] Proper build documentation
+- [ ] All the rest of the documentation lol
+- [x] Proper build documentation
 
 ### Platfroms
 - [x] Mac OsX Intel 12.1.7
@@ -182,6 +195,7 @@ See the [open issues](https://github.com/KaspersCult/HummingBird/issues)
 [license-url]: https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/kasper-bruin-de-6a48ab1ba/
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: githubassets/scrsallwindow20240112.png
+[product-screenshot2]: githubassets/scrsallwindow20240112.png
 [JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
 [JQuery-url]: https://jquery.com 
