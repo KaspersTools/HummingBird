@@ -2,6 +2,71 @@
 
 A curated list of ImGui-related libraries and tools. ImGui is a bloat-free graphical user interface library for C++. It's primarily used for making tools in professional software and game development.
 
+## CPP
+### pointers
+Use Case: You would use a pointer when you need to allocate memory dynamically, or when you need to point to specific memory locations (such as elements within an array).
+```cpp
+#include <iostream>
+int main() {
+int var = 10;
+int *ptr = &var; // pointer to var
+
+    std::cout << "Value of var: " << var << std::endl;
+    std::cout << "Address of var: " << &var << std::endl;
+    std::cout << "Value of ptr: " << ptr << std::endl;
+    std::cout << "Value pointed to by ptr: " << *ptr << std::endl;
+
+    *ptr = 20; // changing the value of var through ptr
+    std::cout << "New value of var: " << var << std::endl;
+
+    return 0;
+}
+```
+
+### references
+Use Case: References are often used to pass arguments to functions in such a way that the function can modify the original argument. They're also used to avoid copying complex structures/classes.
+```cpp
+#include <iostream>
+
+void increment(int &ref) {
+    ref++;
+}
+
+int main() {
+    int a = 5;
+    increment(a); // incrementing 'a' via reference
+
+    std::cout << "Value of a after increment: " << a << std::endl;
+
+    return 0;
+}
+
+```
+
+### copies
+Use Case: Making a copy of a variable is the default behavior in C++ when assigning one variable to another or passing a variable to a function. It's used when you want to work with the value but don’t want to affect the original variable.
+
+```cpp
+#include <iostream>
+
+void modify(int val) {
+    val = 10; // only modifies the local copy
+}
+
+int main() {
+    int original = 5;
+    modify(original);
+
+    std::cout << "Original value: " << original << std::endl; // original remains unchanged
+
+    int copy = original; // making a copy
+    copy++;
+
+    std::cout << "Original: " << original << ", Copy: " << copy << std::endl;
+
+    return 0;
+}
+```
 ## Libraries
 
 ### ImGuizmo
