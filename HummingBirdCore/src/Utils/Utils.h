@@ -18,21 +18,6 @@ namespace fs = std::filesystem;
 
 namespace HummingBirdCore {
   namespace Utils {
-    struct File {
-      std::string name;
-      std::filesystem::path path;
-      std::string extension;
-      std::string content;
-      bool saved = true;
-
-      File() = default;
-
-      File(const std::string &name, const std::filesystem::path &path, const std::string &extension, const std::string &content) : name(name), path(path), extension(extension), content(content) {
-      }
-    };
-    /**
-     * TODO: Copyright stuff here
-     */
 
     /**
      * Takes a string and returns the given string as a FourCharCode.
@@ -47,20 +32,6 @@ namespace HummingBirdCore {
       UInt32 byte3 = (unsigned) bytes[3];
 
       return byte0 | byte1 | byte2 | byte3;
-    }
-
-    /**
-     * Takes a FourCharCode and returns the given code as a string.
-     * @param givenCode The given FourCharCode
-     * @return  The four char code
-     */
-    static std::string fourCharCodeToString(FourCharCode givenCode) {
-      char byte0 = givenCode >> (unsigned) 24;
-      char byte1 = givenCode >> (unsigned) 16;
-      char byte2 = givenCode >> (unsigned) 8;
-      char byte3 = givenCode;
-
-      return std::string({byte0, byte1, byte2, byte3});
     }
 
     /**
@@ -83,9 +54,59 @@ namespace HummingBirdCore {
       return (int) resultValue;
     }
 
+
+    struct File {
+
+  private:
+      std::filesystem::path path;
+
+  public:
+      std::string name;
+      std::string extension;
+      std::string content;
+      bool saved = true;
+
+      File() = default;
+
+      File(const std::string &name, const std::filesystem::path &path, const std::string &extension, const std::string &content) : name(name), path(path), extension(extension), content(content) {
+        setPath(path.string());
+      }
+
+  public:
+      std::string getFullPath() const {
+        if (path.string().contains("~")) {
+          std::string homeDir = getenv("HOME");
+          return homeDir + path.string().substr(1, path.string().length()) + "/" + name + extension;
+        }
+
+        return path.string() + "/" + name + extension;
+      }
+      std::string getFullPathWithExtension() const {
+        return path.string() + "/" + name + extension;
+      }
+
+      void setPath(const std::filesystem::path &newPath) {
+        if (path.string().contains("~")) {
+          std::string homeDir = getenv("HOME");
+          path = homeDir + newPath.string().substr(1, newPath.string().length());
+          return;
+        }
+        path = newPath;
+      }
+
+      void setPath(const std::string &newPath) {
+        setPath(std::filesystem::path(newPath));
+      }
+    };
+
     namespace FileUtils {
       inline static bool fileExists(const std::string &fullname) {
         return std::filesystem::exists(fullname);
+      }
+      inline static bool fileExists(const File &file) {
+        std::string fullpath = file.getFullPath();
+        CORE_TRACE("Checking if file exists " + fullpath);
+        return fileExists(fullpath);
       }
       inline static bool readFromFile(const std::string &path, std::string *contents) {
         std::ifstream myFile(path);
@@ -156,8 +177,7 @@ namespace HummingBirdCore {
 
         File file;
 
-        file.path = fullLocation;
-        //name = without extension
+        file.setPath(fullLocation.parent_path());
         file.name = fullLocation.stem().string();
         file.extension = fullLocation.extension().string();
 
@@ -167,6 +187,38 @@ namespace HummingBirdCore {
 
         return file;
       }
+
+      inline static bool writeToFile(const File &file, const std::string &content) {
+        std::ofstream myFile(file.getFullPath());
+
+        if (!myFile.is_open()) {
+          CORE_ERROR("Unable to open file: " + file.getFullPath());
+          return false;
+        }
+
+        myFile << content;
+
+        myFile.close();
+
+        return true;
+      }
+
+      inline static bool createFile(const File &file) {
+        file.getFullPath();
+        std::ofstream myFile(file.getFullPath());
+
+        if (!myFile.is_open()) {
+          CORE_ERROR("Unable to open file: " + file.getFullPath());
+          return false;
+        }
+
+        myFile << file.content;
+
+        myFile.close();
+
+        return true;
+      }
+
     }// namespace FileUtils
 
     //#TODO: Remove classes and make them static functions in the right namespace

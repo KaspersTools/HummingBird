@@ -24,8 +24,19 @@ namespace HummingBirdCore {
       std::unique_ptr<Utils::PlistUtil::Plist> plist;
 
   public:
-      explicit LaunchDaemon(const Utils::File &file) : file(file),
-                                                       plist(std::make_unique<Utils::PlistUtil::Plist>(file.path.string())) {
+
+      explicit LaunchDaemon(Utils::File file) : file(file),
+                                                       plist(std::make_unique<Utils::PlistUtil::Plist>()) {
+        CORE_TRACE("Loading plist file: " + file.getFullPath());
+        if(Utils::FileUtils::fileExists(file.getFullPath()) || file.name.empty())
+        {
+          plist->parsePlist(file.getFullPath());
+        }else{
+          CORE_INFO("File " + file.getFullPath() + " does not exist, creating a new plist file");
+          plist->createNewPlist();
+          file.name = "NewDaemon";
+          file.extension = ".plist";
+        }
       }
 
   public:
