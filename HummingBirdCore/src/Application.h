@@ -48,6 +48,8 @@ namespace HummingBirdKasper::VisualLink {
 }
 #endif
 
+#include <GLFW/glfw3.h>// Will drag system OpenGL headers
+
 namespace HummingBirdCore {
   class Application {
 public:
@@ -76,14 +78,10 @@ public:
       return io.DisplaySize.y;
     }
 
-    static SDL_Window *GetWindow() { return s_window; }
-    static Application *GetApplication() {
-      return s_application;
-    }
-
     ImVec2 getWindowSize() {
       int w, h;
-      SDL_GetWindowSize(s_window, &w, &h);
+//      SDL_GetWindowSize(s_window, &w, &h);
+      glfwGetWindowSize(s_window, &w, &h);
       return{ (float)w, (float)h };
     }
 
@@ -95,7 +93,7 @@ public:
         return getWindowSize().y;
     }
 private:
-    void InitSDL();
+    void InitGlfw();
 
     void InitImGui();
 
@@ -103,9 +101,15 @@ private:
 
     void RenderUI();
 
-    void SetupDockspace();
+    void RenderMenuBar();
 
     void Render();
+
+    void BeginFullScreenWindow();
+
+    inline static void glfwErrorCallback(int error, const char* description){
+      CORE_ERROR("Error " + std::to_string(error) + ": " + description);
+    }
 
     bool openClosedWindow(const std::string &baseName) {
       for (auto &window: m_uiWindows) {
@@ -119,18 +123,23 @@ private:
       return false;
     }
 private:
-    inline static SDL_Window *s_window;
-    SDL_GLContext m_gl_context{};
-
+    inline static GLFWwindow *s_window;
     inline static Application *s_application = nullptr;
+
+    std::string glslVersion;
+
     bool m_exit = false;
 
     // UIWindows
     std::map<std::string, std::shared_ptr<UIWindow>> m_uiWindows;
     Security::LogInWindow m_loginWindow;
 
+    int m_windowWidth;
+    int m_windowHeight;
     const float c_toolbarHeight = 50.0f;
     float m_menuBarHeight = 0.0f;
+
+    bool renderDockspace = true;
 
     //imgui third party windows
     bool m_showDemoWindow = false;

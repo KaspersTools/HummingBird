@@ -4,10 +4,9 @@
 
 #include "Application.h"
 
+#include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <imgui_impl_sdl2.h>
 
-#include <SDL_opengl.h>
 
 namespace HummingBirdCore {
 
@@ -21,7 +20,8 @@ namespace HummingBirdCore {
 
     s_application = this;
 
-    InitSDL();
+    InitGlfw();
+
     InitImGui();
     m_backgroundTexture.load();
 
@@ -29,79 +29,56 @@ namespace HummingBirdCore {
 
     Run();
 
+    // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    SDL_GL_DeleteContext(m_gl_context);
-    SDL_DestroyWindow(s_window);
-    SDL_Quit();
+    glfwDestroyWindow(s_window);
+    glfwTerminate();
   }
 
   Application::~Application() {
     CORE_INFO("Closing HummingBirdCore Application");
   }
 
-  void Application::InitSDL() {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-      CORE_ERROR("Failed to initialize SDL: {0}", SDL_GetError());
+  void Application::InitGlfw() {
+    glfwSetErrorCallback(glfwErrorCallback);
+    if (!glfwInit()) {
+      CORE_ERROR("Failed to initialize GLFW");
       exit(-1);
     }
 
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    // GL 3.2 + GLSL 150
+    glslVersion = "#version 150";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// 3.2+ only
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);          // Required on Mac
 
-    SDL_GL_SetAttribute(
-            SDL_GL_CONTEXT_PROFILE_MASK,
-            SDL_GL_CONTEXT_PROFILE_CORE);
 
-    SDL_GL_SetAttribute(// required on Apple
-            SDL_GL_CONTEXT_FLAGS,
-            SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    // Create window with graphics context
+    s_window = glfwCreateWindow(1280, 720, "-- HummingBird Tools--", nullptr, nullptr);
 
-    auto mainWindowFlags = (SDL_WindowFlags) (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    s_window = SDL_CreateWindow(
-            "Humming Bird",
-            SDL_WINDOWPOS_CENTERED,
-            SDL_WINDOWPOS_CENTERED,
-            1280,
-            720,
-            mainWindowFlags);
+    glfwMakeContextCurrent(s_window);
+    glfwSwapInterval(1);// Enable vsync
 
-    // limit to which minimum size user can resize the window
-    SDL_SetWindowMinimumSize(s_window, 800, 600);
-
-    m_gl_context = SDL_GL_CreateContext(s_window);
-    if (m_gl_context == nullptr) {
-      CORE_ERROR("Failed to create a GL context: {0}", SDL_GetError());
-      exit(-1);
-    }
-    SDL_GL_MakeCurrent(s_window, m_gl_context);
-
-    // enable VSync
-    SDL_GL_SetSwapInterval(1);
-    int sdlOpenGLmajor = 0, sdlOpenGLminor = 0;
-    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &sdlOpenGLmajor);
-    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &sdlOpenGLminor);
+    return;
   }
 
   void Application::InitImGui() {
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;    // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  // Enable Multi-Viewport / Platform Windows
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// Enable Keyboard Controls
 
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard;
 
-    io.ConfigWindowsMoveFromTitleBarOnly = true;
-
-    io.ConfigViewportsNoAutoMerge = true;
     io.ConfigViewportsNoTaskBarIcon = false;
-
     io.ConfigInputTextCursorBlink = true;
 
 #ifdef __APPLE__
@@ -110,9 +87,8 @@ namespace HummingBirdCore {
     io.ConfigMacOSXBehaviors = false;
 #endif
 
-    // setup platform/renderer bindings
-    ImGui_ImplSDL2_InitForOpenGL(s_window, m_gl_context);
-    ImGui_ImplOpenGL3_Init("#version 330");
+    ImGui_ImplGlfw_InitForOpenGL(s_window, true);
+    ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 
     ImFontConfig config;
     config.OversampleH = 3;
@@ -129,12 +105,7 @@ namespace HummingBirdCore {
     }
   }
 
-  void Application::SetupDockspace() {
-    ImGuiID dockspaceId = ImGui::GetID("MyDockSpace");
-    ImGui::DockSpace(dockspaceId, ImVec2(0, 0),
-                     ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_PassthruCentralNode);
-
-    //File menu
+  void Application::RenderMenuBar() {
     if (ImGui::BeginMenuBar()) {
       // File menu
       if (ImGui::BeginMenu("File")) {
@@ -349,73 +320,66 @@ namespace HummingBirdCore {
     }
   }
 
-  void Application::RenderUI() {
-    {
-      ImGuiWindowFlags mainWindowFlags =
-              ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-              ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-              ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground;
+  void Application::BeginFullScreenWindow() {
+    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 
-      ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-      ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-      ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    const ImGuiViewport *viewport = ImGui::GetMainViewport();
 
-      ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);// Set the window size to the entire display size
-      ImGui::SetNextWindowPos(ImVec2(0, 0));               // Set the window position to the top-left corner
-      ImGui::Begin("FullscreenWindow", nullptr, mainWindowFlags);
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-      ImGui::PopStyleVar(3);
-    }
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+      window_flags |= ImGuiWindowFlags_NoBackground;
 
-    //Render background texture
-    {
-      GLuint textureID = m_backgroundTexture.getTextureID();// Replace with your actual texture ID
-      ImVec2 texSize = ImVec2(
-              getWindowWidth(),
-              getWindowHeight());
-      ImGui::GetWindowDrawList()->AddImage(
-              (void *) (intptr_t) textureID,
-              ImVec2(ImGui::GetWindowPos()),
-              ImVec2(ImGui::GetWindowPos().x + texSize.x, ImGui::GetWindowPos().y + texSize.y),
-              ImVec2(0, 0), ImVec2(1, 1));
-    }
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-    SetupDockspace();
+    bool open = true;
+    ImGui::Begin("DockSpace Demo", &open, window_flags);
+    ImGui::PopStyleVar();
+    ImGui::PopStyleVar(2);RenderMenuBar();
 
-    {
-      if (!Security::LoginManager::isLoggedIn()) {
-        m_loginWindow.render();
-      } else {
-        if (m_showDemoWindow)
-          ImGui::ShowDemoWindow(&m_showDemoWindow);
-
-        for (auto window: m_uiWindows) {
-          window.second->beginFrame();
-        }
-      }
+    ImGuiIO &io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+      ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+      ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
 
     ImGui::End();
   }
 
-  void Application::Render() {
-
-    SDL_Event event;
-
-    while (SDL_PollEvent(&event)) {
-      ImGui_ImplSDL2_ProcessEvent(&event);
-      if (event.type == SDL_QUIT)
-        m_exit = true;
-      if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(s_window))
-        m_exit = true;
+  void Application::RenderUI() {
+    if (renderDockspace) {
+      BeginFullScreenWindow();
     }
+    if (!Security::LoginManager::isLoggedIn()) {
+      m_loginWindow.render();
+    } else {
+      if (m_showDemoWindow)
+        ImGui::ShowDemoWindow(&m_showDemoWindow);
+
+      for (auto window: m_uiWindows) {
+        window.second->beginFrame();
+      }
+    }
+  }
+
+
+  void Application::Render() {
+    glfwPollEvents();
 
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
     RenderUI();
-    //Render toast notifications
+
     {
       ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
       ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
@@ -426,10 +390,19 @@ namespace HummingBirdCore {
 
     ImGui::Render();
 
-    glViewport(0, 0, (int) GetWindowWidth(), (int) GetWindowHeight());
+    glfwGetFramebufferSize(s_window, &m_windowWidth, &m_windowHeight);
+    glViewport(0, 0, m_windowWidth, m_windowHeight);
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    SDL_GL_SwapWindow(s_window);
+
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+      GLFWwindow *backup_current_context = glfwGetCurrentContext();
+      ImGui::UpdatePlatformWindows();
+      ImGui::RenderPlatformWindowsDefault();
+      glfwMakeContextCurrent(backup_current_context);
+    }
+
+    glfwSwapBuffers(s_window);
   }
 }// namespace HummingBirdCore

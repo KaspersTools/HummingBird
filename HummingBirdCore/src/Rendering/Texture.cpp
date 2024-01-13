@@ -7,6 +7,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <GLFW/glfw3.h>
+
 Texture::Texture(const std::string &path) {
   //check if file excists
   if(!std::filesystem::exists(path)) { CORE_ERROR("Texture file does not excist: " + path); return;}

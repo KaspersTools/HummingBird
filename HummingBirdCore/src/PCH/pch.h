@@ -52,8 +52,6 @@
 /////HUMMINGBIRD CORE/////
 //Contains all the precompiled headers for the HummingBirdCore project that are universal for all platforms
 /////THIRD PARTY LIBRARIES/////
-#include "SDL_opengl.h"
-#include <SDL.h>
 
 #define IM_VEC2_CLASS_EXTRA
 #include <imconfig.h>

@@ -155,6 +155,31 @@ endif ()
 
 ######vendor
 
+#glfw
+if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glfw)
+  message("glfw folder not found")
+else ()
+  message("glfw folder found")
+  #include
+  find_library(GLFW_LIBRARY NAMES glfw glfw3 libglfw3 PATHS vendor/glfw/lib-x86_64)
+
+  include_directories(
+          ${HUMMINGBIRD_DIR}/vendor/glfw/include
+  )
+
+  #link
+  link_directories(/root/vendor/glfw/lib-x86_64)
+  if (NOT WITHHUMMINGBIRDCOREASLIB)
+    target_link_libraries(HummingbirdCoreEXE
+            ${GLFW_LIBRARY}
+    )
+  endif()
+
+  target_link_libraries(HummingbirdCore
+          ${GLFW_LIBRARY}
+  )
+endif ()
+
 # fmt
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/fmt)
   message("fmt folder not found")
@@ -177,37 +202,6 @@ else ()
   target_link_libraries(HummingbirdCore
           fmt::fmt
   )
-endif ()
-
-
-#sdl
-if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/sdl)
-  message("SDL folder not found")
-else ()
-  message("SDL folder found needed by imgui")
-  set(SDL_STATIC ON CACHE BOOL "" FORCE)
-  set(SDL_SHARED OFF CACHE BOOL "" FORCE)
-  set(SDL_LIBC ON CACHE BOOL "" FORCE)
-  set(SDL_TEST OFF CACHE BOOL "" FORCE)
-
-  add_subdirectory(vendor/sdl sdl)
-
-  #include
-  include_directories(
-          ${HUMMINGBIRD_DIR}/vendor/sdl/include
-  )
-
-  #link
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            SDL2-static
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          SDL2-static
-  )
-
 endif ()
 
 #spdlog
@@ -264,9 +258,9 @@ else ()
           vendor/imgui/backends/imgui_impl_opengl3_loader.h
           ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_opengl3.cpp
           ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_opengl3.h
-          ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_sdl2.cpp
-          ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_sdl2.h
 
+          ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_glfw.cpp
+          ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_glfw.h
 
           #misc
           ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp/imgui_stdlib.cpp
@@ -303,16 +297,6 @@ else ()
   target_link_libraries(HummingbirdCore
           imgui
   )
-
-  #link sdl to imgui if sdl is valid
-  if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/sdl)
-    message("SDL folder not found AND its needed by imgui")
-  else ()
-    message("SDL folder found")
-    target_link_libraries(imgui
-            SDL2-static
-    )
-  endif ()
 endif ()
 
 ####kasper specific#####################################################
