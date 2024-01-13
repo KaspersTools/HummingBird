@@ -21,20 +21,43 @@ namespace HummingBirdCore {
     struct LaunchDaemon {
   private:
       Utils::File file;
-      std::unique_ptr<Utils::PlistUtil::Plist> plist;
-
+      std::shared_ptr<Utils::PlistUtil::Plist> plist;
+      bool saved = true;
   public:
-      explicit LaunchDaemon(Utils::File file) : file(file),
+      LaunchDaemon(Utils::File file) : file(file),
                                                 plist(std::make_unique<Utils::PlistUtil::Plist>()) {
         CORE_TRACE("Loading plist file: " + file.getFullPath());
+        if(!init()){
+            CORE_ERROR("Failed to load plist file: " + file.getFullPath());
+        }
+      }
+
+      bool init(){
         if (Utils::FileUtils::fileExists(file.getFullPath()) || file.getName().empty()) {
-          plist->parsePlist(file.getFullPath());
+          if(!plist->parsePlist(file.getFullPath()))
+            return false;
+
         } else {
           CORE_INFO("File " + file.getFullPath() + " does not exist, creating a new plist file");
           plist->createNewPlist();
           file.setName("NewDaemon");
           file.setExtension(".plist");
         }
+
+        return true;
+      }
+
+      void reset(Utils::File file){
+        this->file = file;
+        plist = std::make_unique<Utils::PlistUtil::Plist>();
+        CORE_TRACE("Loading plist file: " + file.getFullPath());
+        if(!init()){
+          CORE_ERROR("Failed to load plist file: " + file.getFullPath());
+        }
+      }
+
+      void copyData(LaunchDaemon& daemon){
+        daemon.reset(this->file);
       }
 
   public:
@@ -54,6 +77,13 @@ namespace HummingBirdCore {
         return file.getName();
       }
 
+      const bool isSaved() const {
+        return saved;
+      }
+
+      void setSaved(bool saved) {
+        this->saved = saved;
+      }
   public:
       void save() {
         getPlist()->writePlist(file);
@@ -62,7 +92,7 @@ namespace HummingBirdCore {
 
     class LaunchDaemonsManager : public UIWindow {
   public:
-      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name), m_userAgent()
+      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name, true, false), m_userAgent()
       , m_globalAgent(), m_globalDaemon(), m_systemAgent(), m_systemDaemon(){
         fetchAllDaemons();
       }
@@ -74,10 +104,16 @@ namespace HummingBirdCore {
       void renderDaemon(LaunchDaemon &daemon);
       void renderNode(Utils::PlistUtil::PlistNode &node, int index);
       void fetchAllDaemons();
-      bool renderTab(const std::string &name, const std::vector<LaunchDaemon> &daemons);
+      bool selectDaemon(int idx,  std::vector<LaunchDaemon> &daemons);
+      bool renderTab(const std::string &name, std::vector<LaunchDaemon> &daemons);
 
   private:
-      int m_selectedUserAgentDaemon = 0;
+      int m_selectedIdx = 0;
+
+      LaunchDaemon m_selectedDaemon = LaunchDaemon(Utils::File());
+      LaunchDaemon m_copyOfSelectedDaemonStart = LaunchDaemon(Utils::File());
+
+      std::string m_selectedTab = "";
       std::vector<LaunchDaemon> m_userAgent = {};
       std::vector<LaunchDaemon> m_globalAgent = {};
       std::vector<LaunchDaemon> m_systemAgent = {};
@@ -86,10 +122,8 @@ namespace HummingBirdCore {
 
       //Service type paths
       const std::filesystem::path c_userAgentPath = "~/Library/LaunchAgents";
-
       const std::filesystem::path c_globalAgentPath = "/Library/LaunchAgents";
       const std::filesystem::path c_globalDaemonPath = "/Library/LaunchDaemons";
-
       const std::filesystem::path c_SystemAgentPath = "/System/Library/LaunchAgents";
       const std::filesystem::path c_SystemDaemonPath = "/System/Library/LaunchDaemons";
 

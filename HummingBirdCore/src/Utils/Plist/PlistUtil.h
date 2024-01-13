@@ -64,7 +64,6 @@ public:
     std::optional<std::variant<std::string, int, float, bool, Date>> value;
     bool required = false;
 
-//    std::vector<PlistNode> children = {};
     std::map<std::string, PlistNode> children = {};
 
     PlistType type = PlistTypeNone;
@@ -236,12 +235,14 @@ public:
       xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
       if (doc == NULL) {
         CORE_TRACE("Error: could not parse file " + filename);
+        parsed = false;
         return false;
       }
 
       xmlNode *root_element = xmlDocGetRootElement(doc);
       if (root_element == NULL) {
         CORE_TRACE("Error: could not parse file " + filename);
+        parsed = false;
         return false;
       }
 

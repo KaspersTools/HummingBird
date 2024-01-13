@@ -7,73 +7,17 @@
 namespace HummingBirdCore {
   namespace System {
     void LaunchDaemonsManager::render() {
+      ImGuiWindowFlags finalFlags = m_flags | ImGuiWindowFlags_MenuBar;
+      if (!m_selectedDaemon.isSaved()) {
+        finalFlags |= ImGuiWindowFlags_UnsavedDocument;
+      }
 
+      ImGui::Begin(m_name.c_str(), &m_isOpen, finalFlags);
       //Left resizeable panel
       {
         ImGui::BeginChild("LaunchDaemons", ImVec2(ImGui::GetContentRegionAvail().x * 0.2f, 0), c_leftChildFlags, c_leftWindowFlags);
         ImGui::Text("LaunchDaemons");
         ImGui::Separator();
-
-        //tab
-        ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_Reorderable;
-        tabBarFlags |= ImGuiTabBarFlags_FittingPolicyDefault_;
-        tabBarFlags &= ~(ImGuiTabBarFlags_FittingPolicyMask_ ^ ImGuiTabBarFlags_FittingPolicyScroll);
-        //
-        //        if (ImGui::BeginTabBar("LaunchDaemonsTabBar"), tabBarFlags) {
-        //          if (ImGui::BeginTabItem("User Agent")) {
-        //            int index = 0;
-        //            for (auto &daemon: m_userAgent) {
-        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
-        //                m_selectedUserAgentDaemon = index;
-        //              }
-        //              index++;
-        //            }
-        //            ImGui::EndTabItem();
-        //          }
-        //          if (ImGui::BeginTabItem("Global Agent")) {
-        //            int index = 0;
-        //            for (auto &daemon: m_userAgent) {
-        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
-        //                m_selectedUserAgentDaemon = index;
-        //              }
-        //              index++;
-        //            }
-        //            ImGui::EndTabItem();
-        //          }
-        //          if (ImGui::BeginTabItem("Global Daemon")) {
-        //            int index = 0;
-        //            for (auto &daemon: m_userAgent) {
-        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
-        //                m_selectedUserAgentDaemon = index;
-        //              }
-        //              index++;
-        //            }
-        //            ImGui::EndTabItem();
-        //          }
-        //          if (ImGui::BeginTabItem("System Agent")) {
-        //            int index = 0;
-        //            for (auto &daemon: m_userAgent) {
-        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
-        //                m_selectedUserAgentDaemon = index;
-        //              }
-        //              index++;
-        //            }
-        //            ImGui::EndTabItem();
-        //          }
-        //          if (ImGui::BeginTabItem("System Daemon")) {
-        //            int index = 0;
-        //            for (auto &daemon: m_userAgent) {
-        //              if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
-        //                m_selectedUserAgentDaemon = index;
-        //              }
-        //              index++;
-        //            }
-        //            ImGui::EndTabItem();
-        //          }
-        //
-        //          ImGui::EndTabBar();
-        //        }
-
 
         static ImVector<int> active_tabs;
         static int next_tab_id = 0;
@@ -83,9 +27,7 @@ namespace HummingBirdCore {
 
 
         // Expose some other flags which are useful to showcase how they interact with Leading/Trailing tabs
-        static ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable
-                                                | ImGuiTabBarFlags_FittingPolicyScroll
-                                                | ImGuiTabBarFlags_TabListPopupButton;
+        static ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_TabListPopupButton;
 
         if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
           renderTab("User Agent", m_userAgent);
@@ -109,32 +51,21 @@ namespace HummingBirdCore {
         ImGui::Text("Selected Daemon");
         ImGui::SameLine();
 
-        if (ImGui::Button("Save")) {
-          m_userAgent[m_selectedUserAgentDaemon].save();
-        }
+
         ImGui::SameLine();
 
         if (ImGui::Button("New")) {
-          Utils::File f = Utils::File("NewDaemon", c_userAgentPath, ".plist", "");
-          m_userAgent.emplace_back(f);
         }
         ImGui::Separator();
         // bottom panel
         {
-          std::string copyPath = m_userAgent[m_selectedUserAgentDaemon].getPath();
-          std::string copyName = m_userAgent[m_selectedUserAgentDaemon].getFileName();
+          std::string path = m_selectedDaemon.getFile().getPath();
 
-          if (ImGui::InputText("file path:", &copyPath)) {
-            m_userAgent[m_selectedUserAgentDaemon].getFile().setPath(copyPath);
+          if (ImGui::InputText("file path:", &path)) {
+            m_selectedDaemon.getFile().setPath(path);
           }
-          if (ImGui::InputText("file name:", &copyName)) {
-            m_userAgent[m_selectedUserAgentDaemon].getFile().setName(copyName);
-          }
+          LaunchDaemon &daemon = m_selectedDaemon;
 
-          if (m_selectedUserAgentDaemon >= m_userAgent.size()) {
-            m_selectedUserAgentDaemon = 0;
-          }
-          LaunchDaemon &daemon = m_userAgent[m_selectedUserAgentDaemon];
           renderDaemon(daemon);
         }
         ImGui::EndChild();
@@ -151,15 +82,44 @@ namespace HummingBirdCore {
         }
         ImGui::Separator();
 
+        //compare nodes
+        bool saved = true;
+        for (auto &node: plist->getRootNode().children) {
+          std::string identifier = node.first;
+          Utils::PlistUtil::PlistNode originalNode = m_copyOfSelectedDaemonStart.getPlist()->getRootNode().children[identifier];
+          if (originalNode.value.has_value() && !node.second.value.has_value()) {
+            saved = false;
+          }
+          if (!originalNode.value.has_value() && node.second.value.has_value()) {
+            saved = false;
+          }
+          if (originalNode.value.has_value() && node.second.value.has_value()) {
+            std::variant<std::string, int, float, bool, Utils::PlistUtil::PlistNode::Date> foundValue = originalNode.getValue();
+            std::variant<std::string, int, float, bool, Utils::PlistUtil::PlistNode::Date> currentValue = node.second.getValue();
+
+            if (Utils::PlistUtil::PlistType::PlistTypeString == originalNode.type) {
+              std::string originalValueStr = std::get<std::string>(foundValue);
+              std::string currentValueStr = std::get<std::string>(currentValue);
+              if (originalValueStr != currentValueStr) {
+                saved = false;
+              }
+            }
+          }
+        }
+
         for (auto &node: plist->getRootNode().children) {
           renderNode(node.second, index);
           index += 1;
         }
+        daemon.setSaved(saved);
       }
     }
 
     void LaunchDaemonsManager::renderNode(HummingBirdCore::Utils::PlistUtil::PlistNode &node, int index) {
       std::string id = node.key + " - " + std::to_string(index);
+
+      //compare the node m_selectedDaemon with the node m_copyOfSelectedDaemonStart
+
 
       if (node.type == Utils::PlistUtil::PlistTypeString) {
         std::string val = std::get<std::string>(node.getValue());
@@ -192,6 +152,7 @@ namespace HummingBirdCore {
         }
       } else if (node.type == Utils::PlistUtil::PlistTypeBoolean) {
         int colorCount = 0;
+
         bool val = std::get<bool>(node.getValue());
         if (node.required && !node.value.has_value()) {
           ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -280,9 +241,8 @@ namespace HummingBirdCore {
       std::vector<HummingBirdCore::Utils::File> fileSystemDaemon = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_SystemDaemonPath.string(), ".plist");
 
       for (const auto &file: fileUserAgent) {
-        m_userAgent.emplace_back(file);
+        m_userAgent.emplace_back(std::move(file));
       }
-
       for (const auto &file: fileGlobalAgent) {
         m_globalAgent.emplace_back(file);
       }
@@ -300,23 +260,48 @@ namespace HummingBirdCore {
       }
     }
 
-    bool LaunchDaemonsManager::renderTab(const std::string &name, const std::vector<LaunchDaemon> &daemons) {
-      bool userAgentOpen = true;
+    bool LaunchDaemonsManager::selectDaemon(int idx, std::vector<LaunchDaemon> &daemons) {
+      if (idx >= daemons.size()) {
+        return false;
+      }
 
-      if (ImGui::BeginTabItem(name.c_str(), &userAgentOpen, ImGuiTabItemFlags_None)) {
+      if (!daemons[m_selectedIdx].getPlist()->getIsParsed()) {
+        CORE_WARN("Plist is not parsed");
+        if (!daemons[m_selectedIdx].init()) {
+          CORE_ERROR("Failed to init daemon");
+          return false;
+        }
+      }
+
+      m_selectedIdx = idx;
+      m_selectedDaemon = daemons[m_selectedIdx];
+      m_copyOfSelectedDaemonStart = LaunchDaemon(m_selectedDaemon.getFile());
+
+      return true;
+    }
+
+    bool LaunchDaemonsManager::renderTab(const std::string &name, std::vector<LaunchDaemon> &daemons) {
+      bool tabOpen = true;
+
+      if (ImGui::BeginTabItem(name.c_str(), &tabOpen, ImGuiTabItemFlags_None)) {
         int index = 0;
+        //If new tab is selected select first index if there are items
+        if (m_selectedTab != name) {
+          CORE_TRACE("selected new tab: " + name);
+          m_selectedTab = name;
+          selectDaemon(0, daemons);
+        }
 
         for (auto &daemon: daemons) {
-          if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedUserAgentDaemon == index)) {
-            m_selectedUserAgentDaemon = index;
+          if (ImGui::Selectable(daemon.getFileName().c_str(), m_selectedIdx == index)) {
+            selectDaemon(index, daemons);
           }
           index++;
         }
 
         ImGui::EndTabItem();
       }
-
-      return open;
+      return tabOpen;
     }
   }// namespace System
 }// namespace HummingBirdCore
