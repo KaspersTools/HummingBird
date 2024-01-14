@@ -71,10 +71,15 @@ namespace HummingBirdCore {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
+//    ImGuiBackendFlags_PlatformHasViewports + ImGuiBackendFlags_RendererHasViewports
+//    ImGuiBackendFlags_PlatformHasViewports
+
     ImGuiIO &io = ImGui::GetIO();
-    (void) io;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;    // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  // Enable Multi-Viewport / Platform Windows
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;// Enable Docking
+    //Disabled for now
+//    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;// Enable Multi-Viewport / Platform Windows
+                                                       //    io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleFonts;  //DONT USE
+                                                       //    io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports; //DONT USE
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// Enable Keyboard Controls
 
 
@@ -91,8 +96,8 @@ namespace HummingBirdCore {
     ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 
     ImFontConfig config;
-    config.OversampleH = 3;
-    config.OversampleV = 3;
+    config.OversampleH = 5;
+    config.OversampleV = 5;
     config.RasterizerDensity = 1.0f;
 
     io.FontDefault = io.Fonts->AddFontFromFileTTF(
@@ -342,7 +347,8 @@ namespace HummingBirdCore {
     bool open = true;
     ImGui::Begin("DockSpace Demo", &open, window_flags);
     ImGui::PopStyleVar();
-    ImGui::PopStyleVar(2);RenderMenuBar();
+    ImGui::PopStyleVar(2);
+    RenderMenuBar();
 
     ImGuiIO &io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
