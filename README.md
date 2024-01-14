@@ -110,7 +110,7 @@ git --version
 #### Hummingbird
 1. Clone the HummingBird repository:
    ```sh
-   git clone https://github.com/KaspersCult/HummingBird.git —-recursive
+   git clone --recursive https://github.com/KaspersCult/HummingBird.git
    ```
 
 2. go in the folder:
