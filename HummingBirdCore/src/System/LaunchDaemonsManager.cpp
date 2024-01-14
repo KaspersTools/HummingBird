@@ -31,10 +31,11 @@ namespace HummingBirdCore {
 
         if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
           renderTab("User Agent", m_userAgent);
-          renderTab("Global Agent", m_globalAgent);
-          renderTab("Global Daemon", m_globalDaemon);
-          renderTab("System Agent", m_systemAgent);
-          renderTab("System Daemon", m_systemDaemon);
+          //TODO: REENABLE AND TEST
+//          renderTab("Global Agent", m_globalAgent);
+//          renderTab("Global Daemon", m_globalDaemon);
+//          renderTab("System Agent", m_systemAgent);
+//          renderTab("System Daemon", m_systemDaemon);
           ImGui::EndTabBar();
         }
 
@@ -50,7 +51,6 @@ namespace HummingBirdCore {
 
         ImGui::Text("Selected Daemon");
         ImGui::SameLine();
-
 
         ImGui::SameLine();
 
@@ -77,13 +77,19 @@ namespace HummingBirdCore {
 
       if (plist != nullptr) {
         int index = 0;
+        if(ImGui::Button("Save")){
+          daemon.save();
+        }
+        ImGui::SameLine();
         if (ImGui::Button("Add calendar interval")) {
           plist->addCalendarIntervalToRootNode();
         }
+
         ImGui::Separator();
 
         //compare nodes
         bool saved = true;
+        //todo: make this in a function and make it recursive.
         for (auto &node: plist->getRootNode().children) {
           std::string identifier = node.first;
           Utils::PlistUtil::PlistNode originalNode = m_copyOfSelectedDaemonStart.getPlist()->getRootNode().children[identifier];
@@ -107,9 +113,22 @@ namespace HummingBirdCore {
           }
         }
 
-        for (auto &node: plist->getRootNode().children) {
-          renderNode(node.second, index);
-          index += 1;
+
+        {
+          ImGui::BeginChild("Daemon Left", ImVec2(ImGui::GetContentRegionAvail().x * 0.2f, 0), c_leftChildFlags, c_leftWindowFlags);
+
+          ImGui::Text(daemon.getFile().content.c_str());
+
+          ImGui::EndChild();
+        }
+        {
+          ImGui::SameLine();
+          ImGui::BeginChild("Daemon Right", ImVec2(0, 0), true);
+          for (auto &node: plist->getRootNode().children) {
+            renderNode(node.second, index);
+            index += 1;
+          }
+          ImGui::EndChild();
         }
         daemon.setSaved(saved);
       }
@@ -235,29 +254,30 @@ namespace HummingBirdCore {
 
     void LaunchDaemonsManager::fetchAllDaemons() {
       std::vector<HummingBirdCore::Utils::File> fileUserAgent = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_userAgentPath.string(), ".plist");
-      std::vector<HummingBirdCore::Utils::File> fileGlobalAgent = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_globalAgentPath.string(), ".plist");
-      std::vector<HummingBirdCore::Utils::File> fileGlobalDaemon = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_globalDaemonPath.string(), ".plist");
-      std::vector<HummingBirdCore::Utils::File> fileSystemAgent = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_SystemAgentPath.string(), ".plist");
-      std::vector<HummingBirdCore::Utils::File> fileSystemDaemon = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_SystemDaemonPath.string(), ".plist");
+      //TODO: REENABLE AND TEST
+//      std::vector<HummingBirdCore::Utils::File> fileGlobalAgent = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_globalAgentPath.string(), ".plist");
+//      std::vector<HummingBirdCore::Utils::File> fileGlobalDaemon = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_globalDaemonPath.string(), ".plist");
+//      std::vector<HummingBirdCore::Utils::File> fileSystemAgent = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_SystemAgentPath.string(), ".plist");
+//      std::vector<HummingBirdCore::Utils::File> fileSystemDaemon = HummingBirdCore::Utils::FolderUtils::getFilesInFolder(c_SystemDaemonPath.string(), ".plist");
 
       for (const auto &file: fileUserAgent) {
         m_userAgent.emplace_back(std::move(file));
       }
-      for (const auto &file: fileGlobalAgent) {
-        m_globalAgent.emplace_back(file);
-      }
-
-      for (const auto &file: fileGlobalDaemon) {
-        m_globalDaemon.emplace_back(file);
-      }
-
-      for (const auto &file: fileSystemAgent) {
-        m_systemAgent.emplace_back(file);
-      }
-
-      for (const auto &file: fileSystemDaemon) {
-        m_systemDaemon.emplace_back(file);
-      }
+//      for (const auto &file: fileGlobalAgent) {
+//        m_globalAgent.emplace_back(file);
+//      }
+//
+//      for (const auto &file: fileGlobalDaemon) {
+//        m_globalDaemon.emplace_back(file);
+//      }
+//
+//      for (const auto &file: fileSystemAgent) {
+//        m_systemAgent.emplace_back(file);
+//      }
+//
+//      for (const auto &file: fileSystemDaemon) {
+//        m_systemDaemon.emplace_back(file);
+//      }
     }
 
     bool LaunchDaemonsManager::selectDaemon(int idx, std::vector<LaunchDaemon> &daemons) {

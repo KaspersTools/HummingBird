@@ -86,14 +86,19 @@ namespace HummingBirdCore {
       }
   public:
       void save() {
-        getPlist()->writePlist(file);
+        if(getPlist()->writePlist(file)) {
+          CORE_INFO("Succesfully saved daemon: " + file.getName() + file.getExtension());
+          setSaved(true);
+        }else{
+          CORE_ERROR("Failed to save daemon: " + file.getName() + file.getExtension());
+        }
       }
     };
 
     class LaunchDaemonsManager : public UIWindow {
   public:
       explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name, true, false), m_userAgent()
-      , m_globalAgent(), m_globalDaemon(), m_systemAgent(), m_systemDaemon(){
+      {
         fetchAllDaemons();
       }
 
@@ -113,19 +118,20 @@ namespace HummingBirdCore {
       LaunchDaemon m_selectedDaemon = LaunchDaemon(Utils::File());
       LaunchDaemon m_copyOfSelectedDaemonStart = LaunchDaemon(Utils::File());
 
+      //TODO: Reenable
       std::string m_selectedTab = "";
       std::vector<LaunchDaemon> m_userAgent = {};
-      std::vector<LaunchDaemon> m_globalAgent = {};
-      std::vector<LaunchDaemon> m_systemAgent = {};
-      std::vector<LaunchDaemon> m_globalDaemon = {};
-      std::vector<LaunchDaemon> m_systemDaemon = {};
+//      std::vector<LaunchDaemon> m_globalAgent = {};
+//      std::vector<LaunchDaemon> m_systemAgent = {};
+//      std::vector<LaunchDaemon> m_globalDaemon = {};
+//      std::vector<LaunchDaemon> m_systemDaemon = {};
 
       //Service type paths
-      const std::filesystem::path c_userAgentPath = "~/Library/LaunchAgents";
-      const std::filesystem::path c_globalAgentPath = "/Library/LaunchAgents";
-      const std::filesystem::path c_globalDaemonPath = "/Library/LaunchDaemons";
-      const std::filesystem::path c_SystemAgentPath = "/System/Library/LaunchAgents";
-      const std::filesystem::path c_SystemDaemonPath = "/System/Library/LaunchDaemons";
+      const std::filesystem::path c_userAgentPath =    "~/Library/LaunchAgents";
+//      const std::filesystem::path c_globalAgentPath =  "~/Library/LaunchAgents";
+//      const std::filesystem::path c_globalDaemonPath = "~/Library/LaunchAgents";
+//      const std::filesystem::path c_SystemAgentPath =  "~/Library/LaunchAgents";
+//      const std::filesystem::path c_SystemDaemonPath = "~/Library/LaunchAgents";
 
 
       //UI

@@ -29,16 +29,6 @@ namespace HummingBirdCore::Utils::PlistUtil {
 
   class PlistNode {
 public:
-    //<key>Month</key>
-    //<integer>1</integer>
-    //<key>Day</key>
-    //<integer>1</integer>
-    //<key>Hour</key>
-    //<integer>1</integer>
-    //<key>Minute</key>
-    //<integer>1</integer>
-    //<key>Weekday</key>
-    //<integer>3</integer>
     struct Date {
   public:
       int month;
@@ -83,9 +73,9 @@ public:
               std::variant<std::string, int, float, bool, Date> placeholder,
               bool required = false)
         : key(keyName), value(nodeValue), type(type), parentType(parentType), placeholder(placeholder), required(required) {
-        for (auto &child: children) {
-          addChild(child);
-        }
+      for (auto &child: children) {
+        addChild(child);
+      }
     }
 
     PlistNode(std::string keyName,
@@ -102,7 +92,7 @@ public:
 
     void addChild(PlistNode &node) {
       node.parentType = type;
-      children.insert(std::pair<std::string, PlistNode>(node.key, node));
+      children[node.key] = node;
     }
 
     std::variant<std::string, int, float, bool, Date> &getValue() {
@@ -149,7 +139,6 @@ public:
     }
   };
 
-
   class Plist {
 public:
     explicit Plist() {
@@ -168,13 +157,17 @@ public:
           if (nodeName == "key") {
             currentKey = (const char *) currentNode->children->content;
           } else {
+            if(currentKey == "Label"){
+              CORE_TRACE("Label");
+
+            }
             int ind = 0;
             std::string itemKey = currentKey;
             if (parent.type == PlistTypeArray) {
               ind = parent.children.size();
             }
 
-            PlistNode plnode = plnode;
+            PlistNode plnode;
             plnode.key = itemKey;
             if (parent.type == PlistTypeArray) {
               plnode.key = std::to_string(ind);
@@ -182,10 +175,12 @@ public:
 
             plnode.parentType = parent.type;
 
-
             if (currentKey.empty()) {
               parseNode(currentNode->children, parent, currentKey);
             } else if (nodeName == "string") {
+              if(rootNode.children["Label"].value.has_value()){
+                CORE_TRACE("Label");
+              }
               plnode.type = PlistTypeString;
               plnode.value = (const char *) currentNode->children->content;
             } else if (nodeName == "integer") {
@@ -246,10 +241,13 @@ public:
         return false;
       }
 
-
       std::string currentKey;
+
       rootNode = PlistNode();
+
       createDefaultTypes();
+
+      parseNode(root_element, rootNode, currentKey);
 
       xmlFreeDoc(doc);
       xmlCleanupParser();
@@ -316,7 +314,7 @@ public:
       return rootNode;
     }
 
-    void writePlist(const File &file) {
+    bool writePlist(File &file) {
       std::string plistString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
       plistString += "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n";
       plistString += "<plist version=\"1.0\">\n";
@@ -335,10 +333,10 @@ public:
         CORE_TRACE("File exists overwriting");
         if (FileUtils::writeToFile(file, plistString)) {
           CORE_TRACE("Plits saved");
-          return;
+          return true;
         } else {
           CORE_ERROR("Something went wrong saving the plist");
-          return;
+          return false;
         }
       } else {
         //Create the file
@@ -347,14 +345,14 @@ public:
           CORE_TRACE("File created");
           if (FileUtils::writeToFile(file, plistString)) {
             CORE_TRACE("Plits saved");
-            return;
+            return true;
           } else {
             CORE_ERROR("Something went wrong saving the plist");
-            return;
+            return false;
           }
         } else {
           CORE_ERROR("Something went wrong creating the file");
-          return;
+          return false;
         }
       }
     }
@@ -371,11 +369,9 @@ private:
     void createDefaultTypes() {
       PlistNode label = PlistNode("Label", PlistTypeString, PlistTypeDictionary, {}, "LabelPlaceHolder", true);
       rootNode.children["Label"] = label;
-
-      otherTypes();
     }
 
-    void otherTypes(){
+    void otherTypes() {
 
       PlistNode programArguments = PlistNode("ProgramArguments", PlistTypeArray, PlistTypeDictionary, {}, "ProgramArgumentsPlaceHolder", false);
       rootNode.children["ProgramArguments"] = programArguments;
@@ -487,8 +483,6 @@ private:
     bool parsed = false;
     PlistNode rootNode;
   };
-
-
 }// namespace HummingBirdCore::Utils::PlistUtil
 
 #endif//HUMMINGBIRD_PLISTUTIL_H
