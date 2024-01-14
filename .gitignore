@@ -5,3 +5,5 @@
 /cmake-build-minsizerel/
 /cmake-build-coverage/
 /cmake-build-asan-clang/
+/cmake-build-debug-exe/
+/cmake-build-debug-lib/
