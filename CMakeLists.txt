@@ -6,21 +6,20 @@ set(CMAKE_CXX_STANDARD 23)
 
 message(STATUS "------HUMNMING BIRD------")
 
-#DISPLAY ALL INFO HERE ABOUT THE BUILD
 message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message("CMAKE_CURRENT_OUTPUT_DIRECTORY: ${CMAKE_CURRENT_OUTPUT_DIRECTORY}")
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 set(HUMMINGBIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-set(HUMMINGBIRDCORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HummingbirdCore)
+set(HummingBirdCore_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HummingBirdCore)
 set(HUMMINGBIRDFRONT_DIR ${HUMMINGBIRD_DIR}/HummingbirdFront)
 
 # Add cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 #options
-option(WITHHUMMINGBIRDCOREASLIB "WITH HummingBirdCore as lib" OFF)
+option(HUMMINGBIRD_EXE "With HummingBirdCore exe" OFF)
 
 #check if there is an cmake build type
 if (NOT CMAKE_BUILD_TYPE)
@@ -37,10 +36,9 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "ASAN")
   set(CMAKE_BUILD_TYPE ASAN)
 endif ()
 
-
-####MAIN PROJECT####
-# HummingbirdCore
-set(HUMMINGBIRDCOUREBASESRC
+#########HUMMINGBIRD
+#library
+set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/CoreRef.h
         HummingBirdCore/src/Application.cpp
         HummingBirdCore/src/Application.h
@@ -87,348 +85,25 @@ set(HUMMINGBIRDCOUREBASESRC
         HummingBirdCore/src/Utils/Plist/PlistUtil.h
 )
 
-if (NOT WITHHUMMINGBIRDCOREASLIB)
+add_library(HummingBirdCore STATIC
+        ${HUMMINGBIRDCOURESTATICFILES}
+)
+
+#third party
+add_subdirectory(vendor)
+
+target_precompile_headers(HummingBirdCore PRIVATE HummingBirdCore/src/PCH/pch.h)
+target_include_directories(HummingBirdCore PRIVATE HummingBirdCore/src)
+
+if (HUMMINGBIRD_EXE)
   message("Building with HummingBirdCore as exe")
-  add_executable(HummingbirdCoreEXE
-          ${HUMMINGBIRDCOUREBASESRC}
-          ${HUMMINGBIRDCORE_DIR}/src/main.cpp
+  add_executable(HummingBirdCoreExe
+          ${HummingBirdCore_DIR}/src/main.cpp
   )
-  target_precompile_headers(HummingbirdCoreEXE PUBLIC HummingBirdCore/src/PCH/pch.h)
-endif ()
-
-add_library(HummingbirdCore STATIC
-        ${HUMMINGBIRDCOUREBASESRC}
-)
-target_precompile_headers(HummingbirdCore PUBLIC HummingBirdCore/src/PCH/pch.h)
-
-# Core include directories
-include_directories(
-        HummingBirdCore/src
-)
-########################################################################
-#tinyxml2
-find_package(LibXml2 REQUIRED)
-if (NOT LIBXML2_FOUND)
-  message(FATAL_ERROR "libxml2 not found")
+  target_link_libraries(HummingBirdCoreExe HummingBirdCore)
+  target_include_directories(HummingBirdCoreExe PRIVATE HummingBirdCore/src)
 else ()
-message("libxml2 found")
-
-  #include
-  include_directories(
-          ${LIBXML2_INCLUDE_DIRS}
-  )
-
-  #link
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${LIBXML2_LIBRARIES}
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          ${LIBXML2_LIBRARIES}
-  )
-endif ()
-
-#mysql
-find_package(MySQL)
-
-if (NOT MySQL_FOUND)
-  message(WARNING "MySQL not found")
-else ()
-  message("MySQL found")
-  #include
-  include_directories(
-          ${MySQL_INCLUDE_DIRS}
-  )
-  #link
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${MySQL_LIBRARIES}
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          ${MySQL_LIBRARIES}
-  )
-endif ()
-
-######vendor
-
-#glfw
-if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glfw)
-  message("glfw folder not found")
-else ()
-  message("glfw folder found")
-  #include
-  find_library(GLFW_LIBRARY NAMES glfw glfw3 libglfw3 PATHS vendor/glfw/lib-x86_64)
-
-  include_directories(
-          ${HUMMINGBIRD_DIR}/vendor/glfw/include
-  )
-
-  #link
-  link_directories(/root/vendor/glfw/lib-x86_64)
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${GLFW_LIBRARY}
-    )
-  endif()
-
-  target_link_libraries(HummingbirdCore
-          ${GLFW_LIBRARY}
-  )
-endif ()
-
-# fmt
-if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/fmt)
-  message("fmt folder not found")
-else ()
-  message("fmt folder found")
-  add_subdirectory(${HUMMINGBIRD_DIR}/vendor/fmt)
-
-  #include
-  include_directories(
-          ${HUMMINGBIRD_DIR}/vendor/fmt/include
-  )
-
-  #link
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            fmt::fmt
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          fmt::fmt
-  )
-endif ()
-
-#spdlog
-if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/spdlog)
-  message("spdlog folder not found")
-else ()
-  message("spdlog folder found")
-  add_subdirectory(${HUMMINGBIRD_DIR}/vendor/spdlog)
-
-  #include spdlog
-  include_directories(
-          ${HUMMINGBIRD_DIR}/vendor/spdlog/include
-  )
-
-  # Link spdlog
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            spdlog::spdlog
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          spdlog::spdlog
-  )
-
-endif ()
-
-#imgui
-if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/imgui)
-  message("Imgui folder not found")
-else ()
-  set(IMGUI_SOURCES
-          #imgui
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.cpp
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imgui.h
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imconfig.h
-
-          #imgui widgets
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_draw.cpp
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_internal.h
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_tables.cpp
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_widgets.cpp
-
-          #imstb
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_textedit.h
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_rectpack.h
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imstb_textedit.h
-
-          #imgui demos
-          ${HUMMINGBIRD_DIR}/vendor/imgui/imgui_demo.cpp
-
-          #backends
-
-          vendor/imgui/backends/imgui_impl_opengl3_loader.h
-          ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_opengl3.cpp
-          ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_opengl3.h
-
-          ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_glfw.cpp
-          ${HUMMINGBIRD_DIR}/vendor/imgui/backends/imgui_impl_glfw.h
-
-          #misc
-          ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp/imgui_stdlib.cpp
-          ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp/imgui_stdlib.h
-
-          #addons
-          ${HUMMINGBIRD_DIR}/vendor/imgui/addons/imguinotify/imgui_notify.h
-
-          #fonts
-          ${HUMMINGBIRD_DIR}/vendor/imgui/addons/imguinotify/font_awesome_5.h
-          ${HUMMINGBIRD_DIR}/vendor/imgui/addons/imguinotify/fa_solid_900.h
-  )
-
-  add_library(imgui STATIC
-          ${IMGUI_SOURCES}
-  )
-
-  #include imgui
-  include_directories(
-          vendor/imgui
-          vendor/imgui/backends
-          vendor/imgui/misc/cpp
-          vendor/imgui/addons/imguinotify
-  )
-
-
-  # Link imgui
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            imgui
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          imgui
-  )
-endif ()
-
-####kasper specific#####################################################
-option(WITHHUMMINGBIRDKASPERSPECIFIC "WITH HummingBirdKasperSpecific" OFF)
-if (WITHHUMMINGBIRDKASPERSPECIFIC)
-  message("Building with Kasperspecific")
-  set(HUMMINGBIRDKASPERSPECIFIC_DIR ${HUMMINGBIRD_DIR}/HummingBirdKasperSpecific)
-  set(HUMMINGBIRDKASPERSPECIFICFILES
-          ../HummingBirdKasperSpecific/src/HelloLibrary.cpp
-          ../HummingBirdKasperSpecific/src/HelloLibrary.h
-          ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.cpp
-          ../HummingBirdKasperSpecific/src/Hellebrekers/VisualLinkLauncher.h
-  )
-
-  add_library(
-          KasperSpecificTools STATIC
-          ${HUMMINGBIRDKASPERSPECIFICFILES}
-  )
-
-  #set cpp def
-  add_definitions(-DWITHHUMMINGBIRDKASPERSPECIFIC)
-
-  #include
-  include_directories(
-          ../HummingBirdKasperSpecific/src
-  )
-
-  #link
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            KasperSpecificTools
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          KasperSpecificTools
-  )
-
-endif ()
-
-########################################################################
-# Base Link libraries
-#TODO: MAKE THIS MAC SPECIFIC
-
-# get Security
-find_library(SECURITY_FRAMEWORK Security)
-if (NOT SECURITY_FRAMEWORK)
-  message(FATAL_ERROR "Security not found Are you on mac?")
-else ()
-  message("Security found")
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${SECURITY_FRAMEWORK}
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          ${SECURITY_FRAMEWORK}
-  )
-endif ()
-
-# get IOKit
-find_library(IOKit IOKit)
-if (NOT IOKit)
-  message(FATAL_ERROR "IOKit not found Are you on mac?")
-else ()
-  message("IOKit found")
-
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${IOKit}
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          ${IOKit}
-  )
-endif ()
-
-# get CoreFoundation
-find_library(CoreFoundation CoreFoundation)
-if (NOT CoreFoundation)
-  message(FATAL_ERROR "CoreFoundation not found Are you on mac?")
-else ()
-  message("CoreFoundation found")
-
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${CoreFoundation}
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          ${CoreFoundation}
-  )
-endif ()
-
-
-# Find the System Configuration framework
-find_library(SYSTEM_CONFIGURATION_FRAMEWORK SystemConfiguration)
-if (NOT SYSTEM_CONFIGURATION_FRAMEWORK)
-  message(FATAL_ERROR "SystemConfiguration not found Are you on mac?")
-else ()
-  message("SystemConfiguration found")
-
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${SYSTEM_CONFIGURATION_FRAMEWORK}
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          ${SYSTEM_CONFIGURATION_FRAMEWORK}
-  )
-endif ()
-
-# Find openg;
-find_package(OpenGL REQUIRED)
-if (NOT OPENGL_FOUND)
-  message(FATAL_ERROR "OpenGL not found")
-else ()
-  message("OpenGL found")
-
-  if (NOT WITHHUMMINGBIRDCOREASLIB)
-    target_link_libraries(HummingbirdCoreEXE
-            ${OPENGL_LIBRARIES}
-    )
-  endif ()
-
-  target_link_libraries(HummingbirdCore
-          ${OPENGL_LIBRARIES}
-  )
+  message("Building with HummingBirdCore as lib")
 endif ()
 
 ########################################################################
