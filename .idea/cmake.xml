@@ -2,9 +2,10 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
+      <configuration PROFILE_NAME="Debug-exe" ENABLED="true" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DHUMMINGBIRD_EXE:BOOL=ON -DSPDLOG_FMT_EXTERNAL:BOOL=ON -DSPDLOG_BUILD_WARNINGS:BOOL=OFF" />
+      <configuration PROFILE_NAME="Debug-lib" ENABLED="true" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DHUMMINGBIRD_EXE:BOOL=ON" />
       <configuration PROFILE_NAME="Release" ENABLED="false" CONFIG_NAME="Release" />
       <configuration PROFILE_NAME="RelWithDebInfo" ENABLED="false" CONFIG_NAME="RelWithDebInfo" />
-      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
       <configuration PROFILE_NAME="ASAN-clang++" ENABLED="false" CONFIG_NAME="ASAN" TOOLCHAIN_NAME="clang++" />
     </configurations>
   </component>
