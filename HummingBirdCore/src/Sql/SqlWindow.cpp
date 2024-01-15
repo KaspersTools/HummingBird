@@ -79,7 +79,7 @@ namespace HummingBirdCore {
               bool isSelectedTable = currentDbIndex == i && currentTableIndex == j;
 
               if (ImGui::Selectable(tableName.c_str(), isSelectedTable, c_selectableFlags)) {
-                if(m_connection.useDatabase(i, j)) {
+                if(m_connection.useDatabase(i) && m_connection.useTable(j)) {
                   m_dataViewer->setTable(dbs[i].getTables()[j]);
                 }
               }

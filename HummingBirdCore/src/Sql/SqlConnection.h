@@ -16,6 +16,11 @@ namespace HummingBirdCore::Sql {
     int maxRowSize = 10000;
   };
 
+  enum SqlExportStatements{
+    Insert,
+    InsertWithColumns
+  };
+
   struct Database {
 public:
     Database(const std::string &name, const std::vector<std::shared_ptr<Widgets::Table>> tables) : name(name), tables(tables) {
@@ -70,6 +75,18 @@ private:
     int currentTableIndex = 0;
   };
 
+
+  struct SqlExportSettings{
+    std::string pathToMysqlDump = "";
+    std::string exportPath = "";
+
+    Database database;
+    std::vector<std::string> tablesToExport = {};
+
+    bool multipleRowsInserts = false;
+
+  };
+
   class SqlConnection {
 public:
     SqlConnection() : SqlConnection("", "", "", 3306, false) {
@@ -83,6 +100,10 @@ public:
     ~SqlConnection();
 
     bool connect();
+    bool connect(const std::string &host, const std::string &user, const std::string &password,
+                 const unsigned int port = 3306) {
+      return connect(host, user, password, "", port);
+    }
     bool connect(const std::string &host, const std::string &user,
                  const std::string &password, const std::string &database,
                  const unsigned int port = 3306);
@@ -90,11 +111,16 @@ public:
 
 
     //Database functions
-    bool useDatabase(const int databaseIndex, int tableIndex);
-    bool useDatabase(const std::string &database, int tableIndex);
+    bool useDatabase(const int databaseIndex);
+    bool useDatabase(const std::string &database);
 
     bool useTable(const int tableIndex);
     bool useTable(const std::string &table);
+
+    bool createDatabase(const std::string &databaseName);
+    bool createTable(const std::string &tableName, const std::vector<Widgets::Header> &headers);
+
+    bool importDatabase(Utils::File &file);
 
     //Server functions
     std::vector<Database> SVR_getDatabases() {
@@ -293,17 +319,13 @@ public:
 
 public:
     //Databases
-    std::vector<Database> getDatabases() const {
-      return m_databases;
-    }
-
-    Database getCurrentDatabase() const {
-      return m_databases[getCurrentDatabaseIndex()];
-    }
+    std::vector<Database> getDatabases() const { return m_databases; }
+    Database getCurrentDatabase() const { return m_databases[getCurrentDatabaseIndex()]; }
     std::string getCurrentDatabaseName() const { return getCurrentDatabase().getName(); }
-
     int getCurrentDatabaseIndex() const { return m_currentDatabaseIndex; }
+    int getPort() const { return m_port; }
     bool getIsConnected() const { return m_isConnected; }
+
 
 private:
     bool checkConnection() {

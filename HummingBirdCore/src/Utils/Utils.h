@@ -186,6 +186,7 @@ namespace HummingBirdCore {
 
         std::fclose(fp);
       }
+
       inline static File getFile(const std::filesystem::path &fileLocation) {
         std::filesystem::path fullLocation = fileLocation.string();
 
@@ -237,7 +238,6 @@ namespace HummingBirdCore {
 
         return true;
       }
-
     }// namespace FileUtils
 
     //#TODO: Remove classes and make them static functions in the right namespace

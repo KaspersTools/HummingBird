@@ -11,9 +11,14 @@
 namespace HummingBirdCore {
 
   Application::Application() : m_backgroundTexture("Assets/Textures/newbg.png") {
+
+  }
+
+
+  int Application::InitializeAndRun() {
     if (s_application != nullptr) {
       CORE_WARN("Application already exists!");
-      return;
+      return 0;
     }
 
     CORE_INFO("Starting HummingBirdCore Application");
@@ -36,6 +41,7 @@ namespace HummingBirdCore {
 
     glfwDestroyWindow(s_window);
     glfwTerminate();
+    return 1;
   }
 
   Application::~Application() {
@@ -71,15 +77,15 @@ namespace HummingBirdCore {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-//    ImGuiBackendFlags_PlatformHasViewports + ImGuiBackendFlags_RendererHasViewports
-//    ImGuiBackendFlags_PlatformHasViewports
+    //    ImGuiBackendFlags_PlatformHasViewports + ImGuiBackendFlags_RendererHasViewports
+    //    ImGuiBackendFlags_PlatformHasViewports
 
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;// Enable Docking
     //Disabled for now
-//    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;// Enable Multi-Viewport / Platform Windows
-                                                       //    io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleFonts;  //DONT USE
-                                                       //    io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports; //DONT USE
+    //    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;// Enable Multi-Viewport / Platform Windows
+    //    io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleFonts;  //DONT USE
+    //    io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports; //DONT USE
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// Enable Keyboard Controls
 
 
@@ -95,13 +101,15 @@ namespace HummingBirdCore {
     ImGui_ImplGlfw_InitForOpenGL(s_window, true);
     ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 
-    ImFontConfig config;
-    config.OversampleH = 5;
-    config.OversampleV = 5;
-    config.RasterizerDensity = 1.0f;
+    if (Utils::FileUtils::fileExists("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf")) {
+      ImFontConfig config;
+      config.OversampleH = 5;
+      config.OversampleV = 5;
+      config.RasterizerDensity = 1.0f;
 
-    io.FontDefault = io.Fonts->AddFontFromFileTTF(
-            "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", 15.0f, &config);
+      io.FontDefault = io.Fonts->AddFontFromFileTTF(
+              "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", 15.0f, &config);
+    }
   }
 
   void Application::Run() {
@@ -130,6 +138,18 @@ namespace HummingBirdCore {
         // Session management
         if (ImGui::MenuItem("Log Out")) { Security::LoginManager::logout(); }
         if (ImGui::MenuItem("Exit")) { m_exit = true; }
+        ImGui::EndMenu();
+      }
+
+      if(ImGui::BeginMenu("SQL")){
+        if(ImGui::MenuItem("Import SQL")){
+          const std::string baseName = "Import SQL ";
+          if (!openClosedWindow(baseName)) {
+            const std::string name = baseName + std::to_string(m_sqlImportWindowCount);
+            AddWindow(name, std::make_shared<HummingBirdCore::Sql::SqlImportWindow>(name));
+            m_sqlImportWindowCount++;
+          }
+        }
         ImGui::EndMenu();
       }
 
@@ -222,7 +242,6 @@ namespace HummingBirdCore {
           }
           ImGui::EndMenu();
         }
-
         ImGui::EndMenu();
       }
 
@@ -316,12 +335,18 @@ namespace HummingBirdCore {
           if (ImGui::MenuItem("Demo Window")) {
             m_showDemoWindow = true;
           }
-          if(ImGui::MenuItem("All addon widgets")){
+          if (ImGui::MenuItem("All addon widgets")) {
             AddWindow("addons", std::make_shared<HummingBirdCore::AddonWidget>("addons"));
           }
           ImGui::EndMenu();
         }
         ImGui::EndMenu();
+      }
+
+      for (HummingBirdCore::MenuItem &menuItem: m_menuItems) {
+        if (ImGui::MenuItem(menuItem.name.c_str())) {
+          menuItem.callback();
+        }
       }
 
       ImGui::EndMenuBar();

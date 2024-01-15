@@ -20,7 +20,9 @@ void HummingBirdCore::System::SysInfoWindow::render() {
     m_lastFetchTime = 0.0f;
   }
 
-  if (ImGui::BeginTabBar("SysInfoTabBar")) {
+  ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_TabListPopupButton;
+
+  if (ImGui::BeginTabBar("SysInfoTabBar", tabBarFlags)) {
     if (ImGui::BeginTabItem("Memory")) {
 
       std::string freeMem = std::to_string(m_memoryUsage[0]);

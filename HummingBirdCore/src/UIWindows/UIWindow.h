@@ -123,6 +123,11 @@ namespace HummingBirdCore {
     }
   };
 
+  struct MenuItem{
+    std::string name;
+    std::function<void()> callback;
+  };
+
   class UIWindow : public ApplicationObject {
 public:
     UIWindow(ImGuiWindowFlags flags, const std::string &name, const bool autoEndFrame = true, const bool autoStartFrame=true) : m_flags(flags), m_name(name), c_autoEndFrame(autoEndFrame), c_autoStartFrame(autoStartFrame) {

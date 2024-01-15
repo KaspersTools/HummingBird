@@ -16,9 +16,9 @@
 #include "UIWindows/Themes/Themes.h"
 
 // UIWindows/Widget
+#include "UIWindows/Widget/AllAddonsWidget.h"
 #include "UIWindows/Widget/DataViewer.h"
 #include "UIWindows/Widget/MetricsWidget.h"
-#include "UIWindows/Widget/AllAddonsWidget.h"
 
 // OTHER WINDOWS
 #include "Terminal/TerminalWindow.h"
@@ -27,8 +27,8 @@
 #include "Security/LoginManager.h"
 
 #include "System/Hosts/EditHostsWindow.h"
-#include "System/SysInfoWindow.h"
 #include "System/LaunchDaemonsManager.h"
+#include "System/SysInfoWindow.h"
 
 
 #include "Sql/SqlWindow.h"
@@ -55,7 +55,7 @@ namespace HummingBirdCore {
   class Application {
 public:
     Application();
-
+    int InitializeAndRun();
     ~Application();
 
     //TODO: find more intuitive way to add windows
@@ -81,18 +81,23 @@ public:
 
     ImVec2 getWindowSize() {
       int w, h;
-//      SDL_GetWindowSize(s_window, &w, &h);
+      //      SDL_GetWindowSize(s_window, &w, &h);
       glfwGetWindowSize(s_window, &w, &h);
-      return{ (float)w, (float)h };
+      return {(float) w, (float) h};
     }
 
     float getWindowWidth() {
       return getWindowSize().x;
     }
 
-    float getWindowHeight(){
-        return getWindowSize().y;
+    float getWindowHeight() {
+      return getWindowSize().y;
     }
+
+    void addMenuItem(const std::string &name, const std::function<void()> &callback) {
+      m_menuItems.emplace_back(MenuItem{name, callback});
+    }
+
 private:
     void InitGlfw();
 
@@ -108,7 +113,7 @@ private:
 
     void BeginFullScreenWindow();
 
-    inline static void glfwErrorCallback(int error, const char* description){
+    inline static void glfwErrorCallback(int error, const char *description) {
       CORE_ERROR("Error " + std::to_string(error) + ": " + description);
     }
 
@@ -123,10 +128,14 @@ private:
       }
       return false;
     }
+
+
+
 private:
     inline static GLFWwindow *s_window;
     inline static Application *s_application = nullptr;
 
+    std::vector<HummingBirdCore::MenuItem> m_menuItems = {};
     std::string glslVersion;
 
     bool m_exit = false;

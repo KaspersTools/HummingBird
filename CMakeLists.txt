@@ -20,6 +20,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 #options
 option(HUMMINGBIRD_EXE "With HummingBirdCore exe" OFF)
+option(HUMMINGBIRD_KASPER "With HummingBird Kasper exe" ON)
 
 #check if there is an cmake build type
 if (NOT CMAKE_BUILD_TYPE)
@@ -73,6 +74,8 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/System/SysInfoWindow.h
         HummingBirdCore/src/Sql/SqlWindow.cpp
         HummingBirdCore/src/Sql/SqlWindow.h
+        HummingBirdCore/src/Sql/SqlImportWindow.cpp
+        HummingBirdCore/src/Sql/SqlImportWindow.h
         HummingBirdCore/src/Sql/SqlConnection.cpp
         HummingBirdCore/src/Sql/SqlConnection.h
         HummingBirdCore/src/UIWindows/Widget/DataViewer.h
@@ -93,8 +96,8 @@ add_library(HummingBirdCore STATIC
 #third party
 add_subdirectory(vendor)
 
-target_precompile_headers(HummingBirdCore PRIVATE HummingBirdCore/src/PCH/pch.h)
-target_include_directories(HummingBirdCore PRIVATE HummingBirdCore/src)
+target_precompile_headers(HummingBirdCore PUBLIC HummingBirdCore/src/PCH/pch.h)
+target_include_directories(HummingBirdCore PUBLIC HummingBirdCore/src)
 
 if (HUMMINGBIRD_EXE)
   message("Building with HummingBirdCore as exe")
@@ -106,6 +109,24 @@ if (HUMMINGBIRD_EXE)
 else ()
   message("Building with HummingBirdCore as lib")
 endif ()
+
+
+#####OWN ADDONS
+if(HUMMINGBIRD_KASPER)
+  message("Building with HummingBird Kasper")
+  set(HUMMINGBIRDKASPERLOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../HummingBirdKasper)
+  set(HUMMINGBIRDKASPERCMAKELIST ../HummingBirdKasper/CMakeLists.txt)
+  add_executable(HummingBirdKasper
+          ../HummingBirdKasper/main.cpp
+          ../HummingBirdKasper/testUIWindow.h
+          ../HummingBirdKasper/testUIWindow.h
+  )
+
+  target_link_libraries(HummingBirdKasper HummingBirdCore)
+  target_include_directories(HummingBirdKasper PRIVATE HummingBirdCore/src)
+endif()
+
+
 
 ########################################################################
 # Copying resources from source to build

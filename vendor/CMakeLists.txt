@@ -1,9 +1,18 @@
 #NEW LIST |
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ../cmake/)
 
+list(APPEND HUMMINGBIRD_LIBRARIES
+        HummingBirdCore
+)
+
+
 # opengl
 find_package(OpenGL REQUIRED)
-target_link_libraries(HummingBirdCore ${OPENGL_LIBRARIES})
+target_link_libraries(HummingBirdCore PUBLIC ${OPENGL_LIBRARIES})
+
+list(APPEND HUMMINGBIRD_LIBRARIES
+        ${OPENGL_INCLUDE_DIR}
+)
 
 # glfw
 if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glfw)
@@ -17,14 +26,19 @@ else ()
     message(FATAL_ERROR "glfw library not found")
   else ()
     message(STATUS "glfw library found")
-    target_link_directories(HummingBirdCore PRIVATE ${HUMMINGBIRD_DIR}/vendor/glfw/lib-x86_64)
-    target_link_libraries(HummingBirdCore ${GLFW_LIBRARY})
+    target_link_directories(HummingBirdCore PUBLIC ${HUMMINGBIRD_DIR}/vendor/glfw/lib-x86_64)
+    target_link_libraries(HummingBirdCore PUBLIC ${GLFW_LIBRARY})
     target_include_directories(HummingBirdCore PUBLIC ${HUMMINGBIRD_DIR}/vendor/glfw/include)
+
+    list(APPEND HUMMINGBIRD_LIBRARIES
+            ${GLFW_LIBRARY}
+    )
+
   endif ()
 endif ()
 
 message(STATUS "glfw library found")
-message(STATUS "glfw include dir ${CMAKE_CURRENT_SOURCE_DIR}" )
+message(STATUS "glfw include dir ${CMAKE_CURRENT_SOURCE_DIR}")
 
 # imgui
 set(KDB_IMGUI_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -33,14 +47,17 @@ set(KDB_IMGUI_GLFW ON CACHE BOOL "" FORCE)
 set(KDB_IMGUI_GLFWINCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw/include CACHE STRING "" FORCE)
 
 add_subdirectory(imgui)
-target_link_libraries(HummingBirdCore KDB_IMGUI-STATIC)
+target_link_libraries(HummingBirdCore PUBLIC KDB_IMGUI-STATIC)
 target_include_directories(HummingBirdCore PUBLIC
         ${HUMMINGBIRD_DIR}/vendor/imgui
         ${HUMMINGBIRD_DIR}/vendor/imgui/backends
         ${HUMMINGBIRD_DIR}/vendor/imgui/addons
         ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
-      )
+)
 
+list(APPEND HUMMINGBIRD_LIBRARIES
+        KDB_IMGUI-STATIC
+)
 
 #fmt
 
@@ -49,7 +66,12 @@ IF (NOT EXISTS ../vendor/fmt)
 ELSE ()
   message(STATUS "fmt folder found")
   add_subdirectory(../vendor/fmt)
-  target_link_libraries(HummingBirdCore fmt::fmt-header-only)
+  target_link_libraries(HummingBirdCore PUBLIC fmt::fmt-header-only)
+
+  target_compile_definitions(HummingBirdCore PUBLIC FMT_HEADER_ONLY)
+  list(APPEND HUMMINGBIRD_LIBRARIES
+          fmt::fmt-header-only
+  )
 ENDIF ()
 
 #spdlog
@@ -58,8 +80,11 @@ IF (NOT EXISTS ../vendor/spdlog)
 ELSE ()
   message(STATUS "spdlog folder found")
   add_subdirectory(../vendor/spdlog)
-  target_link_libraries(HummingBirdCore spdlog::spdlog)
-  target_compile_definitions(HummingBirdCore PRIVATE SPDLOG_FMT_EXTERNAL)
+  target_link_libraries(HummingBirdCore PUBLIC spdlog::spdlog)
+  target_compile_definitions(HummingBirdCore PUBLIC SPDLOG_FMT_EXTERNAL)
+  list(APPEND HUMMINGBIRD_LIBRARIES
+          spdlog::spdlog
+  )
 ENDIF ()
 
 ##################system##################
@@ -69,8 +94,12 @@ if (NOT MYSQL_FOUND)
   message(FATAL_ERROR "MySQL not found")
 else ()
   message(STATUS "MySQL found")
-  target_link_libraries(HummingBirdCore ${MySQL_LIBRARIES})
+  target_link_libraries(HummingBirdCore PUBLIC ${MySQL_LIBRARIES})
   target_include_directories(HummingBirdCore PUBLIC ${MySQL_INCLUDE_DIRS})
+
+  list(APPEND HUMMINGBIRD_LIBRARIES
+          ${MySQL_LIBRARIES}
+  )
 endif ()
 
 # get Security Framework mac
@@ -79,7 +108,11 @@ if (NOT SECURITY_FRAMEWORK)
   message(FATAL_ERROR "Security not found Are you on mac?")
 else ()
   message(STATUS "Security found")
-  target_link_libraries(HummingBirdCore
+  target_link_libraries(HummingBirdCore PUBLIC
+          ${SECURITY_FRAMEWORK}
+  )
+
+  list(APPEND HUMMINGBIRD_LIBRARIES
           ${SECURITY_FRAMEWORK}
   )
 endif ()
@@ -90,7 +123,11 @@ if (NOT IOKit)
   message(FATAL_ERROR "IOKit not found Are you on mac?")
 else ()
   message(STATUS "IOKit found")
-  target_link_libraries(HummingBirdCore
+  target_link_libraries(HummingBirdCore PUBLIC
+          ${IOKit}
+  )
+
+  list(APPEND HUMMINGBIRD_LIBRARIES
           ${IOKit}
   )
 endif ()
@@ -102,7 +139,11 @@ if (NOT CoreFoundation)
   message(FATAL_ERROR "CoreFoundation not found Are you on mac?")
 else ()
   message(STATUS "CoreFoundation found")
-  target_link_libraries(HummingBirdCore
+  target_link_libraries(HummingBirdCore PUBLIC
+          ${CoreFoundation}
+  )
+
+  list(APPEND HUMMINGBIRD_LIBRARIES
           ${CoreFoundation}
   )
 endif ()
@@ -115,8 +156,10 @@ if (NOT SYSTEM_CONFIGURATION_FRAMEWORK)
 else ()
   message(STATUS "SystemConfiguration found")
 
-  target_link_libraries(HummingBirdCore
+  target_link_libraries(HummingBirdCore PUBLIC
           ${SYSTEM_CONFIGURATION_FRAMEWORK})
+
+  list(APPEND HUMMINGBIRD_LIBRARIES ${SYSTEM_CONFIGURATION_FRAMEWORK})
 endif ()
 
 
@@ -126,6 +169,27 @@ if (NOT LIBXML2_FOUND)
   message(FATAL_ERROR "libxml2 not found")
 else ()
   message(STATUS "libxml2 found")
-  target_link_libraries(HummingBirdCore ${LIBXML2_LIBRARIES})
+  target_link_libraries(HummingBirdCore PUBLIC ${LIBXML2_LIBRARIES})
   target_include_directories(HummingBirdCore PRIVATE ${LIBXML2_INCLUDE_DIR})
+
+  list(APPEND HUMMINGBIRD_LIBRARIES
+          ${LIBXML2_LIBRARIES}
+  )
 endif ()
+
+#imgui filedialog
+add_subdirectory(ImGuiFileDialog)
+target_include_directories(ImGuiFileDialog PUBLIC
+        ${HUMMINGBIRD_DIR}/vendor/imgui
+        ${HUMMINGBIRD_DIR}/vendor/imgui/backends
+        ${HUMMINGBIRD_DIR}/vendor/imgui/addons
+        ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
+)
+
+target_link_libraries(HummingBirdCore PUBLIC ImGuiFileDialog)
+
+
+
+
+#link all to kasper
+#target_link_libraries(HummingBirdKasper PUBLIC ${HUMMINGBIRD_LIBRARIES})
