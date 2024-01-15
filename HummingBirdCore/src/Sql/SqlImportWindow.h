@@ -6,32 +6,31 @@
 #define HUMMINGBIRD_SQLIMPORTWINDOW_H
 
 #include <PCH/pch.h>
-#include <UIWindows/UIWindow.h>
 #include <Sql/SqlConnection.h>
+#include <UIWindows/UIWindow.h>
 
-
-class SqlImportWindow : public HummingBirdCore::UIWindow {
+namespace HummingBirdCore::Sql {
+  class SqlImportWindow : public HummingBirdCore::UIWindow {
 public:
-  SqlImportWindow(const std::string& name) : UIWindow(ImGuiWindowFlags_None, name) {
-  }
+    SqlImportWindow(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name) {
+    }
 
-  ~SqlImportWindow(){
+    ~SqlImportWindow() {
+    }
 
-  }
-
-  void render() override;
+    void render() override;
 
 private:
-  std::vector<HummingBirdCore::Utils::File> m_files = {};
-  int m_selectedRow = -1; // Variable to track the selected row
+    std::vector<HummingBirdCore::Utils::File> m_files = {};
+    int m_selectedRow = -1;// Variable to track the selected row
 
-  HummingBirdCore::Sql::SqlConnection m_sqlConnection;
+    HummingBirdCore::Sql::SqlConnection m_sqlConnection;
 
-  std::string m_inputServerName = "";
-  std::string m_inputUserName = "";
-  std::string m_inputPassword = "";
+    std::string m_inputServerName = "";
+    std::string m_inputUserName = "";
+    std::string m_inputPassword = "";
 
-  std::string m_inputNewDatabaseName = "";
-};
-
-#endif // HUMMINGBIRD_SQLIMPORTWINDOW_H
+    std::string m_inputNewDatabaseName = "";
+  };
+}// namespace HummingBirdCore::Sql
+#endif// HUMMINGBIRD_SQLIMPORTWINDOW_H

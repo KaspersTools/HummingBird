@@ -142,6 +142,14 @@ namespace HummingBirdCore {
       }
 
       if(ImGui::BeginMenu("SQL")){
+        if (ImGui::MenuItem("Sql Connect")) {
+          const std::string baseName = "Sql ";
+          if (!openClosedWindow(baseName)) {
+            const std::string name = baseName + std::to_string(m_sqlWindowCount);
+            AddWindow(name, std::make_shared<HummingBirdCore::Sql::SqlWindow>(name));
+            m_sqlWindowCount++;
+          }
+        }
         if(ImGui::MenuItem("Import SQL")){
           const std::string baseName = "Import SQL ";
           if (!openClosedWindow(baseName)) {
@@ -195,14 +203,6 @@ namespace HummingBirdCore {
               const std::string name = baseName + std::to_string(m_terminalCount);
               AddWindow(name, std::make_shared<HummingBirdCore::Terminal::TerminalWindow>(name));
               m_terminalCount++;
-            }
-          }
-          if (ImGui::MenuItem("Sql")) {
-            const std::string baseName = "Sql ";
-            if (!openClosedWindow(baseName)) {
-              const std::string name = baseName + std::to_string(m_sqlWindowCount);
-              AddWindow(name, std::make_shared<HummingBirdCore::Sql::SqlWindow>(name));
-              m_sqlWindowCount++;
             }
           }
           if (ImGui::MenuItem("Debug Window")) {

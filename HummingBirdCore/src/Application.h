@@ -32,6 +32,7 @@
 
 
 #include "Sql/SqlWindow.h"
+#include "Sql/SqlImportWindow.h"
 
 // Rendering
 #include "Rendering/Texture.h"
@@ -164,6 +165,7 @@ private:
     int m_themeManagerCount = 0;
     int m_dataViewerCount = 0;
     int m_launchDaemonsManagerCount = 0;
+    int m_sqlImportWindowCount = 0;
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
