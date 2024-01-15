@@ -83,6 +83,7 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/System/LaunchDaemonsManager.cpp
         HummingBirdCore/src/System/LaunchDaemonsManager.h
         HummingBirdCore/src/Utils/Plist/PlistUtil.h
+        HummingBirdCore/src/UIWindows/Widget/AllAddonsWidget.h
 )
 
 add_library(HummingBirdCore STATIC

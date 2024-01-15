@@ -316,6 +316,9 @@ namespace HummingBirdCore {
           if (ImGui::MenuItem("Demo Window")) {
             m_showDemoWindow = true;
           }
+          if(ImGui::MenuItem("All addon widgets")){
+            AddWindow("addons", std::make_shared<HummingBirdCore::AddonWidget>("addons"));
+          }
           ImGui::EndMenu();
         }
         ImGui::EndMenu();

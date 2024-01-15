@@ -5,7 +5,6 @@
 #pragma once
 
 #include <PCH/pch.h>
-
 #include "Utils/Plist/PlistUtil.h"
 
 
@@ -97,7 +96,7 @@ namespace HummingBirdCore {
 
     class LaunchDaemonsManager : public UIWindow {
   public:
-      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name, true, false), m_userAgent()
+      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name), m_userAgent()
       {
         fetchAllDaemons();
       }
@@ -121,18 +120,7 @@ namespace HummingBirdCore {
       //TODO: Reenable
       std::string m_selectedTab = "";
       std::vector<LaunchDaemon> m_userAgent = {};
-//      std::vector<LaunchDaemon> m_globalAgent = {};
-//      std::vector<LaunchDaemon> m_systemAgent = {};
-//      std::vector<LaunchDaemon> m_globalDaemon = {};
-//      std::vector<LaunchDaemon> m_systemDaemon = {};
-
-      //Service type paths
       const std::filesystem::path c_userAgentPath =    "~/Library/LaunchAgents";
-//      const std::filesystem::path c_globalAgentPath =  "~/Library/LaunchAgents";
-//      const std::filesystem::path c_globalDaemonPath = "~/Library/LaunchAgents";
-//      const std::filesystem::path c_SystemAgentPath =  "~/Library/LaunchAgents";
-//      const std::filesystem::path c_SystemDaemonPath = "~/Library/LaunchAgents";
-
 
       //UI
       const ImGuiWindowFlags c_leftWindowFlags = ImGuiWindowFlags_NoScrollbar;

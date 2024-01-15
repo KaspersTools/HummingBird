@@ -18,6 +18,7 @@
 // UIWindows/Widget
 #include "UIWindows/Widget/DataViewer.h"
 #include "UIWindows/Widget/MetricsWidget.h"
+#include "UIWindows/Widget/AllAddonsWidget.h"
 
 // OTHER WINDOWS
 #include "Terminal/TerminalWindow.h"
