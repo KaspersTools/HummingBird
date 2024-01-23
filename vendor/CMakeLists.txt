@@ -5,62 +5,31 @@ list(APPEND HUMMINGBIRD_LIBRARIES
         HummingBirdCore
 )
 
-
-# opengl
-find_package(OpenGL REQUIRED)
-target_link_libraries(HummingBirdCore PUBLIC ${OPENGL_LIBRARIES})
-
-list(APPEND HUMMINGBIRD_LIBRARIES
-        ${OPENGL_INCLUDE_DIR}
-)
-
-# glfw
-if (NOT EXISTS ${HUMMINGBIRD_DIR}/vendor/glfw)
-  message(FATAL_ERROR "glfw folder not found")
-else ()
-  message(STATUS "glfw folder found")
-  #todo: make this cross platform
-  find_library(GLFW_LIBRARY NAMES glfw glfw3 libglfw3 PATHS ${HUMMINGBIRD_DIR}/vendor/vendor/glfw/lib-x86_64)
-
-  if (NOT GLFW_LIBRARY)
-    message(FATAL_ERROR "glfw library not found")
-  else ()
-    message(STATUS "glfw library found")
-    target_link_directories(HummingBirdCore PUBLIC ${HUMMINGBIRD_DIR}/vendor/glfw/lib-x86_64)
-    target_link_libraries(HummingBirdCore PUBLIC ${GLFW_LIBRARY})
-    target_include_directories(HummingBirdCore PUBLIC ${HUMMINGBIRD_DIR}/vendor/glfw/include)
-
-    list(APPEND HUMMINGBIRD_LIBRARIES
-            ${GLFW_LIBRARY}
-    )
-
-  endif ()
-endif ()
-
-message(STATUS "glfw library found")
-message(STATUS "glfw include dir ${CMAKE_CURRENT_SOURCE_DIR}")
-
-# imgui
-set(KDB_IMGUI_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(KDB_IMGUI_GLFW ON CACHE BOOL "" FORCE)
-
-set(KDB_IMGUI_GLFWINCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw/include CACHE STRING "" FORCE)
-
+#
+## imgui
+set(KDB_IMGUI_BUILD_EXAMPLES ON CACHE BOOL "" FORCE)
 add_subdirectory(imgui)
 target_link_libraries(HummingBirdCore PUBLIC KDB_IMGUI-STATIC)
-target_include_directories(HummingBirdCore PUBLIC
-        ${HUMMINGBIRD_DIR}/vendor/imgui
-        ${HUMMINGBIRD_DIR}/vendor/imgui/backends
-        ${HUMMINGBIRD_DIR}/vendor/imgui/addons
-        ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
-)
-
 list(APPEND HUMMINGBIRD_LIBRARIES
         KDB_IMGUI-STATIC
 )
+#
+#set(KDB_IMGUI_GLFWINCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw/include CACHE STRING "" FORCE)
+#
+#add_subdirectory(imgui)
+#target_link_libraries(HummingBirdCore PUBLIC KDB_IMGUI-STATIC)
+#target_include_directories(HummingBirdCore PUBLIC
+#        ${HUMMINGBIRD_DIR}/vendor/imgui
+#        ${HUMMINGBIRD_DIR}/vendor/imgui/backends
+#        ${HUMMINGBIRD_DIR}/vendor/imgui/addons
+#        ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
+#)
+#
+#list(APPEND HUMMINGBIRD_LIBRARIES
+#        KDB_IMGUI-STATIC
+#)
 
 #fmt
-
 IF (NOT EXISTS ../vendor/fmt)
   message(FATAL_ERROR "fmt folder not found")
 ELSE ()
@@ -178,16 +147,16 @@ else ()
 endif ()
 
 #imgui filedialog
-add_subdirectory(ImGuiFileDialog)
-target_include_directories(ImGuiFileDialog PUBLIC
-        ${HUMMINGBIRD_DIR}/vendor/imgui
-        ${HUMMINGBIRD_DIR}/vendor/imgui/backends
-        ${HUMMINGBIRD_DIR}/vendor/imgui/addons
-        ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
-)
-
-target_link_libraries(HummingBirdCore PUBLIC ImGuiFileDialog)
-
+#add_subdirectory(ImGuiFileDialog)
+#target_include_directories(ImGuiFileDialog PUBLIC
+#        ${HUMMINGBIRD_DIR}/vendor/imgui
+#        ${HUMMINGBIRD_DIR}/vendor/imgui/backends
+#        ${HUMMINGBIRD_DIR}/vendor/imgui/addons
+#        ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
+#)
+#
+#target_link_libraries(HummingBirdCore PUBLIC ImGuiFileDialog)
+#
 
 
 
