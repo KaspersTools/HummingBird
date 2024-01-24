@@ -56,6 +56,18 @@ ELSE ()
   )
 ENDIF ()
 
+#portable-file-dialogs
+IF (NOT EXISTS ../vendor/portable-file-dialogs)
+  message(FATAL_ERROR "portable-file-dialogs folder not found")
+ELSE ()
+  message(STATUS "portable-file-dialogs folder found")
+  add_subdirectory(../vendor/portable-file-dialogs)
+  target_link_libraries(HummingBirdCore PUBLIC portable_file_dialogs)
+  list(APPEND HUMMINGBIRD_LIBRARIES
+          portable_file_dialogs
+  )
+endif ()
+
 ##################system##################
 #mysql
 find_package(MySQL)

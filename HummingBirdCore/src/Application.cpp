@@ -3,11 +3,13 @@
 //
 
 #include "Application.h"
-#include <backends/imgui_impl_glfw_vulkan_window.h>
 #include <backends/debug/imgui_impl_glfw_vulkan_debug.h>
+#include <backends/imgui_impl_glfw_vulkan_window.h>
 
 #include <UIWindows/MainMenuBar.h>
 #include <UIWindows/WindowManager.h>
+
+#include <portable-file-dialogs.h>
 
 namespace HummingBirdCore {
   void Application::init() {
@@ -27,6 +29,7 @@ namespace HummingBirdCore {
     m_Specification.TitleBarSettings.HasLogo = true;
     m_Specification.TitleBarSettings.LogoPath = "Assets/Textures/logo.png";
     m_Specification.TitleBarSettings.DrawTitleCentered = true;
+    m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 30.0f;
 
     m_Specification.TitleBarSettings.MainMenuBarCallback = new std::function<void()>([&]() {
       UI::mainMenuBarCallback();
@@ -37,6 +40,11 @@ namespace HummingBirdCore {
     });
 
     ImGui_ImplVKGlfw_init(m_Specification);
+
+    pfd::message("Welcome to Hummingbird Core", "Welcome to Hummingbird Core, the core of the Hummingbird Engine. "
+                                               "This is a work in progress, so expect bugs and crashes. If you find any, "
+                                               "please report them to the Hummingbird Github page. \n"
+                                               "Enjoy!");
 
     run();
   }
@@ -61,4 +69,4 @@ namespace HummingBirdCore {
   void Application::shutdown() {
     ImGui_ImplVKGlfw_shutdown();
   }
-}
+}// namespace HummingBirdCore
