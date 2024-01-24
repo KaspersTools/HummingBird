@@ -8,3 +8,6 @@
 [submodule "vendor/imgui"]
 	path = vendor/imgui
 	url = git@github.com:KaspersTools/imgui.git
+[submodule "vendor/portable-file-dialogs"]
+	path = vendor/portable-file-dialogs
+	url = git@github.com:JVital2013/portable-file-dialogs.git
