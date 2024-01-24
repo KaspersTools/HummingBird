@@ -14,7 +14,7 @@ namespace HummingBirdCore {
 
     ApplicationSpecification m_Specification;
     //App settings
-    m_Specification.Name = "Imgui Vulkan Example";
+    m_Specification.Name = "Hummingbird Core";
     m_Specification.WindowSettings.Width = 800;
     m_Specification.WindowSettings.Height = 600;
     m_Specification.WindowSettings.WindowResizeable = true;
