@@ -9,7 +9,5 @@ int main(){
 
   HummingBirdCore::Application app;
 
-  app.InitializeAndRun();
-
   return 0;
 }

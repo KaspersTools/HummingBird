@@ -10,7 +10,7 @@
 
 namespace HummingBirdCore {
   namespace Sql {
-    class SqlWindow : public HummingBirdCore::UIWindow {
+    class wSqlWindow : public HummingBirdCore::UIWindow {
   public:
       SqlWindow(const std::string &name) : SqlWindow(ImGuiWindowFlags_None, name) {
       }

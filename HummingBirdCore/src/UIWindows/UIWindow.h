@@ -135,7 +135,7 @@ public:
       m_renderStats = std::make_shared<UIWindowRenderStats>(m_renderStatsWindowTitle);
     }
 
-    void beginFrame() {
+    void wbeginFrame() {
       startUpdateStats();
       if (!m_isOpen) {
         return;
@@ -193,6 +193,8 @@ public:
     std::shared_ptr<UIWindowRenderStats> getRenderStats() {
       return m_renderStats;
     }
+
+    void setName(const std::string &name) { m_name = name; }
 
 protected:
     virtual void render() = 0;
