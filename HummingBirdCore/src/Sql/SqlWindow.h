@@ -10,10 +10,11 @@
 
 namespace HummingBirdCore {
   namespace Sql {
-    class wSqlWindow : public HummingBirdCore::UIWindow {
+    class SqlWindow : public HummingBirdCore::UIWindow {
   public:
       SqlWindow(const std::string &name) : SqlWindow(ImGuiWindowFlags_None, name) {
       }
+
       SqlWindow(ImGuiWindowFlags flags, const std::string &name, const bool autoEndFrame = true) : UIWindow(flags, name, autoEndFrame) {
         initialize();
       }

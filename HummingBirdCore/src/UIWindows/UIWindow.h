@@ -135,7 +135,7 @@ public:
       m_renderStats = std::make_shared<UIWindowRenderStats>(m_renderStatsWindowTitle);
     }
 
-    void wbeginFrame() {
+    void beginFrame() {
       startUpdateStats();
       if (!m_isOpen) {
         return;
