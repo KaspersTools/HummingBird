@@ -79,7 +79,6 @@
 #include "Utils/UIUtils.h"
 
 //rendering
-#include "Rendering/Texture.h"
 
 #include "CoreRef.h"
 #include "Updatable.h"

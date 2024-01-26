@@ -40,6 +40,7 @@ endif ()
 #########HUMMINGBIRD
 #library
 set(HUMMINGBIRDCOURESTATICFILES
+        HummingBirdCore/src/stb_image.h
         HummingBirdCore/src/CoreRef.h
         HummingBirdCore/src/Application.cpp
         HummingBirdCore/src/Application.h
@@ -51,9 +52,6 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/UIWindows/Themes/Themes.cpp
         HummingBirdCore/src/UIWindows/Themes/ThemeManager.cpp
         HummingBirdCore/src/UIWindows/Themes/ThemeManager.h
-        HummingBirdCore/src/stb_image.h
-        HummingBirdCore/src/Rendering/Texture.cpp
-        HummingBirdCore/src/Rendering/Texture.h
         HummingBirdCore/src/Security/LogInWindow.cpp
         HummingBirdCore/src/Security/LogInWindow.h
         HummingBirdCore/src/Security/LoginManager.cpp

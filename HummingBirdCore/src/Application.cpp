@@ -28,8 +28,12 @@ namespace HummingBirdCore {
     m_Specification.TitleBarSettings.CustomTitleBar = true;
     m_Specification.TitleBarSettings.HasLogo = true;
     m_Specification.TitleBarSettings.LogoPath = "Assets/Textures/logo.png";
+    m_Specification.TitleBarSettings.LogoDrawSize = {45.f, 45.f};
+
     m_Specification.TitleBarSettings.DrawTitleCentered = true;
-    m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 30.0f;
+
+    m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 19.0f;
+    m_Specification.TitleBarSettings.Height = 60.132f;
 
     m_Specification.TitleBarSettings.MainMenuBarCallback = new std::function<void()>([&]() {
       UI::mainMenuBarCallback();
@@ -46,11 +50,14 @@ namespace HummingBirdCore {
                                                "please report them to the Hummingbird Github page. \n"
                                                "Enjoy!");
 
+
+    //load fonts
+
     run();
   }
 
   bool Application::run() {
-    while (!glfwWindowShouldClose(ImGui_ImplVKGlfw_getMainWindowHandle())) {
+    while (!ImGui_ImplVKGlfw_shouldClose()) {
       render();
     }
   }
