@@ -6,6 +6,8 @@
 #include <KDB_ImGui/backends/debug/imgui_impl_glfw_vulkan_debug.h>
 #include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
 
+#include <KDB_ImGui/fonts/FontManager.h>
+
 #include <UIWindows/MainMenuBar.h>
 #include <UIWindows/WindowManager.h>
 
@@ -52,6 +54,12 @@ namespace HummingBirdCore {
 
 
     //load fonts
+
+    ImFontConfig fontConfig = ImFontConfig();
+
+    fontConfig.RasterizerDensity = 2.0f;
+    fontConfig.RasterizerMultiply = 1.0f;
+    KDB_ImGui::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", "JetBrainsMono", 16.0f, fontConfig);
 
     run();
   }
