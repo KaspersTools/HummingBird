@@ -7,11 +7,20 @@ list(APPEND HUMMINGBIRD_LIBRARIES
 
 #
 ## imgui
-set(KDB_IMGUI_BUILD_EXAMPLES ON CACHE BOOL "" FORCE)
 add_subdirectory(imgui)
-target_link_libraries(HummingBirdCore PUBLIC KDB_IMGUI-STATIC)
+#enable IMGUI_ENABLE_STDLIB_SUPPORT
+set(IMGUI_ENABLE_STDLIB_SUPPORT ON CACHE BOOL "" FORCE)
+set(IMGUI_EXAMPLES ON CACHE BOOL "" FORCE)
+set(IMGUI_DEMO ON CACHE BOOL "" FORCE)
+set(IMGUI_ENABLE_FREETYPE ON CACHE BOOL "" FORCE)
+set(IMGUI_IMPL_GLFW ON CACHE BOOL "" FORCE)
+set(IMGUI_IMPL_VULKAN ON CACHE BOOL "" FORCE)
+
+target_link_libraries(HummingBirdCore PUBLIC imgui imgui-glfw imgui-vulkan)
 list(APPEND HUMMINGBIRD_LIBRARIES
-        KDB_IMGUI-STATIC
+        imgui
+        imgui-glfw
+        imgui-vulkan
 )
 #
 #set(KDB_IMGUI_GLFWINCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw/include CACHE STRING "" FORCE)

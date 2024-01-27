@@ -60,7 +60,7 @@ namespace HummingBirdCore::Terminal {
 
     ImGui::PopStyleColor(3);
     ImGui::PopStyleVar(2);
-    ImGui::SetItemAllowOverlap();
+    ImGui::SetNextItemAllowOverlap();
     handleInput();
     ImGui::EndChild();
 

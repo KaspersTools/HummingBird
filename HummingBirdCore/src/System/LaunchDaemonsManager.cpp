@@ -141,8 +141,6 @@ namespace HummingBirdCore {
 
     void LaunchDaemonsManager::renderNode(HummingBirdCore::Utils::PlistUtil::PlistNode &node, int index) {
       std::string id = node.key + " - " + std::to_string(index);
-
-
       if (node.type == Utils::PlistUtil::PlistTypeString) {
         std::string val = std::get<std::string>(node.getValue());
         int colorCount = 0;
