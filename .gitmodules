@@ -14,3 +14,6 @@
 [submodule "vendor/imgui"]
 	path = vendor/imgui
 	url = git@github.com:KaspersTools/imgui.git
+[submodule "vendor/HummingBird/SqlTool"]
+	path = vendor/HummingBird/SqlTool
+	url = ../SqlTool/
