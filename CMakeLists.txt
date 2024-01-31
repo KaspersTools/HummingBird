@@ -115,17 +115,6 @@ endif ()
 
 #####OWN ADDONS
 if(HUMMINGBIRD_KASPER)
-#  message("Building with HummingBird Kasper")
-#  set(HUMMINGBIRDKASPERLOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../HummingBirdKasper)
-#  set(HUMMINGBIRDKASPERCMAKELIST ../HummingBirdKasper/CMakeLists.txt)
-#  add_executable(HummingBirdKasper
-#          ../HummingBirdKasper/main.cpp
-#          ../HummingBirdKasper/testUIWindow.h
-#          ../HummingBirdKasper/testUIWindow.h
-#  )
-#
-#  target_link_libraries(HummingBirdKasper HummingBirdCore)
-#  target_include_directories(HummingBirdKasper PRIVATE HummingBirdCore/src)
 endif()
 
 

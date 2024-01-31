@@ -143,12 +143,9 @@ endif ()
 option(HUMMINGBIRD_WITH_SQL "HummingBird SQL" ON)
 
 if(HUMMINGBIRD_WITH_SQL)
-#  add_subdirectory(HummingBirdSQL)
-#  target_link_libraries(HummingBirdCore PUBLIC HummingBirdSQL)
-#  list(APPEND HUMMINGBIRD_LIBRARIES
-#          HummingBirdSQL
-#  )
-  #DEFINE
+  set(HUMMINGBIRD_VENDOR_SqlToolDir ${HUMMINGBIRD_DIR}/vendor/HummingBird/SqlTool CACHE STRING "HummingBird SqlTool directory")
+  add_subdirectory(${HUMMINGBIRD_VENDOR_SqlToolDir})
+  target_link_libraries(HummingBirdCore PUBLIC HummingBird_Sql)
   target_compile_definitions(HummingBirdCore PUBLIC HUMMINGBIRD_WITH_SQL)
 endif()
 

@@ -6,6 +6,7 @@
 #define HUMMINGBIRD_SQLWINDOW_H
 
 #include <UIWindows/UIWindow.h>
+#include <Hummingbird_SQL/Connection.h>
 
 namespace HummingBirdCore {
   class SqlWindow : public UIWindow {
@@ -14,10 +15,13 @@ namespace HummingBirdCore {
     }
 
     void render() override;
+private:
+    std::string m_inputServerName = "127.0.0.1";
+    std::string m_inputUserName = "root";
+    std::string m_inputPassword = "";
+
+    HummingBird::Sql::Connection m_connection;
   };
 }
-class SqlWindow {
-};
-
 
 #endif//HUMMINGBIRD_SQLWINDOW_H

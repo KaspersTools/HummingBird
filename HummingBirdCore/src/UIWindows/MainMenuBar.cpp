@@ -32,6 +32,9 @@
 #include "System/SysInfo.h"
 #include "WindowManager.h"
 
+//sql
+#include "Sql/SqlWindow.h"
+
 namespace HummingBirdCore {
   void UI::mainMenuBarCallback() {
     HummingBirdCore::UI::WindowManager *windowManager = HummingBirdCore::UI::WindowManager::getInstance();
@@ -62,16 +65,17 @@ namespace HummingBirdCore {
     }
 
     if (ImGui::BeginMenu("SQL")) {
+
+      const std::string baseName = "Sql ";
+#ifndef HUMMINGBIRD_WITH_SQL
       ImGui::BeginDisabled(true);
+#endif
       if (ImGui::MenuItem("Sql Connect")) {
-        const std::string baseName = "Sql ";
-//        windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::Sql::SqlWindow>(baseName));
+        windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::SqlWindow>(baseName));
       }
-      if (ImGui::MenuItem("Import SQL")) {
-        const std::string baseName = "Import SQL ";
-//        windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::Sql::SqlImportWindow>(baseName));
-      }
+#ifndef HUMMINGBIRD_WITH_SQL
       ImGui::EndDisabled();
+#endif
       ImGui::EndMenu();
     }
 
