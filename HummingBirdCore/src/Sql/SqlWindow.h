@@ -20,6 +20,7 @@ private:
     std::string m_inputUserName = "root";
     std::string m_inputPassword = "";
 
+    uint m_lastMaxWidth = -1;
     HummingBird::Sql::Connection m_connection;
   };
 }
