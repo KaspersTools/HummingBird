@@ -79,7 +79,6 @@
 #include "Utils/UIUtils.h"
 
 //rendering
-
 #include "CoreRef.h"
 #include "Updatable.h"
 #include "ApplicationObject.h"
@@ -87,8 +86,5 @@
 //helper
 #include "Folder.h"
 
-//sql
-#include "Sql/SqlConnection.h"
-
-
-
+//UIWindows
+#include "UIWindows/UIWindow.h"

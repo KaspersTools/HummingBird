@@ -2,6 +2,7 @@
 // Created by Kasper de Bruin on 23/01/2024.
 //
 #include <UIWindows/MainMenuBar.h>
+#include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
 
 // UIWindows
 #include "UIWindows/ContentExplorer.h"
@@ -31,9 +32,6 @@
 #include "System/SysInfo.h"
 #include "WindowManager.h"
 
-#include "Sql/SqlWindow.h"
-#include "Sql/SqlImportWindow.h"
-
 namespace HummingBirdCore {
   void UI::mainMenuBarCallback() {
     HummingBirdCore::UI::WindowManager *windowManager = HummingBirdCore::UI::WindowManager::getInstance();
@@ -59,19 +57,24 @@ namespace HummingBirdCore {
       }
       if (ImGui::MenuItem("Exit")) {
         CORE_WARN("EXIT NOT IMPLEMENTED");
+
+        //Close the window
+        ImGui_ImplVKGlfw_setShouldClose(true);
       }
       ImGui::EndMenu();
     }
 
     if (ImGui::BeginMenu("SQL")) {
+      ImGui::BeginDisabled(true);
       if (ImGui::MenuItem("Sql Connect")) {
         const std::string baseName = "Sql ";
-        windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::Sql::SqlWindow>(baseName));
+//        windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::Sql::SqlWindow>(baseName));
       }
       if (ImGui::MenuItem("Import SQL")) {
         const std::string baseName = "Import SQL ";
-        windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::Sql::SqlImportWindow>(baseName));
+//        windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::Sql::SqlImportWindow>(baseName));
       }
+      ImGui::EndDisabled();
       ImGui::EndMenu();
     }
 

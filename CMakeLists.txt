@@ -70,12 +70,12 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/System/SysInfo.h
         HummingBirdCore/src/System/SysInfoWindow.cpp
         HummingBirdCore/src/System/SysInfoWindow.h
-        HummingBirdCore/src/Sql/SqlWindow.cpp
-        HummingBirdCore/src/Sql/SqlWindow.h
-        HummingBirdCore/src/Sql/SqlImportWindow.cpp
-        HummingBirdCore/src/Sql/SqlImportWindow.h
-        HummingBirdCore/src/Sql/SqlConnection.cpp
-        HummingBirdCore/src/Sql/SqlConnection.h
+#        HummingBirdCore/src/Sql/Old/SqlWindow.cpp
+#        HummingBirdCore/src/Sql/Old/SqlWindow.h
+#        HummingBirdCore/src/Sql/Old/SqlImportWindow.cpp
+#        HummingBirdCore/src/Sql/Old/SqlImportWindow.h
+#        HummingBirdCore/src/Sql/Old/SqlConnection.cpp
+#        HummingBirdCore/src/Sql/Old/SqlConnection.h
         HummingBirdCore/src/UIWindows/Widget/DataViewer.h
         HummingBirdCore/src/ThirdParty/MetricsImGui.cpp
         HummingBirdCore/src/ThirdParty/MetricsImGui.h
@@ -87,7 +87,6 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/UIWindows/Widget/AllAddonsWidget.h
         HummingBirdCore/src/UIWindows/MainMenuBar.cpp
         HummingBirdCore/src/UIWindows/WindowManager.cpp
-
 )
 
 add_library(HummingBirdCore STATIC
