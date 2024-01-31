@@ -87,6 +87,8 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/UIWindows/Widget/AllAddonsWidget.h
         HummingBirdCore/src/UIWindows/MainMenuBar.cpp
         HummingBirdCore/src/UIWindows/WindowManager.cpp
+        HummingBirdCore/src/Sql/SqlWindow.cpp
+        HummingBirdCore/src/Sql/SqlWindow.h
 )
 
 add_library(HummingBirdCore STATIC

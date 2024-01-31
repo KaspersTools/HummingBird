@@ -100,7 +100,7 @@ private:
 
 public:
     EditHostsWindow(const std::string &name) : EditHostsWindow(ImGuiWindowFlags_None, name) {}
-    EditHostsWindow(const ImGuiWindowFlags flags, const std::string &name) : UIWindow(flags, name) {
+    EditHostsWindow(const ImGuiWindowFlags flags, const std::string &name) : UIWindow(name, flags) {
       parseHostsFile();
     }
 

@@ -10,7 +10,7 @@
 namespace HummingBirdCore::Widgets {
   struct Header {
     std::string name;
-    enum_field_types type; //convert to own type
+    //enum_field_types type; //convert to own type
   };
 
   struct Row {
@@ -63,7 +63,7 @@ namespace HummingBirdCore::Widgets {
 
   class DataViewer : public UIWindow {
 public:
-    explicit DataViewer(const std::string &name) : UIWindow(ImGuiWindowFlags_MenuBar, name) {
+    explicit DataViewer(const std::string &name) : UIWindow(name, ImGuiWindowFlags_MenuBar) {
 
     }
     ~DataViewer() = default;

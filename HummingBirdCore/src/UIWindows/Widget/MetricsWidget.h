@@ -11,7 +11,7 @@
 namespace HummingBirdCore::Widgets {
   class MetricsWidget : public UIWindow {
 public:
-        explicit MetricsWidget(const std::string &name) : UIWindow(ImGuiWindowFlags_MenuBar, name) {
+        explicit MetricsWidget(const std::string &name) : UIWindow(name, ImGuiWindowFlags_MenuBar) {
 
         }
 

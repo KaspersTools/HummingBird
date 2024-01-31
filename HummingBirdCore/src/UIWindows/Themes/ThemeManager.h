@@ -47,8 +47,7 @@ namespace HummingBirdCore::Themes{
           "WhiteIsWhite"};
   class ThemeManager : public UIWindow {
 public:
-    ThemeManager(const std::string &name) :
-                     UIWindow(ImGuiWindowFlags_None, name) {
+    ThemeManager(const std::string &name) : UIWindow(name, ImGuiWindowFlags_None) {
 
     }
 

@@ -96,7 +96,7 @@ namespace HummingBirdCore {
 
     class LaunchDaemonsManager : public UIWindow {
   public:
-      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(ImGuiWindowFlags_None, name), m_userAgent()
+      explicit LaunchDaemonsManager(const std::string &name) : UIWindow(name, ImGuiWindowFlags_None), m_userAgent()
       {
         fetchAllDaemons();
       }

@@ -56,9 +56,6 @@ namespace HummingBirdCore {
         CORE_WARN("LOG OUT NOT IMPLEMENTED");
       }
       if (ImGui::MenuItem("Exit")) {
-        CORE_WARN("EXIT NOT IMPLEMENTED");
-
-        //Close the window
         ImGui_ImplVKGlfw_setShouldClose(true);
       }
       ImGui::EndMenu();

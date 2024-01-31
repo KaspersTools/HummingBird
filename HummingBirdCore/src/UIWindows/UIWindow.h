@@ -130,7 +130,7 @@ namespace HummingBirdCore {
 
   class UIWindow : public ApplicationObject {
 public:
-    UIWindow(ImGuiWindowFlags flags, const std::string &name, const bool autoEndFrame = true, const bool autoStartFrame=true) : m_flags(flags), m_name(name), c_autoEndFrame(autoEndFrame), c_autoStartFrame(autoStartFrame) {
+    UIWindow(const std::string &name, ImGuiWindowFlags flags = ImGuiWindowFlags_None, const bool autoEndFrame = true, const bool autoStartFrame = true) : m_flags(flags), m_name(name), c_autoEndFrame(autoEndFrame), c_autoStartFrame(autoStartFrame) {
       m_renderStatsWindowTitle = name + " Render Stats";
       m_renderStats = std::make_shared<UIWindowRenderStats>(m_renderStatsWindowTitle);
     }
@@ -142,15 +142,19 @@ public:
       }
 
       if(getAutoStartFrame()) {
-        ImGui::Begin(m_name.c_str(), &m_isOpen, m_flags | ImGuiWindowFlags_MenuBar);
-        if (ImGui::BeginMenuBar()) {
-          if (ImGui::BeginMenu("Debug")) {
-            if (ImGui::MenuItem("Render Stats")) {
-              m_showRenderStats = !m_showRenderStats;
+        if(m_flags & ImGuiWindowFlags_MenuBar) {
+          ImGui::Begin(m_name.c_str(), &m_isOpen, m_flags | ImGuiWindowFlags_MenuBar);
+          if (ImGui::BeginMenuBar()) {
+            if (ImGui::BeginMenu("Debug")) {
+              if (ImGui::MenuItem("Render Stats")) {
+                m_showRenderStats = !m_showRenderStats;
+              }
+              ImGui::EndMenu();
             }
-            ImGui::EndMenu();
+            ImGui::EndMenuBar();
           }
-          ImGui::EndMenuBar();
+        } else {
+          ImGui::Begin(m_name.c_str(), &m_isOpen, m_flags);
         }
       }
       render();

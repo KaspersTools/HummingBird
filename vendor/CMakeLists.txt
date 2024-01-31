@@ -22,21 +22,6 @@ list(APPEND HUMMINGBIRD_LIBRARIES
         imgui-glfw
         imgui-vulkan
 )
-#
-#set(KDB_IMGUI_GLFWINCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw/include CACHE STRING "" FORCE)
-#
-#add_subdirectory(imgui)
-#target_link_libraries(HummingBirdCore PUBLIC KDB_IMGUI-STATIC)
-#target_include_directories(HummingBirdCore PUBLIC
-#        ${HUMMINGBIRD_DIR}/vendor/imgui
-#        ${HUMMINGBIRD_DIR}/vendor/imgui/backends
-#        ${HUMMINGBIRD_DIR}/vendor/imgui/addons
-#        ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
-#)
-#
-#list(APPEND HUMMINGBIRD_LIBRARIES
-#        KDB_IMGUI-STATIC
-#)
 
 #fmt
 IF (NOT EXISTS ../vendor/fmt)
@@ -78,20 +63,6 @@ ELSE ()
 endif ()
 
 ##################system##################
-#mysql
-find_package(MySQL)
-if (NOT MYSQL_FOUND)
-  message(FATAL_ERROR "MySQL not found")
-else ()
-  message(STATUS "MySQL found")
-  target_link_libraries(HummingBirdCore PUBLIC ${MySQL_LIBRARIES})
-  target_include_directories(HummingBirdCore PUBLIC ${MySQL_INCLUDE_DIRS})
-
-  list(APPEND HUMMINGBIRD_LIBRARIES
-          ${MySQL_LIBRARIES}
-  )
-endif ()
-
 # get Security Framework mac
 find_library(SECURITY_FRAMEWORK Security)
 if (NOT SECURITY_FRAMEWORK)
@@ -166,6 +137,21 @@ else ()
           ${LIBXML2_LIBRARIES}
   )
 endif ()
+
+########HummingBirdTools########
+#sql tool
+option(HUMMINGBIRD_WITH_SQL "HummingBird SQL" ON)
+
+if(HUMMINGBIRD_WITH_SQL)
+#  add_subdirectory(HummingBirdSQL)
+#  target_link_libraries(HummingBirdCore PUBLIC HummingBirdSQL)
+#  list(APPEND HUMMINGBIRD_LIBRARIES
+#          HummingBirdSQL
+#  )
+  #DEFINE
+  target_compile_definitions(HummingBirdCore PUBLIC HUMMINGBIRD_WITH_SQL)
+endif()
+
 
 #imgui filedialog
 #add_subdirectory(ImGuiFileDialog)

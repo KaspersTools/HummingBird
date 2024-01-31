@@ -9,7 +9,7 @@ namespace HummingBirdCore::UIWindows {
 
   class LogWindow : public UIWindow {
 public:
-    LogWindow(const std::string& name) : UIWindow(ImGuiWindowFlags_None, name) {
+    LogWindow(const std::string& name) : UIWindow(name, ImGuiWindowFlags_None) {
     }
 
     ~LogWindow() = default;

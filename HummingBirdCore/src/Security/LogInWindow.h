@@ -13,7 +13,7 @@ public:
                                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
                                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse) {}
 
-    LogInWindow(const ImGuiWindowFlags flags) : UIWindow(flags, "Log In") {
+    LogInWindow(const ImGuiWindowFlags flags) : UIWindow("Log In", flags) {
     }
 
 

@@ -66,7 +66,6 @@
 #pragma warning(pop)
 
 #include <fmt/core.h>
-#include <mysql.h>
 
 /////HUMMINGBIRD CORE/////
 //main

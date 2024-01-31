@@ -59,7 +59,7 @@ private:
 
   public:
       ContentExplorer(const std::string& name) : ContentExplorer(ImGuiWindowFlags_None, name) {}
-      ContentExplorer(ImGuiWindowFlags flags, const std::string& name) : UIWindow(ImGuiWindowFlags_None, name) {
+      ContentExplorer(ImGuiWindowFlags flags, const std::string& name) : UIWindow(name, ImGuiWindowFlags_None) {
         changeDirectory(*m_currentDirectory);
       }
 

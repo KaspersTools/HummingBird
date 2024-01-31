@@ -13,7 +13,7 @@
 namespace HummingBirdCore {
   class AddonWidget : public UIWindow {
 public:
-    explicit AddonWidget(const std::string &name) : UIWindow(ImGuiWindowFlags_MenuBar, name, false, false) {
+    explicit AddonWidget(const std::string &name) : UIWindow(name, ImGuiWindowFlags_MenuBar, false, false) {
     }
     ~AddonWidget() = default;
     void render() override {
