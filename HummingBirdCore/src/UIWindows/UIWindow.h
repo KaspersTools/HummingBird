@@ -6,6 +6,7 @@
 
 #include "PCH/pch.h"
 #include <imgui_internal.h>
+#include <KDB_ImGui/Extension.h>
 
 // Define a UI window structure
 namespace HummingBirdCore {

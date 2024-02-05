@@ -61,7 +61,7 @@ namespace HummingBirdCore {
 
     fontConfig.RasterizerDensity = 2.0f;
     fontConfig.RasterizerMultiply = 1.0f;
-    KDB_ImGui::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", "JetBrainsMono", 16.0f, fontConfig);
+    HBUI::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", "JetBrainsMono", 16.0f, fontConfig);
 
     HummingBirdCore::UI::WindowManager *windowManager = HummingBirdCore::UI::WindowManager::getInstance();
     windowManager->addWindow("Sql Window", 0, std::make_shared<HummingBirdCore::SqlWindow>("Sql Window"));
