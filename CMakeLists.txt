@@ -70,12 +70,6 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/System/SysInfo.h
         HummingBirdCore/src/System/SysInfoWindow.cpp
         HummingBirdCore/src/System/SysInfoWindow.h
-#        HummingBirdCore/src/Sql/Old/SqlWindow.cpp
-#        HummingBirdCore/src/Sql/Old/SqlWindow.h
-#        HummingBirdCore/src/Sql/Old/SqlImportWindow.cpp
-#        HummingBirdCore/src/Sql/Old/SqlImportWindow.h
-#        HummingBirdCore/src/Sql/Old/SqlConnection.cpp
-#        HummingBirdCore/src/Sql/Old/SqlConnection.h
         HummingBirdCore/src/UIWindows/Widget/DataViewer.h
         HummingBirdCore/src/ThirdParty/MetricsImGui.cpp
         HummingBirdCore/src/ThirdParty/MetricsImGui.h
@@ -113,10 +107,8 @@ else ()
 endif ()
 
 
-#####OWN ADDONS
-if(HUMMINGBIRD_KASPER)
-endif()
-
+add_subdirectory(HummingBirdTestPlugin EXCLUDE_FROM_ALL)
+target_include_directories(HummingBirdCore PUBLIC HummingBirdTestPlugin/include)
 
 
 ########################################################################

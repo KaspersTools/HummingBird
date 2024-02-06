@@ -4,6 +4,7 @@
 //
 
 #pragma once
+#include "../../HummingBirdTestPlugin/include/IPlugin.h"
 #include <PCH/pch.h>
 
 namespace HummingBirdCore {
@@ -23,6 +24,8 @@ private:
 
 private:
     bool showDebugWindow = false;
+    HummingBird::Plugins::IPlugin* plugin = nullptr;
+    void* handle = nullptr;
   };
 
 }// namespace HummingBirdCore

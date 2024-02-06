@@ -2,6 +2,14 @@
 // Created by Kasper de Bruin on 01/11/2023.
 //
 
+
+#include <imconfig.h>
+#include <misc/cpp/imgui_stdlib.h>
+
+#include <imgui.h>
+#include <imgui_internal.h>
+#include <addons/imguinotify/imgui_notify.h>
+
 #include "Application.h"
 #include <KDB_ImGui/backends/debug/imgui_impl_glfw_vulkan_debug.h>
 #include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
@@ -13,10 +21,39 @@
 
 #include <portable-file-dialogs.h>
 
+#include <dlfcn.h>
+#include <iostream>
+
 #include <Sql/SqlWindow.h>
 
 namespace HummingBirdCore {
   void Application::init() {
+
+    handle = dlopen("/Users/k.debruin/_private/_hummingbird/workdir/HummingBird/cmake-build-debug-exe/plugins/TestPlugin/libHUMMINGBIRD_PLUGIN_TEST.dylib", RTLD_LAZY);
+    if (!handle) {
+      std::cerr << "Cannot load library: " << dlerror() << '\n';
+      exit(-1);
+    }
+
+    // reset errors
+    dlerror();
+
+    // load the symbols
+    HummingBird::Plugins::IPlugin* (*create_plugin)();
+    *(void**)(&create_plugin) = dlsym(handle, "create_plugin");
+    const char* dlsym_error = dlerror();
+    if (dlsym_error) {
+      std::cerr << "Cannot load symbol create: " << dlsym_error << '\n';
+      dlclose(handle);
+      exit(-1);
+    }
+
+    // create an instance of the class
+    plugin = create_plugin();
+
+    // use the class
+    plugin->initialize();
+
 
     ApplicationSpecification m_Specification;
     //App settings
@@ -79,7 +116,7 @@ namespace HummingBirdCore {
     ImGui_ImplVKGlfw_startRender();
 
     ImGui::ShowDemoWindow();
-
+    plugin->render(ImGui::GetCurrentContext());
     HummingBirdCore::UI::WindowManager::getInstance()->render();
 
     ImguiGlfwVulkanDebugger::render();
@@ -88,5 +125,11 @@ namespace HummingBirdCore {
 
   void Application::shutdown() {
     ImGui_ImplVKGlfw_shutdown();
+
+    // close the library
+    dlclose(handle);
+    if(plugin != nullptr){
+      delete plugin;
+    }
   }
 }// namespace HummingBirdCore

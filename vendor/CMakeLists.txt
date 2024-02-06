@@ -16,11 +16,12 @@ set(IMGUI_ENABLE_FREETYPE ON CACHE BOOL "" FORCE)
 set(IMGUI_IMPL_GLFW ON CACHE BOOL "" FORCE)
 set(IMGUI_IMPL_VULKAN ON CACHE BOOL "" FORCE)
 
-target_link_libraries(HummingBirdCore PUBLIC imgui imgui-glfw imgui-vulkan)
+target_link_libraries(HummingBirdCore PUBLIC imgui imgui-glfw imgui-vulkan imgui-stdlib)
 list(APPEND HUMMINGBIRD_LIBRARIES
         imgui
         imgui-glfw
         imgui-vulkan
+        imgui-stdlib
 )
 
 #fmt
