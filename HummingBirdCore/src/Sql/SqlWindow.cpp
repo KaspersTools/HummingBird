@@ -38,7 +38,7 @@ namespace HummingBirdCore {
 
       if (!schemas.empty()) {
         ImGui::BeginChild("##left", ImVec2(0, 0), true);
-        HBUI::textCenteredMultiline("No Schemas found", ImVec4(1,0,0,1));
+        KDB_IMGUI::textCenteredMultiline("No Schemas found", ImVec4(1,0,0,1));
         ImGui::EndChild();
       } else {
         if (m_initialSize.x == -1) {
@@ -103,9 +103,9 @@ namespace HummingBirdCore {
             ImGui::Separator();
             {
               if (!m_connection.isCurrentSchemaSet() || !m_connection.getCurrentSchema().isTableSet()) {
-                HBUI::textCenteredMultiline("No Schema or Table selected", ImVec4(1,0,0,1));
+                KDB_IMGUI::textCenteredMultiline("No Schema or Table selected", ImVec4(1,0,0,1));
               } else if (columnCount != -1) {
-                HBUI::textCenteredMultiline("No Columns found, for table: " + currentTable.getName(), ImVec4(1,0,0,1));
+                KDB_IMGUI::textCenteredMultiline("No Columns found, for table: " + currentTable.getName(), ImVec4(1,0,0,1));
               } else {
                 ImGuiTableFlags tableFlags = ImGuiTableFlags_Resizable |
                                              ImGuiTableFlags_RowBg |

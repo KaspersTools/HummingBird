@@ -29,7 +29,7 @@
 namespace HummingBirdCore {
   void Application::init() {
 
-    handle = dlopen("/Users/k.debruin/_private/_hummingbird/workdir/HummingBird/cmake-build-debug-exe/plugins/TestPlugin/libHUMMINGBIRD_PLUGIN_TEST.dylib", RTLD_LAZY);
+    handle = dlopen("/Users/k.debruin/_private/_hummingbird/workdir/HummingBird/cmake-build-debug-exe/plugins/Manager/libHUMMINGBIRD_PLUGIN_MANAGER.dylib", RTLD_LAZY);
     if (!handle) {
       std::cerr << "Cannot load library: " << dlerror() << '\n';
       exit(-1);
@@ -98,7 +98,7 @@ namespace HummingBirdCore {
 
     fontConfig.RasterizerDensity = 2.0f;
     fontConfig.RasterizerMultiply = 1.0f;
-    HBUI::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", "JetBrainsMono", 16.0f, fontConfig);
+    KDB_IMGUI::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf", "JetBrainsMono", 16.0f, fontConfig);
 
     HummingBirdCore::UI::WindowManager *windowManager = HummingBirdCore::UI::WindowManager::getInstance();
     windowManager->addWindow("Sql Window", 0, std::make_shared<HummingBirdCore::SqlWindow>("Sql Window"));
