@@ -138,7 +138,8 @@ namespace HummingBirdCore {
 
   bool Application::run() {
     while (!ImGui_ImplVKGlfw_shouldClose()) {
-      pluginManager->update();
+      if(pluginManager)
+        pluginManager->update();
       render();
     }
   }
