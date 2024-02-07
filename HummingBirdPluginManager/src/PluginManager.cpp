@@ -4,22 +4,20 @@
 
 #include "PluginManager.h"
 
-#include <HBUI/HBUI.h>
-
 void PluginManager::initialize() {
   std::cout << "PluginManager initialized" << std::endl;
-}
-
-void PluginManager::execute() {
-  std::cout << "PluginManager executed" << std::endl;
+  HummingBirdCore::UI::WindowManager::getInstance()->addWindow("PluginManager", 0, std::make_shared<PluginManagerWindow>());
 }
 
 void PluginManager::cleanup() {
   std::cout << "PluginManager cleaned up" << std::endl;
+  for (auto &plugin : plugins) {
+    plugin->cleanup();
+  }
 }
 
-void PluginManager::render() {
-  ImGui::Begin("PluginManager");
-  ImGui::Text("PluginManager");
-  ImGui::End();
+void PluginManager::update() {
+  for (auto &plugin : plugins) {
+    plugin->update();
+  }
 }

@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.24.4)
 project(HUMMINGBIRD_PLUGIN_MANAGER)
 set(CMAKE_CXX_STANDARD 23)
 
-
-
 if(NOT DEFINED HUMMINGBIRD_PLUGIN_DIR)
     set(HUMMINGBIRD_PLUGIN_MANAGER_DIR ${CMAKE_CURRENT_BINARY_DIR})
 else()
@@ -13,7 +11,7 @@ endif()
 message(STATUS "HUMMINGBIRD_PLUGIN_MANAGER_DIR: ${HUMMINGBIRD_PLUGIN_MANAGER_DIR}")
 
 add_library(HUMMINGBIRD_PLUGIN_MANAGER SHARED
-        src/PluginManager.cpp src/PluginManager.h)
+        src/PluginManager.cpp src/PluginManager.h src/PluginManagerWindow.h)
 target_include_directories(HUMMINGBIRD_PLUGIN_MANAGER PRIVATE include)
 
 set_target_properties(HUMMINGBIRD_PLUGIN_MANAGER PROPERTIES

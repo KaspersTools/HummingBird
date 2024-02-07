@@ -107,6 +107,8 @@ endif ()
 
 set(HUMMINGBIRD_PLUGIN_DIR ${CMAKE_CURRENT_BINARY_DIR}/plugins)
 add_subdirectory(HummingBirdPluginManager EXCLUDE_FROM_ALL)
+add_subdirectory(HummingBirdPluginExample EXCLUDE_FROM_ALL)
+
 target_include_directories(HummingBirdCore PUBLIC HummingBirdPluginManager/include)
 
 

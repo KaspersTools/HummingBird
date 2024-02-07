@@ -19,12 +19,13 @@ public:
     bool run();
 private:
     void init();
-    bool loadPluginManager();
+
+    bool loadPluginManager(const std::filesystem::path &path);
+
     void render();
     void shutdown();
 
 private:
-    bool showDebugWindow = false;
     HummingBird::Plugins::IPlugin* pluginManager = nullptr;
     void* handle = nullptr;
   };

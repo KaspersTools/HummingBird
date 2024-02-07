@@ -25,7 +25,11 @@ set(IMGUI_IMPL_GLFW ON CACHE BOOL "" FORCE)
 set(IMGUI_IMPL_VULKAN ON CACHE BOOL "" FORCE)
 set(IMGUI_EXTENSION ON CACHE BOOL "" FORCE)
 
-target_link_libraries(HummingBirdCore PUBLIC imgui imgui-glfw imgui-vulkan imgui-stdlib imgui-extension)
+target_link_libraries(HummingBirdCore PUBLIC
+        imgui
+        imgui-glfw imgui-vulkan
+        imgui-stdlib
+        imgui-extension)
 list(APPEND HUMMINGBIRD_LIBRARIES
         imgui
         imgui-glfw
