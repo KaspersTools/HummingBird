@@ -132,7 +132,15 @@ namespace HummingBirdCore {
     }
 
     loadPlugin("plugins/libHUMMINGBIRD_PLUGIN_TEMPLATE.dylib", pluginManager);
-
+    auto entries = std::filesystem::directory_iterator("plugins/testplugins");
+    if(entries == std::filesystem::directory_iterator()){
+      CORE_ERROR("No plugins found in plugins directory");
+      return false;
+    }
+    for (const auto &entry : entries) {
+      if(entry.is_regular_file() && entry.path().extension() == ".dylib")
+        loadPlugin(entry.path(), pluginManager);
+    }
     return true;
   }
 
@@ -140,6 +148,7 @@ namespace HummingBirdCore {
     while (!ImGui_ImplVKGlfw_shouldClose()) {
       if(pluginManager)
         pluginManager->update();
+
       render();
     }
   }
