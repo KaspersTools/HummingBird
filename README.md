@@ -100,17 +100,11 @@ git --version
 
 ### Installation
 #### Deps
-1. mysql client
-   1.1 Brew
-     ```sh
-     brew install mysql-client
-     ```
-   1.2 mac ports
 
 #### Hummingbird
 1. Clone the HummingBird repository:
    ```sh
-   git clone --recursive https://github.com/KaspersCult/HummingBird.git
+   git clone https://github.com/KaspersCult/HummingBird.git --recursive 
    ```
 
 2. go in the folder:
