@@ -17,7 +17,7 @@
 #include <KDB_ImGui/fonts/FontManager.h>
 
 #include <UIWindows/MainMenuBar.h>
-#include <UIWindows/WindowManager.h>
+#include <HBUI/WindowManager.h>
 
 #include <portable-file-dialogs.h>
 
@@ -25,37 +25,13 @@
 #include <iostream>
 
 #include <Sql/SqlWindow.h>
+typedef void (*SetContextFunc)(ImGuiContext*);
 
 namespace HummingBirdCore {
   void Application::init() {
 
-    handle = dlopen("/Users/k.debruin/_private/_hummingbird/workdir/HummingBird/cmake-build-debug-exe/plugins/Manager/libHUMMINGBIRD_PLUGIN_MANAGER.dylib", RTLD_LAZY);
-    if (!handle) {
-      std::cerr << "Cannot load library: " << dlerror() << '\n';
-      exit(-1);
-    }
-
-    // reset errors
-    dlerror();
-
-    // load the symbols
-    HummingBird::Plugins::IPlugin* (*create_plugin)();
-    *(void**)(&create_plugin) = dlsym(handle, "create_plugin");
-    const char* dlsym_error = dlerror();
-    if (dlsym_error) {
-      std::cerr << "Cannot load symbol create: " << dlsym_error << '\n';
-      dlclose(handle);
-      exit(-1);
-    }
-
-    // create an instance of the class
-    plugin = create_plugin();
-
-    // use the class
-    plugin->initialize();
-
-
     ApplicationSpecification m_Specification;
+
     //App settings
     m_Specification.Name = "Hummingbird Core";
     m_Specification.WindowSettings.Width = 800;
@@ -103,6 +79,33 @@ namespace HummingBirdCore {
     HummingBirdCore::UI::WindowManager *windowManager = HummingBirdCore::UI::WindowManager::getInstance();
     windowManager->addWindow("Sql Window", 0, std::make_shared<HummingBirdCore::SqlWindow>("Sql Window"));
 
+
+    // Pass the context to the libraries
+    handle = dlopen("plugins/libHUMMINGBIRD_PLUGIN_MANAGER.dylib",
+                    RTLD_LAZY);
+    if (!handle) {
+      std::cerr << "Cannot cdload library: " << dlerror() << '\n';
+      exit(-1);
+    }
+
+    // reset errors
+    dlerror();
+    // load the symbols
+    HummingBird::Plugins::IPlugin* (*create_plugin)();
+    *(void**)(&create_plugin) = dlsym(handle, "create_plugin");
+
+    const char* dlsym_error = dlerror();
+    if (dlsym_error) {
+      std::cerr << "Cannot load symbol create: " << dlsym_error << '\n';
+      dlclose(handle);
+      exit(-1);
+    }
+
+    pluginManager = create_plugin();
+    pluginManager->initialize();
+    SetContextFunc setContextPluginManager = (SetContextFunc)dlsym(handle, "setImGuiContext");
+    setContextPluginManager(ImGui::GetCurrentContext());
+
     run();
   }
 
@@ -116,7 +119,9 @@ namespace HummingBirdCore {
     ImGui_ImplVKGlfw_startRender();
 
     ImGui::ShowDemoWindow();
-    plugin->render(ImGui::GetCurrentContext());
+
+    pluginManager->render();
+
     HummingBirdCore::UI::WindowManager::getInstance()->render();
 
     ImguiGlfwVulkanDebugger::render();
@@ -126,10 +131,9 @@ namespace HummingBirdCore {
   void Application::shutdown() {
     ImGui_ImplVKGlfw_shutdown();
 
-    // close the library
     dlclose(handle);
-    if(plugin != nullptr){
-      delete plugin;
+    if(pluginManager != nullptr){
+      delete pluginManager;
     }
   }
 }// namespace HummingBirdCore

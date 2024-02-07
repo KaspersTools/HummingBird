@@ -9,20 +9,31 @@ list(APPEND HUMMINGBIRD_LIBRARIES
 ## imgui
 add_subdirectory(imgui)
 #enable IMGUI_ENABLE_STDLIB_SUPPORT
-set(IMGUI_ENABLE_STDLIB_SUPPORT ON CACHE BOOL "" FORCE)
+#set(IMGUI_ENABLE_STDLIB_SUPPORT ON CACHE BOOL "" FORCE)
+#set(IMGUI_EXAMPLES ON CACHE BOOL "" FORCE)
+#set(IMGUI_DEMO ON CACHE BOOL "" FORCE)
+#set(IMGUI_ENABLE_FREETYPE ON CACHE BOOL "" FORCE)
+#set(IMGUI_IMPL_GLFW ON CACHE BOOL "" FORCE)
+#set(IMGUI_IMPL_VULKAN ON CACHE BOOL "" FORCE)
+#set(IMGUI_IMPL_VULKAN ON CACHE BOOL "" FORCE)
+
 set(IMGUI_EXAMPLES ON CACHE BOOL "" FORCE)
 set(IMGUI_DEMO ON CACHE BOOL "" FORCE)
+set(IMGUI_ENABLE_STDLIB_SUPPORT ON CACHE BOOL "" FORCE)
 set(IMGUI_ENABLE_FREETYPE ON CACHE BOOL "" FORCE)
 set(IMGUI_IMPL_GLFW ON CACHE BOOL "" FORCE)
 set(IMGUI_IMPL_VULKAN ON CACHE BOOL "" FORCE)
+set(IMGUI_EXTENSION ON CACHE BOOL "" FORCE)
 
-target_link_libraries(HummingBirdCore PUBLIC imgui imgui-glfw imgui-vulkan imgui-stdlib)
+target_link_libraries(HummingBirdCore PUBLIC imgui imgui-glfw imgui-vulkan imgui-stdlib imgui-extension)
 list(APPEND HUMMINGBIRD_LIBRARIES
         imgui
         imgui-glfw
         imgui-vulkan
         imgui-stdlib
+        imgui-extension
 )
+target_include_directories(HummingBirdCore PUBLIC imgui)
 
 #fmt
 IF (NOT EXISTS ../vendor/fmt)
@@ -149,20 +160,6 @@ if(HUMMINGBIRD_WITH_SQL)
   target_link_libraries(HummingBirdCore PUBLIC HummingBird_Sql)
   target_compile_definitions(HummingBirdCore PUBLIC HUMMINGBIRD_WITH_SQL)
 endif()
-
-
-#imgui filedialog
-#add_subdirectory(ImGuiFileDialog)
-#target_include_directories(ImGuiFileDialog PUBLIC
-#        ${HUMMINGBIRD_DIR}/vendor/imgui
-#        ${HUMMINGBIRD_DIR}/vendor/imgui/backends
-#        ${HUMMINGBIRD_DIR}/vendor/imgui/addons
-#        ${HUMMINGBIRD_DIR}/vendor/imgui/misc/cpp
-#)
-#
-#target_link_libraries(HummingBirdCore PUBLIC ImGuiFileDialog)
-#
-
 
 
 #link all to kasper

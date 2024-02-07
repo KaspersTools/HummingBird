@@ -10,7 +10,7 @@
 #include <Security/Security.h>
 #endif
 
-#include "../../UIWindows/UIWindow.h"
+#include <HBUI/UIWindow.h>
 
 namespace HummingBirdCore::System {
   class EditHostsWindow : public HummingBirdCore::UIWindow {

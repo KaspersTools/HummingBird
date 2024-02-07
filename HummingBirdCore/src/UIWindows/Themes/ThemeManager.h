@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "../UIWindow.h"
+#include <HBUI/UIWindow.h>
 #include <UIWindows/Themes/Themes.h>
 
 namespace HummingBirdCore::Themes{

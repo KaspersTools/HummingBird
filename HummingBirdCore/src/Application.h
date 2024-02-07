@@ -4,8 +4,8 @@
 //
 
 #pragma once
-#include "../../HummingBirdTestPlugin/include/IPlugin.h"
 #include <PCH/pch.h>
+#include "../../HummingBirdPluginManager/include/IPlugin.h"
 
 namespace HummingBirdCore {
   class Application {
@@ -19,12 +19,13 @@ public:
     bool run();
 private:
     void init();
+    bool loadPluginManager();
     void render();
     void shutdown();
 
 private:
     bool showDebugWindow = false;
-    HummingBird::Plugins::IPlugin* plugin = nullptr;
+    HummingBird::Plugins::IPlugin* pluginManager = nullptr;
     void* handle = nullptr;
   };
 

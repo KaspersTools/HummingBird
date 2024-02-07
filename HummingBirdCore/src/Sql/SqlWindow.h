@@ -6,7 +6,7 @@
 #define HUMMINGBIRD_SQLWINDOW_H
 
 #include <Hummingbird_SQL/Connection.h>
-#include <UIWindows/UIWindow.h>
+#include <HBUI/UIWindow.h>
 
 namespace HummingBirdCore {
   class SqlWindow : public UIWindow {

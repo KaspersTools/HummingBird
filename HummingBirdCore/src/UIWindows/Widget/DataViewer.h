@@ -5,7 +5,6 @@
 #pragma once
 
 #include <PCH/pch.h>
-#include "UIWindows/UIWindow.h"
 
 namespace HummingBirdCore::Widgets {
   struct Header {

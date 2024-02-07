@@ -6,7 +6,6 @@
 #include <PCH/pch.h>
 
 #include "ThirdParty/MetricsImGui.h"
-#include "UIWindows/UIWindow.h"
 
 namespace HummingBirdCore::Widgets {
   class MetricsWidget : public UIWindow {

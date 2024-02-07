@@ -7,7 +7,7 @@
 #include <PCH/pch.h>
 
 #include "SysInfo.h"
-#include "UIWindows/UIWindow.h"
+#include <HBUI/UIWindow.h>
 
 
 namespace HummingBirdCore::System {

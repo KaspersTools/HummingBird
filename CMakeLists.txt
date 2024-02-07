@@ -80,7 +80,6 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/Utils/Plist/PlistUtil.h
         HummingBirdCore/src/UIWindows/Widget/AllAddonsWidget.h
         HummingBirdCore/src/UIWindows/MainMenuBar.cpp
-        HummingBirdCore/src/UIWindows/WindowManager.cpp
         HummingBirdCore/src/Sql/SqlWindow.cpp
         HummingBirdCore/src/Sql/SqlWindow.h
 )
@@ -106,9 +105,7 @@ else ()
   message("Building with HummingBirdCore as lib")
 endif ()
 
-set(HUMMINGBIRD_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
-set(HUMMINGBIRD_PLUGINS_DIR "${HUMMINGBIRD_BUILD_DIR}/plugins")
-
+set(HUMMINGBIRD_PLUGIN_DIR ${CMAKE_CURRENT_BINARY_DIR}/plugins)
 add_subdirectory(HummingBirdPluginManager EXCLUDE_FROM_ALL)
 target_include_directories(HummingBirdCore PUBLIC HummingBirdPluginManager/include)
 

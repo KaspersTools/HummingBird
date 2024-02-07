@@ -53,7 +53,6 @@
 //Contains all the precompiled headers for the HummingBirdCore project that are universal for all platforms
 /////THIRD PARTY LIBRARIES/////
 
-#define IM_VEC2_CLASS_EXTRA
 #include <imconfig.h>
 #include <misc/cpp/imgui_stdlib.h>
 #include <imgui.h>
@@ -86,4 +85,4 @@
 #include "Folder.h"
 
 //UIWindows
-#include "UIWindows/UIWindow.h"
+#include <HBUI/UIWindow.h>

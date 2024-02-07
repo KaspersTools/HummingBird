@@ -4,27 +4,22 @@
 
 #include "PluginManager.h"
 
-void PluginManager::initialize() {
+#include <HBUI/HBUI.h>
 
+void PluginManager::initialize() {
+  std::cout << "PluginManager initialized" << std::endl;
 }
 
 void PluginManager::execute() {
-
+  std::cout << "PluginManager executed" << std::endl;
 }
 
 void PluginManager::cleanup() {
-
+  std::cout << "PluginManager cleaned up" << std::endl;
 }
 
-void PluginManager::render(ImGuiContext* currentContext) {
-  ImGui::SetCurrentContext(currentContext);
+void PluginManager::render() {
   ImGui::Begin("PluginManager");
-  ImGui::Text("Hello, Plugin manager render!");
+  ImGui::Text("PluginManager");
   ImGui::End();
 }
-
-
-extern "C" HummingBird::Plugins::IPlugin* create_plugin() {
-  return new PluginManager();
-}
-

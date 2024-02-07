@@ -6,7 +6,6 @@
 #define HUMMINGBIRD_ALLADDONSWIDGET_H
 
 #include <PCH/pch.h>
-#include <UIWindows/UIWindow.h>
 #include <addons/imguidatechooser/imguidatechooser.h>
 #include <time.h>
 

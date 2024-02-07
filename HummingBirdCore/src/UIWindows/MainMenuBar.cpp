@@ -7,7 +7,7 @@
 // UIWindows
 #include "UIWindows/ContentExplorer.h"
 #include "UIWindows/LogWindow.h"
-#include "UIWindows/UIWindow.h"
+#include <HBUI/UIWindow.h>
 
 // UIWindows/Themes
 #include "UIWindows/Themes/ThemeManager.h"
@@ -30,7 +30,7 @@
 
 // System
 #include "System/SysInfo.h"
-#include "WindowManager.h"
+#include <HBUI/WindowManager.h>
 
 //sql
 #include "Sql/SqlWindow.h"

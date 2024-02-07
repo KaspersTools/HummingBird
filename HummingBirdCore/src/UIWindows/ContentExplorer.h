@@ -6,7 +6,7 @@
 
 #include <PCH/pch.h>
 
-#include "UIWindow.h"
+#include <HBUI/UIWindow.h>
 
 namespace HummingBirdCore {
   class ContentBrowserItem {
