@@ -26,10 +26,8 @@
 
 #include "System/Hosts/EditHostsWindow.h"
 #include "System/LaunchDaemonsManager.h"
-#include "System/SysInfoWindow.h"
 
 // System
-#include "System/SysInfo.h"
 #include <HBUI/WindowManager.h>
 
 //sql
@@ -83,10 +81,6 @@ namespace HummingBirdCore {
     if (ImGui::BeginMenu("Tools")) {
       // System Tools
       if (ImGui::BeginMenu("System Tools")) {
-        if (ImGui::MenuItem("System Info")) {
-          const std::string baseName = "System Info ";
-          windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::System::SysInfoWindow>(baseName));
-        }
         if (ImGui::MenuItem("Edit Hosts")) {
           const std::string baseName = "Edit Hosts ";
           windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::System::EditHostsWindow>(baseName));

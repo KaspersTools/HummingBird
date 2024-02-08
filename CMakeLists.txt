@@ -66,10 +66,6 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/UIWindows/LogWindow.h
         HummingBirdCore/src/Utils/Input.h
         HummingBirdCore/src/Updatable.h
-        HummingBirdCore/src/System/SysInfo.cpp
-        HummingBirdCore/src/System/SysInfo.h
-        HummingBirdCore/src/System/SysInfoWindow.cpp
-        HummingBirdCore/src/System/SysInfoWindow.h
         HummingBirdCore/src/UIWindows/Widget/DataViewer.h
         HummingBirdCore/src/ThirdParty/MetricsImGui.cpp
         HummingBirdCore/src/ThirdParty/MetricsImGui.h
