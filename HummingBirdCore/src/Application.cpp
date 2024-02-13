@@ -13,6 +13,7 @@
 #include "Application.h"
 #include <KDB_ImGui/backends/debug/imgui_impl_glfw_vulkan_debug.h>
 #include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
+#include <KDB_ImGui/themes/ThemeManager.h>
 
 #include <KDB_ImGui/fonts/FontManager.h>
 
@@ -76,7 +77,7 @@ namespace HummingBirdCore {
     HummingBirdCore::UI::WindowManager *windowManager = new UI::WindowManager();
     HummingBirdCore::UI::WindowManager::setInstance(windowManager);
 
-    if (!loadPluginManager("plugins/libHUMMINGBIRD_PLUGIN_MANAGER.dylib")) {
+    if (!loadPluginManager("plugins/manager/libHUMMINGBIRD_PLUGIN_MANAGER.dylib")) {
       CORE_ERROR("Failed to load plugin manager");
     }
     run();
@@ -132,21 +133,24 @@ namespace HummingBirdCore {
     }
 
     loadPlugin("plugins/libHUMMINGBIRD_PLUGIN_TEMPLATE.dylib", pluginManager);
-    auto entries = std::filesystem::directory_iterator("plugins/testplugins");
-    if(entries == std::filesystem::directory_iterator()){
-      CORE_ERROR("No plugins found in plugins directory");
-      return false;
-    }
-    for (const auto &entry : entries) {
-      if(entry.is_regular_file() && entry.path().extension() == ".dylib")
-        loadPlugin(entry.path(), pluginManager);
+    //plugins in this folder will be automatically loaded
+    if (std::filesystem::exists("plugins/testplugins/build/plugins/JavaISAPlugin")) {
+      auto entries = std::filesystem::directory_iterator("plugins/testplugins/build/plugins/JavaISAPlugin/");
+      if (entries == std::filesystem::directory_iterator()) {
+        CORE_ERROR("No plugins found in plugins directory");
+        return false;
+      }
+      for (const auto &entry: entries) {
+        if (entry.is_regular_file() && entry.path().extension() == ".dylib")
+          loadPlugin(entry.path(), pluginManager);
+      }
     }
     return true;
   }
 
   bool Application::run() {
     while (!ImGui_ImplVKGlfw_shouldClose()) {
-      if(pluginManager)
+      if (pluginManager)
         pluginManager->update();
 
       render();
@@ -159,7 +163,6 @@ namespace HummingBirdCore {
     ImGui::ShowDemoWindow();
 
     HummingBirdCore::UI::WindowManager::getInstance()->render();
-
     ImguiGlfwVulkanDebugger::render();
     ImGui_ImplVKGlfw_endRender();
   }
@@ -172,6 +175,5 @@ namespace HummingBirdCore {
     }
     dlclose(handle);
     ImGui_ImplVKGlfw_shutdown();
-
   }
 }// namespace HummingBirdCore

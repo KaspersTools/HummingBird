@@ -36,7 +36,7 @@ namespace HummingBirdCore {
       }
 
 
-      if (!schemas.empty()) {
+      if (schemas.empty()) {
         ImGui::BeginChild("##left", ImVec2(0, 0), true);
         KDB_IMGUI::textCenteredMultiline("No Schemas found", ImVec4(1,0,0,1));
         ImGui::EndChild();

@@ -112,3 +112,6 @@ target_include_directories(HummingBirdCore PUBLIC HummingBirdPluginManager/inclu
 # Copying resources from source to build
 message("Copying resources from ${CMAKE_CURRENT_SOURCE_DIR}/Assets to ${CMAKE_CURRENT_BINARY_DIR}/Assets")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+# Copying plugins from source to build
+message("Copying plugins from ${CMAKE_CURRENT_SOURCE_DIR}/plugins to ${CMAKE_CURRENT_BINARY_DIR}/plugins")

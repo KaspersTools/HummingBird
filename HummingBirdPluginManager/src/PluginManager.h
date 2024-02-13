@@ -15,6 +15,11 @@
 #include <dlfcn.h>
 #include <iostream>
 
+struct PluginData{
+  std::string name;
+  std::filesystem::path fullPath;
+};
+
 class PluginManager : public HummingBird::Plugins::IPlugin {
   public:
   PluginManager(HummingBirdCore::UI::WindowManager *windowManagerPtr, ImGuiContext *imGuiContext,
@@ -67,6 +72,7 @@ class PluginManager : public HummingBird::Plugins::IPlugin {
 
     plugins.push_back(plugin);
     plugin->initialize();
+    return true;
   }
 
   private:
