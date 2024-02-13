@@ -3,13 +3,13 @@
 //
 
 #pragma once
-#include <imgui.h>
+
 
 namespace ImGui {
   static float GetContentRegionAvailWidth() {
-    return ImGui::GetContentRegionAvail().x;
+//    return ImGui::GetContentRegionAvail().x;
   }
   static float GetContentRegionAvailHeight() {
-    return ImGui::GetContentRegionAvail().y;
+//    return ImGui::GetContentRegionAvail().y;
   }
 }// namespace ImGui

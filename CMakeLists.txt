@@ -11,6 +11,16 @@ message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message("CMAKE_CURRENT_OUTPUT_DIRECTORY: ${CMAKE_CURRENT_OUTPUT_DIRECTORY}")
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
+if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif ()
+if (NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif ()
+if (NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+  set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+endif ()
+
 set(HUMMINGBIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HummingBirdCore_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HummingBirdCore)
 set(HUMMINGBIRDFRONT_DIR ${HUMMINGBIRD_DIR}/HummingbirdFront)
@@ -67,8 +77,6 @@ set(HUMMINGBIRDCOURESTATICFILES
         HummingBirdCore/src/Utils/Input.h
         HummingBirdCore/src/Updatable.h
         HummingBirdCore/src/UIWindows/Widget/DataViewer.h
-        HummingBirdCore/src/ThirdParty/MetricsImGui.cpp
-        HummingBirdCore/src/ThirdParty/MetricsImGui.h
         HummingBirdCore/src/UIWindows/Widget/MetricsWidget.h
         HummingBirdCore/src/Utils/UIUtils.h
         HummingBirdCore/src/System/LaunchDaemonsManager.cpp
@@ -102,8 +110,11 @@ else ()
 endif ()
 
 set(HUMMINGBIRD_PLUGIN_DIR ${CMAKE_CURRENT_BINARY_DIR}/plugins)
+
 add_subdirectory(HummingBirdPluginManager EXCLUDE_FROM_ALL)
 add_subdirectory(HummingBirdPluginExample EXCLUDE_FROM_ALL)
+
+
 
 target_include_directories(HummingBirdCore PUBLIC HummingBirdPluginManager/include)
 

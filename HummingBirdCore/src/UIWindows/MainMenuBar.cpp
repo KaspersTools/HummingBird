@@ -2,7 +2,6 @@
 // Created by Kasper de Bruin on 23/01/2024.
 //
 #include <UIWindows/MainMenuBar.h>
-#include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
 
 // UIWindows
 #include "UIWindows/ContentExplorer.h"
@@ -57,7 +56,7 @@ namespace HummingBirdCore {
         CORE_WARN("LOG OUT NOT IMPLEMENTED");
       }
       if (ImGui::MenuItem("Exit")) {
-        ImGui_ImplVKGlfw_setShouldClose(true);
+        HBUI::shutdown();
       }
       ImGui::EndMenu();
     }

@@ -6,7 +6,8 @@
 
 #include <PCH/pch.h>
 #include "Utils/Plist/PlistUtil.h"
-
+#include <HBUI/HBUI.h>
+#include <HBUI/UIWindow.h>
 
 namespace HummingBirdCore {
   namespace System {

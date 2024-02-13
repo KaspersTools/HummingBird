@@ -4,7 +4,8 @@
 
 #pragma once
 #include <PCH/pch.h>
-
+#include <HBUI/HBUI.h>
+#include <HBUI/UIWindow.h>
 namespace HummingBirdCore::Security {
 
   class LogInWindow : public UIWindow {

@@ -5,8 +5,6 @@
 #pragma once
 #include <PCH/pch.h>
 
-#include "ThirdParty/MetricsImGui.h"
-
 namespace HummingBirdCore::Widgets {
   class MetricsWidget : public UIWindow {
 public:

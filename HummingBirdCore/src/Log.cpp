@@ -45,54 +45,54 @@ namespace HummingBirdCore {
   }
 
   void Log::notify(spdlog::source_loc loc, spdlog::level::level_enum lvl, spdlog::string_view_t msg) {
-
-    if(lvl == spdlog::level::off || lvl == spdlog::level::trace)
-      return;
-
-    spdlog::details::log_msg logMsg(loc, "notify", lvl, msg);
-
-    std::unique_ptr<spdlog::formatter> formatter;
-
-    std::string patternForTitle = "%^[%T] %n";
-    formatter = std::unique_ptr<spdlog::formatter>(new spdlog::pattern_formatter(patternForTitle));
-    fmt::basic_memory_buffer<char, 250> formatted;
-    formatter->format(logMsg, formatted);
-    std::string formattedTitleStr = std::string(formatted.data(), formatted.size());
-
-    std::string patternForMessage = "%v";
-    formatted = fmt::basic_memory_buffer<char, 250>();
-    formatter = std::unique_ptr<spdlog::formatter>(new spdlog::pattern_formatter(patternForMessage));
-    formatter->format(logMsg, formatted);
-    std::string formattedData = std::string(formatted.data(), formatted.size());
-
-    auto type = ImGuiToastType_None;
-
-    switch (lvl) {
-      case spdlog::level::trace:
-        type = ImGuiToastType_Info;
-        break;
-      case spdlog::level::debug:
-        type = ImGuiToastType_Info;
-        break;
-      case spdlog::level::info:
-        type = ImGuiToastType_Info;
-        break;
-      case spdlog::level::warn:
-        type = ImGuiToastType_Warning;
-        break;
-      case spdlog::level::err:
-        type = ImGuiToastType_Error;
-        break;
-      case spdlog::level::critical:
-        type = ImGuiToastType_Error;
-        break;
-      case spdlog::level::off:
-        type = ImGuiToastType_None;
-        break;
-    }
-
-    ImGuiToast toast = ImGuiToast(type, formattedTitleStr, formattedData, 5000);
-    ImGui::InsertNotification(toast);
+//
+//    if(lvl == spdlog::level::off || lvl == spdlog::level::trace)
+//      return;
+//
+//    spdlog::details::log_msg logMsg(loc, "notify", lvl, msg);
+//
+//    std::unique_ptr<spdlog::formatter> formatter;
+//
+//    std::string patternForTitle = "%^[%T] %n";
+//    formatter = std::unique_ptr<spdlog::formatter>(new spdlog::pattern_formatter(patternForTitle));
+//    fmt::basic_memory_buffer<char, 250> formatted;
+//    formatter->format(logMsg, formatted);
+//    std::string formattedTitleStr = std::string(formatted.data(), formatted.size());
+//
+//    std::string patternForMessage = "%v";
+//    formatted = fmt::basic_memory_buffer<char, 250>();
+//    formatter = std::unique_ptr<spdlog::formatter>(new spdlog::pattern_formatter(patternForMessage));
+//    formatter->format(logMsg, formatted);
+//    std::string formattedData = std::string(formatted.data(), formatted.size());
+//
+//    auto type = ImGuiToastType_None;
+//
+//    switch (lvl) {
+//      case spdlog::level::trace:
+//        type = ImGuiToastType_Info;
+//        break;
+//      case spdlog::level::debug:
+//        type = ImGuiToastType_Info;
+//        break;
+//      case spdlog::level::info:
+//        type = ImGuiToastType_Info;
+//        break;
+//      case spdlog::level::warn:
+//        type = ImGuiToastType_Warning;
+//        break;
+//      case spdlog::level::err:
+//        type = ImGuiToastType_Error;
+//        break;
+//      case spdlog::level::critical:
+//        type = ImGuiToastType_Error;
+//        break;
+//      case spdlog::level::off:
+//        type = ImGuiToastType_None;
+//        break;
+//    }
+//
+//    ImGuiToast toast = ImGuiToast(type, formattedTitleStr, formattedData, 5000);
+//    ImGui::InsertNotification(toast);
   }
 
 }// namespace HummingBirdCore

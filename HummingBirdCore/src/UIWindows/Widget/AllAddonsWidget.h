@@ -6,8 +6,8 @@
 #define HUMMINGBIRD_ALLADDONSWIDGET_H
 
 #include <PCH/pch.h>
-#include <addons/imguidatechooser/imguidatechooser.h>
 #include <time.h>
+//#include <addons/imguidatechooser/imguidatechooser.h>
 
 namespace HummingBirdCore {
   class AddonWidget : public UIWindow {
@@ -17,9 +17,9 @@ public:
     ~AddonWidget() = default;
     void render() override {
       ImGui::Begin("Addon Widget");
-      if(ImGui::Button("Show/Hide date chooser")){
-        m_showDateChooser = !m_showDateChooser;
-      }
+//      if(ImGui::Button("Show/Hide date chooser")){
+//        m_showDateChooser = !m_showDateChooser;
+//      }
       ImGui::End();
 
 
@@ -29,7 +29,7 @@ public:
     }
 
     void showDateChooser() {
-      ImGui::TestDateChooser();
+//      ImGui::TestDateChooser();
     }
 
 private:

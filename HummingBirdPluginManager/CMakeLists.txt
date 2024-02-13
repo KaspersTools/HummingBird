@@ -19,4 +19,4 @@ set_target_properties(HUMMINGBIRD_PLUGIN_MANAGER PROPERTIES
 )
 
 #enable IMGUI_ENABLE_STDLIB_SUPPORT
-target_link_libraries(HUMMINGBIRD_PLUGIN_MANAGER PUBLIC imgui-extension)
+target_link_libraries(HUMMINGBIRD_PLUGIN_MANAGER PUBLIC HBUI)

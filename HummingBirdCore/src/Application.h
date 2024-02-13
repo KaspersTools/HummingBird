@@ -5,6 +5,8 @@
 
 #pragma once
 #include <PCH/pch.h>
+#include <HBUI/HBUI.h>
+
 #include "../../HummingBirdPluginManager/include/IPlugin.h"
 
 namespace HummingBirdCore {

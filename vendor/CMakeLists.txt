@@ -4,41 +4,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ../cmake/)
 list(APPEND HUMMINGBIRD_LIBRARIES
         HummingBirdCore
 )
-
-#
 ## imgui
-add_subdirectory(imgui)
-#enable IMGUI_ENABLE_STDLIB_SUPPORT
-#set(IMGUI_ENABLE_STDLIB_SUPPORT ON CACHE BOOL "" FORCE)
-#set(IMGUI_EXAMPLES ON CACHE BOOL "" FORCE)
-#set(IMGUI_DEMO ON CACHE BOOL "" FORCE)
-#set(IMGUI_ENABLE_FREETYPE ON CACHE BOOL "" FORCE)
-#set(IMGUI_IMPL_GLFW ON CACHE BOOL "" FORCE)
-#set(IMGUI_IMPL_VULKAN ON CACHE BOOL "" FORCE)
-#set(IMGUI_IMPL_VULKAN ON CACHE BOOL "" FORCE)
-
-set(IMGUI_EXAMPLES ON CACHE BOOL "" FORCE)
-set(IMGUI_DEMO ON CACHE BOOL "" FORCE)
-set(IMGUI_ENABLE_STDLIB_SUPPORT ON CACHE BOOL "" FORCE)
-set(IMGUI_ENABLE_FREETYPE ON CACHE BOOL "" FORCE)
-set(IMGUI_IMPL_GLFW ON CACHE BOOL "" FORCE)
-set(IMGUI_IMPL_VULKAN ON CACHE BOOL "" FORCE)
-set(IMGUI_EXTENSION ON CACHE BOOL "" FORCE)
-
-target_link_libraries(HummingBirdCore PUBLIC
-        imgui
-        imgui-glfw imgui-vulkan
-        imgui-stdlib
-        imgui-extension)
-list(APPEND HUMMINGBIRD_LIBRARIES
-        imgui
-        imgui-glfw
-        imgui-vulkan
-        imgui-stdlib
-        imgui-extension
-)
-target_include_directories(HummingBirdCore PUBLIC imgui)
-
+#add_subdirectory(imgui)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/example/ ${CMAKE_BINARY_DIR}/example)
+#target_link_libraries(ImVk-example PRIVATE HBUI)
+ADD_SUBDIRECTORY(../vendor/imgui)
+add_subdirectory(../vendor/imgui/HBUI)
+target_link_libraries(HummingBirdCore PUBLIC HBUI)
+#target_link_libraries(HummingBirdCore PUBLIC HBUI)
 #fmt
 IF (NOT EXISTS ../vendor/fmt)
   message(FATAL_ERROR "fmt folder not found")

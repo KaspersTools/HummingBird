@@ -53,11 +53,6 @@
 //Contains all the precompiled headers for the HummingBirdCore project that are universal for all platforms
 /////THIRD PARTY LIBRARIES/////
 
-#include <imconfig.h>
-#include <misc/cpp/imgui_stdlib.h>
-#include <imgui.h>
-#include <imgui_internal.h>
-#include <addons/imguinotify/imgui_notify.h>
 
 #pragma warning(push, 0)
 #include <spdlog/spdlog.h>
@@ -85,4 +80,7 @@
 #include "Folder.h"
 
 //UIWindows
-#include <HBUI/UIWindow.h>
+//#include <HBUI/UIWindow.h>
+//#include <HBUI/WindowManager.h>
+//#include <HBUI/UIWindow.h>
+//#include <HBUI/HBUI.h>
