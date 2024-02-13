@@ -8,8 +8,8 @@ list(APPEND HUMMINGBIRD_LIBRARIES
 #add_subdirectory(imgui)
 #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/example/ ${CMAKE_BINARY_DIR}/example)
 #target_link_libraries(ImVk-example PRIVATE HBUI)
-ADD_SUBDIRECTORY(../vendor/imgui)
-add_subdirectory(../vendor/imgui/HBUI)
+add_subdirectory(imgui)
+add_subdirectory(imgui/HBUI)
 target_link_libraries(HummingBirdCore PUBLIC HBUI)
 #target_link_libraries(HummingBirdCore PUBLIC HBUI)
 #fmt
