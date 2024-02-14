@@ -67,12 +67,16 @@ namespace HummingBirdCore {
 #ifndef HUMMINGBIRD_WITH_SQL
       ImGui::BeginDisabled(true);
 #endif
+
       if (ImGui::MenuItem("Sql Connect")) {
+#ifdef HUMMINGBIRD_WITH_SQL
         windowManager->addWindow(baseName, 0, std::make_shared<HummingBirdCore::SqlWindow>(baseName));
-      }
-#ifndef HUMMINGBIRD_WITH_SQL
-      ImGui::EndDisabled();
 #endif
+      }
+#ifdef HUMMINGBIRD_WITH_SQL
+        ImGui::EndDisabled();
+#endif
+
       ImGui::EndMenu();
     }
 

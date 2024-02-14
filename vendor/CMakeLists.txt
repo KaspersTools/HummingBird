@@ -8,6 +8,8 @@ list(APPEND HUMMINGBIRD_LIBRARIES
 #add_subdirectory(imgui)
 #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/example/ ${CMAKE_BINARY_DIR}/example)
 #target_link_libraries(ImVk-example PRIVATE HBUI)
+set(IMVK_DOWNLOAD_GLFW ON)
+
 add_subdirectory(imgui)
 add_subdirectory(imgui/HBUI)
 target_link_libraries(HummingBirdCore PUBLIC HBUI)
@@ -129,8 +131,7 @@ endif ()
 
 ########HummingBirdTools########
 #sql tool
-option(HUMMINGBIRD_WITH_SQL "HummingBird SQL" ON)
-
+option(HUMMINGBIRD_WITH_SQL "HummingBird SQL" OFF)
 if(HUMMINGBIRD_WITH_SQL)
   set(HUMMINGBIRD_VENDOR_SqlToolDir ${HUMMINGBIRD_DIR}/vendor/HummingBird/SqlTool CACHE STRING "HummingBird SqlTool directory")
   add_subdirectory(${HUMMINGBIRD_VENDOR_SqlToolDir})

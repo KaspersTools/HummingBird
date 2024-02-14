@@ -1,7 +1,7 @@
 //
 // Created by Kasper de Bruin on 31/01/2024.
 //
-
+#ifdef HUMMINGBIRD_WITH_SQL
 #include "SqlWindow.h"
 #include <Hummingbird_SQL/Structures.h>
 //#include <KDB_ImGui/Extension.h>
@@ -144,3 +144,4 @@ namespace HummingBirdCore {
     }
   }
 }// namespace HummingBirdCore
+#endif

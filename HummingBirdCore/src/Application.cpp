@@ -100,7 +100,7 @@ namespace HummingBirdCore {
       return false;
     }
 
-    loadPlugin("plugins/libHUMMINGBIRD_PLUGIN_TEMPLATE.dylib", pluginManager);
+    loadPlugin("plugins/EXAMPLE/libHUMMINGBIRD_PLUGIN_EXAMPLE.dylib", pluginManager);
     //plugins in this folder will be automatically loaded
     if (std::filesystem::exists("plugins/testplugins")) {
       auto entries = std::filesystem::directory_iterator("plugins/testplugins/");

@@ -111,14 +111,18 @@ endif ()
 
 set(HUMMINGBIRD_PLUGIN_DIR ${CMAKE_CURRENT_BINARY_DIR}/plugins)
 
-add_subdirectory(HummingBirdPluginManager EXCLUDE_FROM_ALL)
-add_subdirectory(HummingBirdPluginExample EXCLUDE_FROM_ALL)
-
-
 
 target_include_directories(HummingBirdCore PUBLIC HummingBirdPluginManager/include)
 
-
+option(HUMMINGBIRD_PLUGINS_WITH_MANAGER "With plugin manager" ON)
+if(HUMMINGBIRD_PLUGINS_WITH_MANAGER)
+  message("Building with plugin manager")
+  add_subdirectory(HummingBirdPluginManager EXCLUDE_FROM_ALL)
+endif()
+option(HUMMINGBIRD_PLUGINS_WITH_EXAMPLE "With plugin example" ON)
+if(HUMMINGBIRD_PLUGINS_WITH_EXAMPLE)
+  add_subdirectory(HummingBirdPluginExample EXCLUDE_FROM_ALL)
+endif()
 ########################################################################
 # Copying resources from source to build
 message("Copying resources from ${CMAKE_CURRENT_SOURCE_DIR}/Assets to ${CMAKE_CURRENT_BINARY_DIR}/Assets")

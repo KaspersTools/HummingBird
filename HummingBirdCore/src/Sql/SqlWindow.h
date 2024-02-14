@@ -2,6 +2,8 @@
 // Created by Kasper de Bruin on 31/01/2024.
 //
 
+#ifdef HUMMINGBIRD_WITH_SQL
+
 #ifndef HUMMINGBIRD_SQLWINDOW_H
 #define HUMMINGBIRD_SQLWINDOW_H
 
@@ -27,3 +29,5 @@ private:
 }// namespace HummingBirdCore
 
 #endif//HUMMINGBIRD_SQLWINDOW_H
+
+#endif
