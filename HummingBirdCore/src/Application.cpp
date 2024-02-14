@@ -30,39 +30,6 @@ typedef bool (*LoadPluginFunc)(const std::filesystem::path &path, HummingBird::P
 
 namespace HummingBirdCore {
   void Application::init() {
-//    ApplicationSpecification m_Specification;
-//
-//    //App settings
-//    m_Specification.Name = "Hummingbird Core";
-//    m_Specification.WindowSettings.Width = 800;
-//    m_Specification.WindowSettings.Height = 600;
-//    m_Specification.WindowSettings.WindowResizeable = true;
-//    m_Specification.WindowSettings.WindowDecorated = true;
-//    m_Specification.WindowSettings.CenterWindow = true;
-//    m_Specification.WindowSettings.CreateDefaultDockSpace = true;
-//
-//    //Titlebar settings
-//    m_Specification.TitleBarSettings.CustomTitleBar = true;
-//    m_Specification.TitleBarSettings.HasLogo = true;
-//    m_Specification.TitleBarSettings.LogoPath = "Assets/Textures/logo.png";
-//    m_Specification.TitleBarSettings.LogoDrawSize = {45.f, 45.f};
-//
-//    m_Specification.TitleBarSettings.DrawTitleCentered = true;
-//
-//    m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 19.0f;
-//    m_Specification.TitleBarSettings.Height = 60.132f;
-//
-//    m_Specification.TitleBarSettings.MainMenuBarCallback = new std::function<void()>([&]() {
-//      UI::mainMenuBarCallback();
-//    });
-//
-//    ImGui_ImplVKGlfw_setImplErrorCallback([&](int error, const char *description) {
-//      std::cout << "GLFWVULKANIMPL::errorCallback() error: " << error << " description: " << description
-//                << std::endl;
-//    });
-//
-//    ImGui_ImplVKGlfw_init(m_Specification);
-
     HBUI::initialize();
     pfd::message("Welcome to Hummingbird Core", "Welcome to Hummingbird Core, the core of the Hummingbird Engine. "
                                                 "This is a work in progress, so expect bugs and crashes. If you find any, "
@@ -73,8 +40,6 @@ namespace HummingBirdCore {
 
     fontConfig.RasterizerDensity = 2.0f;
     fontConfig.RasterizerMultiply = 1.0f;
-//    KDB_IMGUI::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
-//                                    "JetBrainsMono", 16.0f, fontConfig);
 
     HummingBirdCore::UI::WindowManager *windowManager = new UI::WindowManager();
     HummingBirdCore::UI::WindowManager::setInstance(windowManager);
@@ -161,9 +126,7 @@ namespace HummingBirdCore {
 
   void Application::render() {
     HBUI::startFrame();
-
-    ImGui::ShowDemoWindow();
-
+    HBUI::beginFullScreenDockspace(false, false);
     HummingBirdCore::UI::WindowManager::getInstance()->render();
     HBUI::endFrame();
   }
